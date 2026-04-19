@@ -1,0 +1,84 @@
+# =============================================================
+#  Supabase config — PronosticsContest v2
+# =============================================================
+#
+#  Lancement : `supabase start`   (Docker Desktop doit tourner)
+#  Arrêt     : `supabase stop`
+#  Reset     : `supabase db reset`   (rejoue toutes les migrations + seed)
+#
+#  URLs en local :
+#    API       : http://localhost:54321
+#    DB        : postgresql://postgres:postgres@localhost:54322/postgres
+#    Studio    : http://localhost:54323
+#    Inbucket  : http://localhost:54324   (emails capturés, magic links, resets)
+#
+# =============================================================
+
+project_id = "pronosticscontest-v2"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[db.pooler]
+enabled = false
+port = 54329
+pool_mode = "transaction"
+default_pool_size = 20
+max_client_conn = 100
+
+[realtime]
+enabled = true
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173/auth/callback"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+enable_anonymous_sign_ins = false
+enable_manual_linking = false
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+# Désactivé en local pour faciliter le dev (Inbucket reste accessible quand même)
+enable_confirmations = false
+secure_password_change = false
+max_frequency = "1s"
+otp_length = 6
+otp_expiry = 3600
+
+[auth.sms]
+enable_signup = false
+enable_confirmations = false
+template = "Your code is {{ .Code }}"
+
+# Google OAuth (désactivé en Sprint 1, à activer au Sprint 6 si besoin)
+# [auth.external.google]
+# enabled = true
+# client_id = "env(SUPABASE_AUTH_GOOGLE_CLIENT_ID)"
+# secret = "env(SUPABASE_AUTH_GOOGLE_SECRET)"
+# redirect_uri = ""
