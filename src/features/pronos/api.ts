@@ -31,10 +31,12 @@ export type MatchWithEquipes = Match & {
 
 const EQUIPE_SELECT = 'id, code, nom, groupe, drapeau_url' as const;
 
+// Désambiguïsation : `matchs` a 2 FK vers `equipes`, on cible la bonne
+// contrainte pour éviter `SelectQueryError` côté types générés.
 const MATCH_WITH_EQUIPES_SELECT = `
   *,
-  equipe_a:equipe_a_id (${EQUIPE_SELECT}),
-  equipe_b:equipe_b_id (${EQUIPE_SELECT})
+  equipe_a:equipes!matchs_equipe_a_id_fkey (${EQUIPE_SELECT}),
+  equipe_b:equipes!matchs_equipe_b_id_fkey (${EQUIPE_SELECT})
 ` as const;
 
 // ------------------------------------------------------------------
