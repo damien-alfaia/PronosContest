@@ -1,10 +1,13 @@
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/use-auth';
 
 export function LandingPage() {
   const { t, i18n } = useTranslation();
+  const { isAuthenticated } = useAuth();
 
   const toggleLocale = () => {
     void i18n.changeLanguage(i18n.language.startsWith('fr') ? 'en' : 'fr');
@@ -35,7 +38,20 @@ export function LandingPage() {
         </p>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Button>{t('app.cta')}</Button>
+        {isAuthenticated ? (
+          <Button asChild>
+            <Link to="/app/dashboard">{t('nav.dashboard')}</Link>
+          </Button>
+        ) : (
+          <>
+            <Button asChild>
+              <Link to="/auth/signup">{t('app.cta')}</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/auth/login">{t('nav.login')}</Link>
+            </Button>
+          </>
+        )}
       </div>
       <p className="text-xs text-muted-foreground">{t('app.sprintStatus')}</p>
     </main>
