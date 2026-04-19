@@ -146,7 +146,7 @@ pnpm prepare                     # Husky hooks
 
 ## 🗺️ Roadmap (voir spec pour détail)
 
-- [ ] **Sprint 0** — Setup (Vite + TS + Tailwind + shadcn + Supabase + CI)
+- [x] **Sprint 0** — Setup (Vite + TS + Tailwind + shadcn + Supabase structure + qualité)
 - [ ] **Sprint 1** — Auth + layout + i18n + theme
 - [ ] **Sprint 2** — Concours & compétitions (liste, création, recherche)
 - [ ] **Sprint 3** — Saisie de pronos
@@ -155,7 +155,7 @@ pnpm prepare                     # Husky hooks
 - [ ] **Sprint 6** — Social & gamification (badges, chat, notifs)
 - [ ] **Sprint 7** — PWA, perf, docs, lancement
 
-Sprint courant : **Sprint 0**.
+Sprint courant : **Sprint 1** (Auth Supabase + layout + theme + i18n complet).
 
 ---
 

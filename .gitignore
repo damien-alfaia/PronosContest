@@ -69,3 +69,5 @@ supabase/seed.local.sql
 # --- Misc ---
 *.pem
 .history/
+_tmp_*
+
