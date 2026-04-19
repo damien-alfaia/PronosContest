@@ -155,6 +155,7 @@ export type Database = {
           competition_id: string
           created_at: string
           drapeau_url: string | null
+          fifa_id: number | null
           groupe: string | null
           id: string
           nom: string
@@ -165,6 +166,7 @@ export type Database = {
           competition_id: string
           created_at?: string
           drapeau_url?: string | null
+          fifa_id?: number | null
           groupe?: string | null
           id?: string
           nom: string
@@ -175,6 +177,7 @@ export type Database = {
           competition_id?: string
           created_at?: string
           drapeau_url?: string | null
+          fifa_id?: number | null
           groupe?: string | null
           id?: string
           nom?: string
@@ -186,6 +189,88 @@ export type Database = {
             columns: ["competition_id"]
             isOneToOne: false
             referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      matchs: {
+        Row: {
+          competition_id: string
+          created_at: string
+          equipe_a_id: string
+          equipe_b_id: string
+          fifa_match_id: number | null
+          id: string
+          kick_off_at: string
+          penalty_score_a: number | null
+          penalty_score_b: number | null
+          phase: string
+          round: number | null
+          score_a: number | null
+          score_b: number | null
+          status: string
+          updated_at: string
+          vainqueur_tab: string | null
+          venue_name: string | null
+        }
+        Insert: {
+          competition_id: string
+          created_at?: string
+          equipe_a_id: string
+          equipe_b_id: string
+          fifa_match_id?: number | null
+          id?: string
+          kick_off_at: string
+          penalty_score_a?: number | null
+          penalty_score_b?: number | null
+          phase: string
+          round?: number | null
+          score_a?: number | null
+          score_b?: number | null
+          status?: string
+          updated_at?: string
+          vainqueur_tab?: string | null
+          venue_name?: string | null
+        }
+        Update: {
+          competition_id?: string
+          created_at?: string
+          equipe_a_id?: string
+          equipe_b_id?: string
+          fifa_match_id?: number | null
+          id?: string
+          kick_off_at?: string
+          penalty_score_a?: number | null
+          penalty_score_b?: number | null
+          phase?: string
+          round?: number | null
+          score_a?: number | null
+          score_b?: number | null
+          status?: string
+          updated_at?: string
+          vainqueur_tab?: string | null
+          venue_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matchs_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matchs_equipe_a_id_fkey"
+            columns: ["equipe_a_id"]
+            isOneToOne: false
+            referencedRelation: "equipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matchs_equipe_b_id_fkey"
+            columns: ["equipe_b_id"]
+            isOneToOne: false
+            referencedRelation: "equipes"
             referencedColumns: ["id"]
           },
         ]
@@ -226,12 +311,61 @@ export type Database = {
         }
         Relationships: []
       }
+      pronos: {
+        Row: {
+          concours_id: string
+          created_at: string
+          match_id: string
+          score_a: number
+          score_b: number
+          updated_at: string
+          user_id: string
+          vainqueur_tab: string | null
+        }
+        Insert: {
+          concours_id: string
+          created_at?: string
+          match_id: string
+          score_a: number
+          score_b: number
+          updated_at?: string
+          user_id: string
+          vainqueur_tab?: string | null
+        }
+        Update: {
+          concours_id?: string
+          created_at?: string
+          match_id?: string
+          score_a?: number
+          score_b?: number
+          updated_at?: string
+          user_id?: string
+          vainqueur_tab?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pronos_concours_id_fkey"
+            columns: ["concours_id"]
+            isOneToOne: false
+            referencedRelation: "concours"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pronos_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matchs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       generate_concours_code: { Args: never; Returns: string }
+      is_match_locked: { Args: { p_match_id: string }; Returns: boolean }
       is_participant: { Args: { p_concours_id: string }; Returns: boolean }
       join_concours_by_code: { Args: { p_code: string }; Returns: string }
     }
