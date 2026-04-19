@@ -147,7 +147,7 @@ pnpm prepare                     # Husky hooks
 ## 🗺️ Roadmap (voir spec pour détail)
 
 - [x] **Sprint 0** — Setup (Vite + TS + Tailwind + shadcn + Supabase structure + qualité)
-- [ ] **Sprint 1** — Auth + layout + i18n + theme
+- [x] **Sprint 1** — Auth + layout + i18n + theme
 - [ ] **Sprint 2** — Concours & compétitions (liste, création, recherche)
 - [ ] **Sprint 3** — Saisie de pronos
 - [ ] **Sprint 4** — Scoring & classement Realtime (cœur)
@@ -155,7 +155,15 @@ pnpm prepare                     # Husky hooks
 - [ ] **Sprint 6** — Social & gamification (badges, chat, notifs)
 - [ ] **Sprint 7** — PWA, perf, docs, lancement
 
-Sprint courant : **Sprint 1** (Auth Supabase + layout + theme + i18n complet).
+Sprint courant : **Sprint 2** (Concours & compétitions — liste, création, recherche).
+
+### Sprint 1 — récap (✅)
+
+- **1.A** — Supabase local (`config.toml`, migration `profiles` + RLS + trigger + types générés), stores Zustand (`theme`, `auth`), providers (Query, Theme, Auth), hook `useAuth`, `ThemeToggle`.
+- **1.B** — Schémas Zod auth (login/signup/forgot/reset/magicLink), erreurs typées (`TypedAuthError`), pages auth, guards `RequireAuth` / `RedirectIfAuth`, tests Vitest (34 tests).
+- **1.C** — Layout app (Sidebar / Topbar / BottomNav / UserMenu / AppLayout), placeholders `concours` / `pronos` / `classement`, page profil avec `useQuery` + `useMutation` optimiste, `LanguageSwitcher`, i18n enrichi, ADR-0002 (Zustand client / TanStack Query server).
+
+Checks verts : `typecheck` ✅ · `lint` ✅ (0 warning) · `test` 34/34 ✅ · `build` ✅.
 
 ---
 
