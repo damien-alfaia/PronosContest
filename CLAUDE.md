@@ -148,14 +148,14 @@ pnpm prepare                     # Husky hooks
 
 - [x] **Sprint 0** — Setup (Vite + TS + Tailwind + shadcn + Supabase structure + qualité)
 - [x] **Sprint 1** — Auth + layout + i18n + theme
-- [ ] **Sprint 2** — Concours & compétitions (liste, création, recherche)
+- [x] **Sprint 2** — Concours & compétitions (liste, création, recherche)
 - [ ] **Sprint 3** — Saisie de pronos
 - [ ] **Sprint 4** — Scoring & classement Realtime (cœur)
 - [ ] **Sprint 5** — Admin & import auto des matchs
 - [ ] **Sprint 6** — Social & gamification (badges, chat, notifs)
 - [ ] **Sprint 7** — PWA, perf, docs, lancement
 
-Sprint courant : **Sprint 2** (Concours & compétitions — liste, création, recherche).
+Sprint courant : **Sprint 3** (Saisie de pronostics).
 
 ### Sprint 1 — récap (✅)
 
@@ -164,6 +164,14 @@ Sprint courant : **Sprint 2** (Concours & compétitions — liste, création, re
 - **1.C** — Layout app (Sidebar / Topbar / BottomNav / UserMenu / AppLayout), placeholders `concours` / `pronos` / `classement`, page profil avec `useQuery` + `useMutation` optimiste, `LanguageSwitcher`, i18n enrichi, ADR-0002 (Zustand client / TanStack Query server).
 
 Checks verts : `typecheck` ✅ · `lint` ✅ (0 warning) · `test` 34/34 ✅ · `build` ✅.
+
+### Sprint 2 — récap (✅)
+
+- **2.A** — Migration `20260419130000_init_concours.sql` : 4 tables (`competitions`, `equipes`, `concours`, `concours_participants`) avec RLS, helper `is_participant(uuid)` en `SECURITY DEFINER` (coupe la récursion sur la policy SELECT de `cp`), trigger auto-génération de `code_invitation` + auto-ajout de l'owner comme `admin`, RPC `join_concours_by_code(text)`. Seed FIFA WC 2026 (48 équipes / 12 groupes A-L, tirage officiel 5 déc. 2025 + barrages UEFA et intercontinentaux). Types TS régénérés.
+- **2.B** — `features/concours` : `schemas.ts` (Zod pour création / join par code / recherche, defaults scoring alignés sur le SQL), `api.ts` (`listMyConcours`, `listPublicConcours` avec échappement anti-wildcard, `getConcoursById`, `createConcours`, `joinPublicConcours`, `leaveConcours`, RPC `joinConcoursByCode`, `listCompetitions`, `listEquipesByCompetition`), `use-concours.ts` (query keys structurées + mutations avec invalidations ciblées). Pages : liste avec sections "Mes concours" / "Découvrir" + recherche `useDeferredValue`, création avec radio-group 3 visibilités, détail avec badges owner/member/visitor + code d'invitation copiable. UI primitives ajoutées : `badge`, `separator`, `textarea`.
+- **2.C** — Modale `JoinByCodeDialog` (overlay + focus mgmt + Esc) avec mapping d'erreurs RPC (`not_found` / `not_joinable`). Tests Vitest (29 nouveaux : 18 schemas + 11 api avec builder supabase mocké). i18n FR/EN enrichi du bloc `concours.*`.
+
+Checks verts : `typecheck` ✅ · `lint` ✅ (0 warning) · `test` 63/63 ✅ · `build` ✅.
 
 ---
 
