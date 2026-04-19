@@ -21,15 +21,27 @@
   "common": {
     "loading": "Chargement…",
     "submitting": "Envoi…",
+    "saving": "Enregistrement…",
     "or": "ou",
     "back": "Retour",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "comingSoon": "Bientôt disponible"
   },
   "nav": {
     "login": "Se connecter",
     "signup": "Créer un compte",
     "dashboard": "Tableau de bord",
-    "logout": "Se déconnecter"
+    "concours": "Concours",
+    "pronos": "Pronostics",
+    "classement": "Classement",
+    "profile": "Profil",
+    "logout": "Se déconnecter",
+    "toggleMenu": "Ouvrir le menu",
+    "userMenu": "Menu utilisateur",
+    "primary": "Navigation principale"
   },
   "auth": {
     "login": {
@@ -99,5 +111,32 @@
   "dashboard": {
     "welcome": "Salut {{name}} 👋",
     "placeholder": "Le tableau de bord arrive au Sprint 2."
+  },
+  "pages": {
+    "concours": {
+      "title": "Concours",
+      "placeholder": "La liste des concours arrive au Sprint 2."
+    },
+    "pronos": {
+      "title": "Pronostics",
+      "placeholder": "La saisie des pronostics arrive au Sprint 3."
+    },
+    "classement": {
+      "title": "Classement",
+      "placeholder": "Le classement temps réel arrive au Sprint 4."
+    }
+  },
+  "profile": {
+    "title": "Mon profil",
+    "subtitle": "Gère tes informations personnelles.",
+    "avatarFallback": "{{initials}}",
+    "sectionAccount": "Compte",
+    "emailLabel": "Adresse e-mail",
+    "emailReadonlyHint": "L'e-mail ne peut pas être modifié depuis ici.",
+    "rolePlayer": "Joueur",
+    "roleAdmin": "Administrateur",
+    "updateSuccess": "Profil mis à jour.",
+    "updateError": "Impossible d'enregistrer le profil.",
+    "loadError": "Impossible de charger le profil."
   }
 }

@@ -21,15 +21,27 @@
   "common": {
     "loading": "Loading…",
     "submitting": "Submitting…",
+    "saving": "Saving…",
     "or": "or",
     "back": "Back",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "close": "Close",
+    "comingSoon": "Coming soon"
   },
   "nav": {
     "login": "Sign in",
     "signup": "Create account",
     "dashboard": "Dashboard",
-    "logout": "Sign out"
+    "concours": "Contests",
+    "pronos": "Predictions",
+    "classement": "Leaderboard",
+    "profile": "Profile",
+    "logout": "Sign out",
+    "toggleMenu": "Open menu",
+    "userMenu": "User menu",
+    "primary": "Primary navigation"
   },
   "auth": {
     "login": {
@@ -99,5 +111,32 @@
   "dashboard": {
     "welcome": "Hi {{name}} 👋",
     "placeholder": "Dashboard coming in Sprint 2."
+  },
+  "pages": {
+    "concours": {
+      "title": "Contests",
+      "placeholder": "Contest list coming in Sprint 2."
+    },
+    "pronos": {
+      "title": "Predictions",
+      "placeholder": "Prediction input coming in Sprint 3."
+    },
+    "classement": {
+      "title": "Leaderboard",
+      "placeholder": "Real-time leaderboard coming in Sprint 4."
+    }
+  },
+  "profile": {
+    "title": "My profile",
+    "subtitle": "Manage your personal information.",
+    "avatarFallback": "{{initials}}",
+    "sectionAccount": "Account",
+    "emailLabel": "Email address",
+    "emailReadonlyHint": "Email cannot be changed from here.",
+    "rolePlayer": "Player",
+    "roleAdmin": "Administrator",
+    "updateSuccess": "Profile updated.",
+    "updateError": "Couldn't save the profile.",
+    "loadError": "Couldn't load the profile."
   }
 }
