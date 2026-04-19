@@ -9,6 +9,8 @@ import { LoginPage } from '@/features/auth/pages/login-page';
 import { ResetPasswordPage } from '@/features/auth/pages/reset-password-page';
 import { SignupPage } from '@/features/auth/pages/signup-page';
 import { ClassementPage } from '@/features/classement/classement-page';
+import { ConcoursDetailPage } from '@/features/concours/concours-detail-page';
+import { ConcoursNewPage } from '@/features/concours/concours-new-page';
 import { ConcoursPage } from '@/features/concours/concours-page';
 import { DashboardPage } from '@/features/dashboard/dashboard-page';
 import { LandingPage } from '@/features/landing/landing-page';
@@ -41,6 +43,8 @@ export const router = createBrowserRouter([
         children: [
           { path: '/app/dashboard', element: <DashboardPage /> },
           { path: '/app/concours', element: <ConcoursPage /> },
+          { path: '/app/concours/nouveau', element: <ConcoursNewPage /> },
+          { path: '/app/concours/:id', element: <ConcoursDetailPage /> },
           { path: '/app/pronos', element: <PronosPage /> },
           { path: '/app/classement', element: <ClassementPage /> },
           { path: '/app/profile', element: <ProfilePage /> },

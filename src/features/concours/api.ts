@@ -22,13 +22,14 @@ export type ConcoursParticipant =
 
 /**
  * Concours + infos compétition (lecture).
- * Supabase retourne `competition` en nested object car la FK est connue.
+ * Supabase retourne `competition` en nested object car la FK est NOT NULL
+ * + ON DELETE RESTRICT (donc jamais null).
  */
 export type ConcoursWithCompetition = Concours & {
   competition: Pick<
     Competition,
     'id' | 'code' | 'nom' | 'sport' | 'date_debut' | 'date_fin' | 'status' | 'logo_url'
-  > | null;
+  >;
 };
 
 export type ConcoursDetail = ConcoursWithCompetition & {

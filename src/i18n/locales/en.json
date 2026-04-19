@@ -126,6 +126,115 @@
       "placeholder": "Real-time leaderboard coming in Sprint 4."
     }
   },
+  "concours": {
+    "title": "Contests",
+    "subtitle": "Create or join contests around a competition.",
+    "actions": {
+      "create": "Create a contest",
+      "joinByCode": "Join with a code",
+      "join": "Join",
+      "leave": "Leave",
+      "copyCode": "Copy code",
+      "copied": "Code copied",
+      "back": "Back to contests"
+    },
+    "tabs": {
+      "mine": "My contests",
+      "discover": "Discover"
+    },
+    "sections": {
+      "myConcours": "My contests",
+      "discover": "Discover",
+      "participants": "Participants",
+      "invitation": "Invitation",
+      "scoring": "Scoring rules"
+    },
+    "empty": {
+      "mine": "You haven't joined any contest yet.",
+      "mineCta": "Create your first contest or join one with a code.",
+      "discover": "No public contest available right now.",
+      "search": "No contest matches your search."
+    },
+    "search": {
+      "label": "Search a contest",
+      "placeholder": "Contest name…"
+    },
+    "list": {
+      "participantsCount_one": "{{count}} participant",
+      "participantsCount_other": "{{count}} participants",
+      "viewDetails": "View details"
+    },
+    "fields": {
+      "nom": "Contest name",
+      "nomPlaceholder": "e.g. Predictions with friends 2026",
+      "description": "Description (optional)",
+      "descriptionPlaceholder": "Describe your contest in a few words…",
+      "competition": "Competition",
+      "competitionPlaceholder": "Pick a competition",
+      "visibility": "Visibility",
+      "visibilityPublic": "Public",
+      "visibilityPublicHint": "Listed and joinable by anyone.",
+      "visibilityPrivate": "Private",
+      "visibilityPrivateHint": "Hidden, joinable with a code.",
+      "visibilityUnlisted": "Unlisted",
+      "visibilityUnlistedHint": "Hidden, joinable with a code or a direct link.",
+      "codeInvitation": "Invitation code"
+    },
+    "create": {
+      "title": "Create a contest",
+      "subtitle": "Set the rules, you'll invite players next.",
+      "submit": "Create contest",
+      "submitting": "Creating…",
+      "successTitle": "Contest created",
+      "successBody": "Your contest is ready. Share the invitation code or link to gather your players."
+    },
+    "detail": {
+      "ownerBadge": "Owner",
+      "memberBadge": "Member",
+      "visitorBadge": "Not a member",
+      "codeDescription": "Share this code with the people you want to invite.",
+      "notAMember": "You are not a member of this contest."
+    },
+    "join": {
+      "title": "Join with a code",
+      "subtitle": "Enter the code shared by the contest owner.",
+      "submit": "Join",
+      "submitting": "Checking…",
+      "cancel": "Cancel",
+      "success": "Welcome to the contest!"
+    },
+    "toast": {
+      "createError": "Couldn't create the contest.",
+      "joinSuccess": "You joined the contest.",
+      "joinError": "Couldn't join this contest.",
+      "joinNotFound": "Invalid code or contest not found.",
+      "joinNotJoinable": "This code can't be used to join a contest.",
+      "leaveSuccess": "You left the contest.",
+      "leaveError": "Couldn't leave the contest for now."
+    },
+    "errors": {
+      "nomTooShort": "Name too short (3 characters minimum).",
+      "nomTooLong": "Name too long (80 characters maximum).",
+      "descriptionTooLong": "Description too long (500 characters maximum).",
+      "competitionRequired": "Pick a competition.",
+      "visibilityRequired": "Pick a visibility.",
+      "codeTooShort": "Code too short.",
+      "codeTooLong": "Code too long."
+    },
+    "visibility": {
+      "public": "Public",
+      "private": "Private",
+      "unlisted": "Unlisted"
+    },
+    "scoring": {
+      "exact_score": "Exact score",
+      "correct_winner": "Correct winner",
+      "correct_draw": "Correct draw",
+      "knockout_bonus": "Knockout bonus",
+      "odds_multiplier_enabled_on": "Odds multiplier enabled",
+      "odds_multiplier_enabled_off": "Odds multiplier disabled"
+    }
+  },
   "profile": {
     "title": "My profile",
     "subtitle": "Manage your personal information.",

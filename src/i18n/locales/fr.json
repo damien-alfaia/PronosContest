@@ -126,6 +126,115 @@
       "placeholder": "Le classement temps réel arrive au Sprint 4."
     }
   },
+  "concours": {
+    "title": "Concours",
+    "subtitle": "Crée ou rejoins des concours autour d'une compétition.",
+    "actions": {
+      "create": "Créer un concours",
+      "joinByCode": "Rejoindre via un code",
+      "join": "Rejoindre",
+      "leave": "Quitter",
+      "copyCode": "Copier le code",
+      "copied": "Code copié",
+      "back": "Retour aux concours"
+    },
+    "tabs": {
+      "mine": "Mes concours",
+      "discover": "Découvrir"
+    },
+    "sections": {
+      "myConcours": "Mes concours",
+      "discover": "Découvrir",
+      "participants": "Participants",
+      "invitation": "Invitation",
+      "scoring": "Règles de scoring"
+    },
+    "empty": {
+      "mine": "Tu n'as encore rejoint aucun concours.",
+      "mineCta": "Crée ton premier concours ou rejoins-en un via un code.",
+      "discover": "Aucun concours public pour le moment.",
+      "search": "Aucun concours ne correspond à ta recherche."
+    },
+    "search": {
+      "label": "Rechercher un concours",
+      "placeholder": "Nom du concours…"
+    },
+    "list": {
+      "participantsCount_one": "{{count}} participant",
+      "participantsCount_other": "{{count}} participants",
+      "viewDetails": "Voir le détail"
+    },
+    "fields": {
+      "nom": "Nom du concours",
+      "nomPlaceholder": "Ex : Pronos entre potes 2026",
+      "description": "Description (optionnel)",
+      "descriptionPlaceholder": "Présente ton concours en quelques mots…",
+      "competition": "Compétition",
+      "competitionPlaceholder": "Choisis une compétition",
+      "visibility": "Visibilité",
+      "visibilityPublic": "Public",
+      "visibilityPublicHint": "Listé et rejoignable par tous.",
+      "visibilityPrivate": "Privé",
+      "visibilityPrivateHint": "Caché, rejoignable via un code.",
+      "visibilityUnlisted": "Non listé",
+      "visibilityUnlistedHint": "Caché, rejoignable via un code ou un lien direct.",
+      "codeInvitation": "Code d'invitation"
+    },
+    "create": {
+      "title": "Créer un concours",
+      "subtitle": "Configure les règles, tu pourras inviter des joueurs ensuite.",
+      "submit": "Créer le concours",
+      "submitting": "Création…",
+      "successTitle": "Concours créé",
+      "successBody": "Ton concours est prêt. Partage le code d'invitation ou le lien pour rassembler tes joueurs."
+    },
+    "detail": {
+      "ownerBadge": "Propriétaire",
+      "memberBadge": "Membre",
+      "visitorBadge": "Non membre",
+      "codeDescription": "Partage ce code avec les personnes que tu veux inviter.",
+      "notAMember": "Tu n'es pas membre de ce concours."
+    },
+    "join": {
+      "title": "Rejoindre via un code",
+      "subtitle": "Saisis le code partagé par le propriétaire du concours.",
+      "submit": "Rejoindre",
+      "submitting": "Vérification…",
+      "cancel": "Annuler",
+      "success": "Bienvenue dans le concours !"
+    },
+    "toast": {
+      "createError": "Impossible de créer le concours.",
+      "joinSuccess": "Tu as rejoint le concours.",
+      "joinError": "Impossible de rejoindre ce concours.",
+      "joinNotFound": "Code invalide ou concours introuvable.",
+      "joinNotJoinable": "Ce code ne permet pas de rejoindre un concours.",
+      "leaveSuccess": "Tu as quitté le concours.",
+      "leaveError": "Impossible de quitter le concours pour le moment."
+    },
+    "errors": {
+      "nomTooShort": "Nom trop court (3 caractères minimum).",
+      "nomTooLong": "Nom trop long (80 caractères maximum).",
+      "descriptionTooLong": "Description trop longue (500 caractères maximum).",
+      "competitionRequired": "Choisis une compétition.",
+      "visibilityRequired": "Choisis une visibilité.",
+      "codeTooShort": "Code trop court.",
+      "codeTooLong": "Code trop long."
+    },
+    "visibility": {
+      "public": "Public",
+      "private": "Privé",
+      "unlisted": "Non listé"
+    },
+    "scoring": {
+      "exact_score": "Score exact",
+      "correct_winner": "Bon vainqueur",
+      "correct_draw": "Match nul deviné",
+      "knockout_bonus": "Bonus phase finale",
+      "odds_multiplier_enabled_on": "Multiplicateur de cotes activé",
+      "odds_multiplier_enabled_off": "Multiplicateur de cotes désactivé"
+    }
+  },
   "profile": {
     "title": "Mon profil",
     "subtitle": "Gère tes informations personnelles.",
