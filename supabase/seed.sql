@@ -1,0 +1,6 @@
+-- ============================================================
+--  PronosticsContest v2 — seed (placeholder Sprint 0)
+-- ============================================================
+-- Ce fichier sera rempli au Sprint 2 avec un jeu de données
+-- d'exemple (Euro 2024 : compétition, équipes, groupes, matchs,
+-- phases finales). Pour l'instant, vide.
