@@ -119,7 +119,7 @@
     },
     "pronos": {
       "title": "Pronostics",
-      "placeholder": "La saisie des pronostics arrive au Sprint 3."
+      "placeholder": "Ouvre la fiche d'un concours pour saisir tes pronostics."
     },
     "classement": {
       "title": "Classement",
@@ -136,7 +136,8 @@
       "leave": "Quitter",
       "copyCode": "Copier le code",
       "copied": "Code copié",
-      "back": "Retour aux concours"
+      "back": "Retour aux concours",
+      "goToPronos": "Saisir mes pronostics"
     },
     "tabs": {
       "mine": "Mes concours",
@@ -233,6 +234,64 @@
       "knockout_bonus": "Bonus phase finale",
       "odds_multiplier_enabled_on": "Multiplicateur de cotes activé",
       "odds_multiplier_enabled_off": "Multiplicateur de cotes désactivé"
+    }
+  },
+  "pronos": {
+    "title": "Pronostics",
+    "backToConcours": "Retour au concours",
+    "viewClassement": "Voir le classement",
+    "progress": "{{current}} / {{total}} pronostics saisis",
+    "locked": "Verrouillé",
+    "saved": "Enregistré",
+    "group": "Groupe {{letter}}",
+    "round": "J{{n}}",
+    "roundUnknown": "Sans journée",
+    "scoreFor": "Score {{team}}",
+    "countdown": {
+      "daysHours": "Dans {{d}}j {{h}}h",
+      "hoursMinutes": "Dans {{h}}h {{m}}min",
+      "minutes": "Dans {{m}} min",
+      "soon": "Imminent"
+    },
+    "phase": {
+      "groupes": "Phase de groupes",
+      "seiziemes": "16es de finale",
+      "huitiemes": "8es de finale",
+      "quarts": "Quarts de finale",
+      "demis": "Demi-finales",
+      "petite_finale": "Petite finale",
+      "finale": "Finale"
+    },
+    "vainqueurTab": {
+      "legend": "Vainqueur aux tirs au but"
+    },
+    "actions": {
+      "delete": "Effacer mon prono"
+    },
+    "filters": {
+      "statusLabel": "Filtrer par statut",
+      "all": "Tous",
+      "todo": "À pronostiquer",
+      "locked": "Verrouillés",
+      "allGroups": "Tous"
+    },
+    "empty": {
+      "title": "Aucun match disponible",
+      "description": "Cette compétition n'a pas encore de matchs publiés."
+    },
+    "emptyFiltered": {
+      "title": "Aucun match avec ce filtre",
+      "description": "Essaie un autre filtre ou groupe."
+    },
+    "errors": {
+      "scoreRequired": "Score requis.",
+      "scoreInteger": "Le score doit être un nombre entier.",
+      "scoreRange": "Score entre 0 et 99.",
+      "vainqueurTabRequiredOnDraw": "Choisis le vainqueur aux tirs au but.",
+      "vainqueurTabOnlyOnDraw": "À renseigner uniquement en cas d'égalité.",
+      "vainqueurTabNotAllowedGroupes": "Pas de tirs au but en phase de groupes.",
+      "concoursRequired": "Concours requis.",
+      "matchRequired": "Match requis."
     }
   },
   "profile": {

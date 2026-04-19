@@ -119,7 +119,7 @@
     },
     "pronos": {
       "title": "Predictions",
-      "placeholder": "Prediction input coming in Sprint 3."
+      "placeholder": "Open a contest page to enter your predictions."
     },
     "classement": {
       "title": "Leaderboard",
@@ -136,7 +136,8 @@
       "leave": "Leave",
       "copyCode": "Copy code",
       "copied": "Code copied",
-      "back": "Back to contests"
+      "back": "Back to contests",
+      "goToPronos": "Enter my predictions"
     },
     "tabs": {
       "mine": "My contests",
@@ -233,6 +234,64 @@
       "knockout_bonus": "Knockout bonus",
       "odds_multiplier_enabled_on": "Odds multiplier enabled",
       "odds_multiplier_enabled_off": "Odds multiplier disabled"
+    }
+  },
+  "pronos": {
+    "title": "Predictions",
+    "backToConcours": "Back to contest",
+    "viewClassement": "View leaderboard",
+    "progress": "{{current}} / {{total}} predictions entered",
+    "locked": "Locked",
+    "saved": "Saved",
+    "group": "Group {{letter}}",
+    "round": "MD{{n}}",
+    "roundUnknown": "No matchday",
+    "scoreFor": "{{team}} score",
+    "countdown": {
+      "daysHours": "In {{d}}d {{h}}h",
+      "hoursMinutes": "In {{h}}h {{m}}min",
+      "minutes": "In {{m}} min",
+      "soon": "Imminent"
+    },
+    "phase": {
+      "groupes": "Group stage",
+      "seiziemes": "Round of 32",
+      "huitiemes": "Round of 16",
+      "quarts": "Quarter-finals",
+      "demis": "Semi-finals",
+      "petite_finale": "Third-place play-off",
+      "finale": "Final"
+    },
+    "vainqueurTab": {
+      "legend": "Winner on penalties"
+    },
+    "actions": {
+      "delete": "Clear my prediction"
+    },
+    "filters": {
+      "statusLabel": "Filter by status",
+      "all": "All",
+      "todo": "To predict",
+      "locked": "Locked",
+      "allGroups": "All"
+    },
+    "empty": {
+      "title": "No match available",
+      "description": "This competition has no matches published yet."
+    },
+    "emptyFiltered": {
+      "title": "No match for this filter",
+      "description": "Try a different filter or group."
+    },
+    "errors": {
+      "scoreRequired": "Score required.",
+      "scoreInteger": "Score must be an integer.",
+      "scoreRange": "Score between 0 and 99.",
+      "vainqueurTabRequiredOnDraw": "Pick the penalties winner.",
+      "vainqueurTabOnlyOnDraw": "Only required when the match is a draw.",
+      "vainqueurTabNotAllowedGroupes": "No penalty shoot-out in the group stage.",
+      "concoursRequired": "Contest required.",
+      "matchRequired": "Match required."
     }
   },
   "profile": {
