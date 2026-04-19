@@ -1,0 +1,8 @@
+{
+  "app": {
+    "title": "PronosticsContest",
+    "tagline": "Crée un concours, invite tes amis, pronostique, gagne.",
+    "cta": "Commencer",
+    "sprintStatus": "bootstrap en place, prêt pour le Sprint 1."
+  }
+}
