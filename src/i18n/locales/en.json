@@ -3,6 +3,19 @@
     "title": "PronosticsContest",
     "tagline": "Start a contest, invite your friends, predict, win.",
     "cta": "Get started",
-    "sprintStatus": "bootstrap ready, moving on to Sprint 1."
+    "sprintStatus": "Sprint 1 in progress — Supabase auth, layout, theme."
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggle": "Toggle theme"
+  },
+  "locale": {
+    "label": "Language",
+    "fr": "French",
+    "en": "English",
+    "toggle": "Toggle language"
   }
 }
