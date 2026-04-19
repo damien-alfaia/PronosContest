@@ -15,6 +15,7 @@ import { ConcoursPage } from '@/features/concours/concours-page';
 import { DashboardPage } from '@/features/dashboard/dashboard-page';
 import { LandingPage } from '@/features/landing/landing-page';
 import { ProfilePage } from '@/features/profile/profile-page';
+import { PronosGridPage } from '@/features/pronos/pronos-grid-page';
 import { PronosPage } from '@/features/pronos/pronos-page';
 
 export const router = createBrowserRouter([
@@ -45,6 +46,7 @@ export const router = createBrowserRouter([
           { path: '/app/concours', element: <ConcoursPage /> },
           { path: '/app/concours/nouveau', element: <ConcoursNewPage /> },
           { path: '/app/concours/:id', element: <ConcoursDetailPage /> },
+          { path: '/app/concours/:id/pronos', element: <PronosGridPage /> },
           { path: '/app/pronos', element: <PronosPage /> },
           { path: '/app/classement', element: <ClassementPage /> },
           { path: '/app/profile', element: <ProfilePage /> },

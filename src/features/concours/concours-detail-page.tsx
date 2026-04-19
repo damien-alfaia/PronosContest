@@ -8,6 +8,7 @@ import {
   Loader2,
   Lock,
   Shield,
+  Target,
   Trophy,
   UserMinus,
   UserPlus,
@@ -159,7 +160,15 @@ export const ConcoursDetailPage = () => {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            {isMember ? (
+              <Button asChild>
+                <Link to={`/app/concours/${concours.id}/pronos`}>
+                  <Target className="mr-2 h-4 w-4" aria-hidden />
+                  {t('concours.actions.goToPronos')}
+                </Link>
+              </Button>
+            ) : null}
             {!isMember && concours.visibility === 'public' ? (
               <Button onClick={onJoin} disabled={joinMutation.isPending}>
                 {joinMutation.isPending ? (
