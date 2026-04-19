@@ -149,13 +149,13 @@ pnpm prepare                     # Husky hooks
 - [x] **Sprint 0** — Setup (Vite + TS + Tailwind + shadcn + Supabase structure + qualité)
 - [x] **Sprint 1** — Auth + layout + i18n + theme
 - [x] **Sprint 2** — Concours & compétitions (liste, création, recherche)
-- [ ] **Sprint 3** — Saisie de pronos
+- [x] **Sprint 3** — Saisie de pronos
 - [ ] **Sprint 4** — Scoring & classement Realtime (cœur)
 - [ ] **Sprint 5** — Admin & import auto des matchs
 - [ ] **Sprint 6** — Social & gamification (badges, chat, notifs)
 - [ ] **Sprint 7** — PWA, perf, docs, lancement
 
-Sprint courant : **Sprint 3** (Saisie de pronostics).
+Sprint courant : **Sprint 4** (Scoring & classement Realtime).
 
 ### Sprint 1 — récap (✅)
 
@@ -173,13 +173,13 @@ Checks verts : `typecheck` ✅ · `lint` ✅ (0 warning) · `test` 34/34 ✅ · 
 
 Checks verts : `typecheck` ✅ · `lint` ✅ (0 warning) · `test` 63/63 ✅ · `build` ✅.
 
-### Sprint 3 — en cours 🔄
+### Sprint 3 — récap (✅)
 
 - **3.A** — Migration `20260419210000_init_matchs_pronos.sql` : tables `matchs` (phase CHECK enum `groupes/seiziemes/huitiemes/quarts/demis/petite_finale/finale`, FK `equipe_a_id` / `equipe_b_id` + `ON DELETE RESTRICT`, `round`, `kick_off_at timestamptz`, `cote_a/b/nul` optionnels, `stade`, `ville`) et `pronos` (PK composite `(concours_id, user_id, match_id)`, `score_a/b` + CHECK 0..99, `vainqueur_tab` text CHECK `a/b`, NOT NULL via triggers côté app). RLS stricte : lecture des pronos des autres ouverte **uniquement après kick-off** via helper `is_match_locked(uuid)` en `SECURITY DEFINER STABLE`. Seed manuel des 72 matchs de la phase de groupes FIFA WC 2026 (12 groupes × 6 matchs, dates officielles). Types TS régénérés (`fifa_id` sur equipes, `matchs`, `pronos`, `is_match_locked` dans Functions).
 - **3.B** — `features/pronos` : `schemas.ts` (Zod, partage du raffinement `vainqueur_tab` entre `pronoFormSchema` / `upsertPronoSchema`), `api.ts` (désambiguïsation FK `equipes!matchs_equipe_a_id_fkey` + `..._equipe_b_id_fkey`, `listMatchsByCompetition`, `listMyPronosInConcours`, `listPronosForMatchInConcours`, `upsertProno` avec `onConflict`, `deleteProno`), `use-pronos.ts` (query keys structurées + `useUpsertPronoMutation` / `useDeletePronoMutation` avec optimistic update complet `onMutate` → snapshot → patch → `onError` rollback → `onSettled` invalidate). Hooks partagés : `useCountdown` (tick 30s) + `useDebouncedCallback` (run / flush / cancel). `MatchCard` avec RHF + auto-save debouncé 600 ms (subscription `form.watch` filtrée sur `type === 'change'`, `form.reset(values, { keepValues: true })` pour clear le dirty flag), radios vainqueur TAB conditionnels (KO + égalité uniquement, reset auto sinon), Loader2 pendant save + Check emerald 1,5 s après succès, verrouillage coup d'envoi piloté par `useCountdown`. `PronosGridPage` sur `/app/concours/:id/pronos` : guards (membre uniquement), filtres statut (`all` / `todo` / `locked`) + groupe, tick 60 s pour que le filtre "Verrouillés" reste cohérent, sections par `round` (Map pour préserver l'ordre chrono), 2 états vides distincts. Bouton CTA "Saisir mes pronostics" ajouté sur la fiche concours (membres uniquement).
-- **3.C.2** — i18n FR/EN : bloc `pronos.*` complet (title / navigation / countdown templates / phase labels / filters / empty states / errors), clé `concours.actions.goToPronos`, placeholder `pages.pronos` mis à jour.
+- **3.C** — Tests Vitest (44 nouveaux : 22 schemas pronos, 13 api pronos avec builder Supabase mocké, 9 `MatchCard` avec mock de `use-pronos` + i18n forcé en `fr`) et i18n FR/EN : bloc `pronos.*` complet (title / navigation / countdown templates / phase labels / filters / empty states / errors), clé `concours.actions.goToPronos`, placeholder `pages.pronos` mis à jour.
 
-Reste à faire : **3.C.1** — Tests Vitest (schemas pronos + api mockée + `MatchCard`).
+Checks verts : `typecheck` ✅ · `lint` ✅ (0 warning) · `test` 107/107 ✅ · `build` ✅.
 
 ---
 
