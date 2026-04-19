@@ -47,12 +47,17 @@ export const concoursCreateSchema = z.object({
     .trim()
     .min(3, { message: 'concours.errors.nomTooShort' })
     .max(80, { message: 'concours.errors.nomTooLong' }),
-  description: z
-    .string()
-    .trim()
-    .max(500, { message: 'concours.errors.descriptionTooLong' })
-    .optional()
-    .or(z.literal('').transform(() => undefined)),
+  // Description optionnelle : on mappe "" -> undefined (preprocess) puis
+  // on valide la taille max. Permet de laisser le champ vide côté form
+  // sans déclencher une contrainte inutile.
+  description: z.preprocess(
+    (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+    z
+      .string()
+      .trim()
+      .max(500, { message: 'concours.errors.descriptionTooLong' })
+      .optional(),
+  ),
   competition_id: z
     .string()
     .uuid({ message: 'concours.errors.competitionRequired' }),
