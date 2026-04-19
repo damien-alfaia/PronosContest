@@ -34,6 +34,162 @@ export type Database = {
   }
   public: {
     Tables: {
+      competitions: {
+        Row: {
+          code: string
+          created_at: string
+          date_debut: string | null
+          date_fin: string | null
+          id: string
+          logo_url: string | null
+          nom: string
+          sport: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          date_debut?: string | null
+          date_fin?: string | null
+          id?: string
+          logo_url?: string | null
+          nom: string
+          sport: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          date_debut?: string | null
+          date_fin?: string | null
+          id?: string
+          logo_url?: string | null
+          nom?: string
+          sport?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      concours: {
+        Row: {
+          code_invitation: string | null
+          competition_id: string
+          created_at: string
+          description: string | null
+          id: string
+          nom: string
+          owner_id: string
+          scoring_rules: Json
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          code_invitation?: string | null
+          competition_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          nom: string
+          owner_id: string
+          scoring_rules?: Json
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          code_invitation?: string | null
+          competition_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          nom?: string
+          owner_id?: string
+          scoring_rules?: Json
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concours_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      concours_participants: {
+        Row: {
+          concours_id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          concours_id: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          concours_id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concours_participants_concours_id_fkey"
+            columns: ["concours_id"]
+            isOneToOne: false
+            referencedRelation: "concours"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipes: {
+        Row: {
+          code: string
+          competition_id: string
+          created_at: string
+          drapeau_url: string | null
+          groupe: string | null
+          id: string
+          nom: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          competition_id: string
+          created_at?: string
+          drapeau_url?: string | null
+          groupe?: string | null
+          id?: string
+          nom: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          competition_id?: string
+          created_at?: string
+          drapeau_url?: string | null
+          groupe?: string | null
+          id?: string
+          nom?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipes_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -75,7 +231,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_concours_code: { Args: never; Returns: string }
+      is_participant: { Args: { p_concours_id: string }; Returns: boolean }
+      join_concours_by_code: { Args: { p_code: string }; Returns: string }
     }
     Enums: {
       user_role: "user" | "admin"
