@@ -17,5 +17,87 @@
     "fr": "French",
     "en": "English",
     "toggle": "Toggle language"
+  },
+  "common": {
+    "loading": "Loading…",
+    "submitting": "Submitting…",
+    "or": "or",
+    "back": "Back",
+    "cancel": "Cancel"
+  },
+  "nav": {
+    "login": "Sign in",
+    "signup": "Create account",
+    "dashboard": "Dashboard",
+    "logout": "Sign out"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to continue your predictions.",
+      "submit": "Sign in",
+      "magicLinkMode": "Send me a magic link",
+      "passwordMode": "Use a password",
+      "noAccount": "No account yet?",
+      "signupLink": "Create one",
+      "forgotPassword": "Forgot your password?"
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "In less than a minute.",
+      "submit": "Create my account",
+      "alreadyAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "emailSent": "A confirmation email has been sent. Check your inbox."
+    },
+    "forgot": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email, we'll send you a reset link.",
+      "submit": "Send link",
+      "backToLogin": "Back to sign in",
+      "emailSent": "If an account exists for this email, a link has been sent."
+    },
+    "reset": {
+      "title": "New password",
+      "subtitle": "Choose a new password for your account.",
+      "submit": "Update",
+      "success": "Password updated. Redirecting…"
+    },
+    "magicLink": {
+      "emailSent": "Magic link sent! Open your inbox to sign in."
+    },
+    "callback": {
+      "title": "Signing in",
+      "subtitle": "Verifying your link, don't close this page."
+    },
+    "fields": {
+      "email": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "8 characters minimum",
+      "confirmPassword": "Confirm password",
+      "prenom": "First name",
+      "nom": "Last name"
+    },
+    "errors": {
+      "invalidEmail": "Invalid email.",
+      "passwordTooShort": "Password too short (8 characters minimum).",
+      "passwordTooLong": "Password too long (72 characters maximum).",
+      "passwordsDontMatch": "Passwords don't match.",
+      "firstNameRequired": "First name is required.",
+      "lastNameRequired": "Last name is required.",
+      "invalidCredentials": "Invalid email or password.",
+      "emailNotConfirmed": "Email not confirmed, check your inbox.",
+      "userAlreadyExists": "An account already exists for this email.",
+      "weakPassword": "Password too weak.",
+      "rateLimited": "Too many attempts. Try again in a moment.",
+      "network": "Can't reach the server, check your connection.",
+      "unknown": "Something went wrong. Try again in a moment.",
+      "invalidOrExpiredLink": "This link is invalid or expired."
+    }
+  },
+  "dashboard": {
+    "welcome": "Hi {{name}} 👋",
+    "placeholder": "Dashboard coming in Sprint 2."
   }
 }

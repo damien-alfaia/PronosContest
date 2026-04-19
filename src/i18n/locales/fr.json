@@ -17,5 +17,87 @@
     "fr": "Français",
     "en": "English",
     "toggle": "Changer de langue"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "submitting": "Envoi…",
+    "or": "ou",
+    "back": "Retour",
+    "cancel": "Annuler"
+  },
+  "nav": {
+    "login": "Se connecter",
+    "signup": "Créer un compte",
+    "dashboard": "Tableau de bord",
+    "logout": "Se déconnecter"
+  },
+  "auth": {
+    "login": {
+      "title": "Content de te revoir",
+      "subtitle": "Connecte-toi pour continuer tes pronostics.",
+      "submit": "Se connecter",
+      "magicLinkMode": "Recevoir un lien magique",
+      "passwordMode": "Utiliser un mot de passe",
+      "noAccount": "Pas encore de compte ?",
+      "signupLink": "En créer un",
+      "forgotPassword": "Mot de passe oublié ?"
+    },
+    "signup": {
+      "title": "Crée ton compte",
+      "subtitle": "En moins d'une minute.",
+      "submit": "Créer mon compte",
+      "alreadyAccount": "Déjà un compte ?",
+      "loginLink": "Se connecter",
+      "emailSent": "Un e-mail de confirmation t'a été envoyé. Vérifie ta boîte."
+    },
+    "forgot": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Indique ton e-mail, on t'envoie un lien de réinitialisation.",
+      "submit": "Envoyer le lien",
+      "backToLogin": "Retour à la connexion",
+      "emailSent": "Si un compte existe pour cet e-mail, un lien vient d'être envoyé."
+    },
+    "reset": {
+      "title": "Nouveau mot de passe",
+      "subtitle": "Choisis un nouveau mot de passe pour ton compte.",
+      "submit": "Mettre à jour",
+      "success": "Mot de passe mis à jour. Redirection…"
+    },
+    "magicLink": {
+      "emailSent": "Lien magique envoyé ! Ouvre ton e-mail pour te connecter."
+    },
+    "callback": {
+      "title": "Connexion en cours",
+      "subtitle": "On vérifie ton lien, ne ferme pas cette page."
+    },
+    "fields": {
+      "email": "Adresse e-mail",
+      "emailPlaceholder": "toi@exemple.com",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "8 caractères minimum",
+      "confirmPassword": "Confirmation",
+      "prenom": "Prénom",
+      "nom": "Nom"
+    },
+    "errors": {
+      "invalidEmail": "E-mail invalide.",
+      "passwordTooShort": "Mot de passe trop court (8 caractères minimum).",
+      "passwordTooLong": "Mot de passe trop long (72 caractères maximum).",
+      "passwordsDontMatch": "Les mots de passe ne correspondent pas.",
+      "firstNameRequired": "Le prénom est requis.",
+      "lastNameRequired": "Le nom est requis.",
+      "invalidCredentials": "E-mail ou mot de passe incorrect.",
+      "emailNotConfirmed": "E-mail non confirmé, vérifie ta boîte.",
+      "userAlreadyExists": "Un compte existe déjà pour cet e-mail.",
+      "weakPassword": "Mot de passe trop faible.",
+      "rateLimited": "Trop de tentatives. Réessaie dans un instant.",
+      "network": "Connexion impossible, vérifie ta connexion internet.",
+      "unknown": "Une erreur est survenue. Réessaie dans un instant.",
+      "invalidOrExpiredLink": "Ce lien est invalide ou a expiré."
+    }
+  },
+  "dashboard": {
+    "welcome": "Salut {{name}} 👋",
+    "placeholder": "Le tableau de bord arrive au Sprint 2."
   }
 }
