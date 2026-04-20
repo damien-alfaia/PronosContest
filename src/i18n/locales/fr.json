@@ -27,6 +27,8 @@
     "cancel": "Annuler",
     "save": "Enregistrer",
     "edit": "Modifier",
+    "delete": "Supprimer",
+    "deleting": "Suppression…",
     "close": "Fermer",
     "comingSoon": "Bientôt disponible"
   },
@@ -38,6 +40,9 @@
     "pronos": "Pronostics",
     "classement": "Classement",
     "profile": "Profil",
+    "adminMatchs": "Admin — Matchs",
+    "adminCompetitions": "Admin — Compétitions",
+    "adminEquipes": "Admin — Équipes",
     "logout": "Se déconnecter",
     "toggleMenu": "Ouvrir le menu",
     "userMenu": "Menu utilisateur",
@@ -137,7 +142,8 @@
       "copyCode": "Copier le code",
       "copied": "Code copié",
       "back": "Retour aux concours",
-      "goToPronos": "Saisir mes pronostics"
+      "goToPronos": "Saisir mes pronostics",
+      "goToClassement": "Voir le classement"
     },
     "tabs": {
       "mine": "Mes concours",
@@ -294,6 +300,27 @@
       "matchRequired": "Match requis."
     }
   },
+  "classement": {
+    "title": "Classement",
+    "backToConcours": "Retour au concours",
+    "goToPronos": "Saisir mes pronostics",
+    "myPosition": "Ma position",
+    "pointsSummary": "{{points}} pts · {{exacts}} exact(s) · {{gagnes}} gagné(s)",
+    "youLabel": "Toi",
+    "rowMeAriaLabel": "Ta ligne",
+    "columns": {
+      "rank": "Rang",
+      "player": "Joueur",
+      "points": "Points",
+      "pronosJoues": "Joués",
+      "pronosGagnes": "Gagnés",
+      "pronosExacts": "Exacts"
+    },
+    "empty": {
+      "title": "Classement vide",
+      "description": "Aucun participant pour le moment. Invite des joueurs pour lancer la compétition !"
+    }
+  },
   "profile": {
     "title": "Mon profil",
     "subtitle": "Gère tes informations personnelles.",
@@ -306,5 +333,223 @@
     "updateSuccess": "Profil mis à jour.",
     "updateError": "Impossible d'enregistrer le profil.",
     "loadError": "Impossible de charger le profil."
+  },
+  "admin": {
+    "competitions": {
+      "title": "Admin — Compétitions",
+      "subtitle": "Crée, édite ou supprime les compétitions du référentiel.",
+      "confirmDelete": "Supprimer cette compétition ? Cette action est définitive.",
+      "actions": {
+        "create": "Nouvelle compétition"
+      },
+      "dialog": {
+        "createTitle": "Nouvelle compétition",
+        "editTitle": "Modifier la compétition",
+        "subtitle": "Les dates et le logo sont facultatifs. Le code doit être unique."
+      },
+      "fields": {
+        "code": "Code",
+        "codeHint": "Identifiant technique unique (ex : fifa-wc-2026).",
+        "nom": "Nom",
+        "sport": "Sport",
+        "status": "Statut",
+        "dateDebut": "Date de début",
+        "dateFin": "Date de fin",
+        "logoUrl": "URL du logo"
+      },
+      "columns": {
+        "code": "Code",
+        "nom": "Nom",
+        "sport": "Sport",
+        "status": "Statut",
+        "dateDebut": "Début",
+        "dateFin": "Fin",
+        "actions": "Actions"
+      },
+      "sport": {
+        "football": "Football",
+        "rugby": "Rugby"
+      },
+      "competitionStatus": {
+        "upcoming": "À venir",
+        "live": "En cours",
+        "finished": "Terminée"
+      },
+      "empty": {
+        "title": "Aucune compétition",
+        "description": "Crée une première compétition pour commencer."
+      }
+    },
+    "equipes": {
+      "title": "Admin — Équipes",
+      "subtitle": "Gère les équipes rattachées à une compétition.",
+      "competitionLabel": "Compétition",
+      "emptyCompetitions": "Aucune compétition disponible. Crée-en une d'abord.",
+      "confirmDelete": "Supprimer cette équipe ? Elle ne doit pas être utilisée dans un match.",
+      "flagAlt": "Drapeau {{nom}}",
+      "actions": {
+        "create": "Nouvelle équipe"
+      },
+      "dialog": {
+        "createTitle": "Nouvelle équipe",
+        "editTitle": "Modifier l'équipe",
+        "subtitle": "Le code doit être unique au sein de la compétition."
+      },
+      "fields": {
+        "code": "Code",
+        "nom": "Nom",
+        "groupe": "Groupe",
+        "fifaId": "FIFA ID",
+        "drapeauUrl": "URL du drapeau"
+      },
+      "columns": {
+        "groupe": "Groupe",
+        "code": "Code",
+        "nom": "Nom",
+        "fifaId": "FIFA ID",
+        "drapeau": "Drapeau",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "Aucune équipe",
+        "description": "Ajoute une première équipe pour cette compétition."
+      }
+    },
+    "matchs": {
+      "title": "Administration — Matchs",
+      "subtitle": "Saisis les résultats, assigne les équipes manquantes, reporte ou annule un match.",
+      "competitionLabel": "Compétition",
+      "placeholderTeam": "À déterminer",
+      "emptyCompetitions": "Aucune compétition disponible.",
+      "counts": {
+        "total_one": "{{count}} match",
+        "total_other": "{{count}} matchs",
+        "scheduled_one": "{{count}} planifié",
+        "scheduled_other": "{{count}} planifiés",
+        "live_one": "{{count}} en direct",
+        "live_other": "{{count}} en direct",
+        "finished_one": "{{count}} terminé",
+        "finished_other": "{{count}} terminés"
+      },
+      "filters": {
+        "phaseLabel": "Phase",
+        "statusLabel": "Statut",
+        "allPhases": "Toutes",
+        "allStatuses": "Tous"
+      },
+      "status": {
+        "scheduled": "Planifié",
+        "live": "En direct",
+        "finished": "Terminé",
+        "postponed": "Reporté",
+        "cancelled": "Annulé"
+      },
+      "vainqueurTabShort": {
+        "a": "TAB dom.",
+        "b": "TAB ext."
+      },
+      "columns": {
+        "phase": "Phase",
+        "kickOff": "Coup d'envoi",
+        "teams": "Équipes",
+        "score": "Score",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "actions": {
+        "enterResult": "Saisir résultat",
+        "assignFirst": "Assigne d'abord les deux équipes.",
+        "moreLabel": "Autres actions",
+        "assignTeams": "Assigner les équipes",
+        "postpone": "Reporter",
+        "cancel": "Annuler",
+        "restoreScheduled": "Remettre en planifié",
+        "resetResult": "Réinitialiser le résultat"
+      },
+      "emptyFiltered": {
+        "title": "Aucun match avec ces filtres",
+        "description": "Essaie une autre phase ou un autre statut."
+      },
+      "confirmReset": "Réinitialiser le résultat de ce match ? Le scoring sera recalculé.",
+      "resultDialog": {
+        "title": "Résultat du match",
+        "vainqueurTabLegend": "Vainqueur aux tirs au but",
+        "penaltyA": "Pénos domicile (optionnel)",
+        "penaltyB": "Pénos extérieur (optionnel)",
+        "saveLive": "Enregistrer en live",
+        "saveFinished": "Valider le résultat"
+      },
+      "teamsDialog": {
+        "title": "Équipes du match",
+        "subtitle": "Assigne ou modifie les deux équipes. Un match terminé est verrouillé.",
+        "teamA": "Équipe à domicile",
+        "teamB": "Équipe à l'extérieur",
+        "unassigned": "Non assignée"
+      }
+    },
+    "toast": {
+      "resultSavedFinished": "Résultat enregistré. Classement mis à jour.",
+      "resultSavedLive": "Résultat live enregistré.",
+      "resultSaveError": "Impossible d'enregistrer le résultat.",
+      "finishedMatchLocked": "Ce match est terminé et verrouillé.",
+      "teamsSaved": "Équipes mises à jour.",
+      "teamsSaveError": "Impossible de mettre à jour les équipes.",
+      "statusUpdated": {
+        "scheduled": "Match remis en planifié.",
+        "postponed": "Match reporté.",
+        "cancelled": "Match annulé."
+      },
+      "statusUpdateError": "Impossible de changer le statut.",
+      "resetSuccess": "Résultat réinitialisé.",
+      "resetError": "Impossible de réinitialiser le résultat.",
+      "competitionCreated": "Compétition créée.",
+      "competitionUpdated": "Compétition mise à jour.",
+      "competitionDeleted": "Compétition supprimée.",
+      "competitionCodeExists": "Ce code de compétition est déjà pris.",
+      "competitionInUse": "Impossible : des concours ou des matchs utilisent encore cette compétition.",
+      "competitionCreateError": "Impossible de créer la compétition.",
+      "competitionUpdateError": "Impossible de mettre à jour la compétition.",
+      "competitionDeleteError": "Impossible de supprimer la compétition.",
+      "equipeCreated": "Équipe créée.",
+      "equipeUpdated": "Équipe mise à jour.",
+      "equipeDeleted": "Équipe supprimée.",
+      "equipeCodeExists": "Ce code d'équipe est déjà pris dans cette compétition.",
+      "equipeCompetitionLocked": "Impossible de changer la compétition d'une équipe existante.",
+      "equipeInUse": "Impossible : cette équipe est utilisée dans un match.",
+      "equipeCreateError": "Impossible de créer l'équipe.",
+      "equipeUpdateError": "Impossible de mettre à jour l'équipe.",
+      "equipeDeleteError": "Impossible de supprimer l'équipe."
+    },
+    "errors": {
+      "matchRequired": "Match requis.",
+      "equipeInvalid": "Équipe invalide.",
+      "equipesMustDiffer": "Les deux équipes doivent être différentes.",
+      "scoreRequired": "Score requis.",
+      "scoreInteger": "Le score doit être un nombre entier.",
+      "scoreRange": "Score entre 0 et 99.",
+      "penaltyRange": "Tirs au but entre 0 et 30.",
+      "penaltyBothOrNone": "Saisis les pénos des deux équipes ou aucune.",
+      "vainqueurTabRequiredOnDraw": "Choisis le vainqueur aux tirs au but.",
+      "vainqueurTabOnlyOnDraw": "À renseigner uniquement en cas d'égalité.",
+      "vainqueurTabNotAllowedGroupes": "Pas de tirs au but en phase de groupes.",
+      "codeTooShort": "Code trop court (2 caractères minimum).",
+      "codeTooLong": "Code trop long (40 caractères maximum).",
+      "codeSlugFormat": "Code invalide : lettres minuscules, chiffres et tirets uniquement.",
+      "nomTooShort": "Nom trop court (2 caractères minimum).",
+      "nomTooLong": "Nom trop long.",
+      "sportRequired": "Choisis un sport.",
+      "statusRequired": "Choisis un statut.",
+      "dateFormat": "Format de date invalide (YYYY-MM-DD attendu).",
+      "dateFinBeforeDebut": "La date de fin doit être postérieure à la date de début.",
+      "logoUrlFormat": "URL de logo invalide.",
+      "competitionRequired": "Choisis une compétition.",
+      "teamCodeTooShort": "Code trop court (2 caractères minimum).",
+      "teamCodeTooLong": "Code trop long (10 caractères maximum).",
+      "teamCodeFormat": "Code invalide : lettres majuscules et chiffres uniquement.",
+      "groupeFormat": "Groupe invalide : une seule lettre majuscule (A-Z).",
+      "drapeauUrlFormat": "URL de drapeau invalide.",
+      "fifaIdInteger": "L'ID FIFA doit être un entier.",
+      "fifaIdRange": "L'ID FIFA doit être supérieur à zéro."
+    }
   }
 }
