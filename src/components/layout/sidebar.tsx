@@ -3,14 +3,19 @@ import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
 import { NAV_ITEMS } from '@/components/layout/nav-items';
+import { useIsAdmin } from '@/features/admin/hooks/use-is-admin';
 import { cn } from '@/lib/utils';
 
 /**
  * Sidebar verticale affichée sur md+ (≥ 768px).
- * Affiche tous les NAV_ITEMS sans filtrage mobile.
+ * Affiche les NAV_ITEMS en filtrant ceux marqués `adminOnly` pour les
+ * utilisateurs non admin.
  */
 export const Sidebar = () => {
   const { t } = useTranslation();
+  const { isAdmin } = useIsAdmin();
+
+  const items = NAV_ITEMS.filter((i) => !i.adminOnly || isAdmin);
 
   return (
     <aside className="hidden border-r bg-background md:fixed md:inset-y-0 md:left-0 md:z-30 md:flex md:w-56 md:flex-col">
@@ -24,7 +29,7 @@ export const Sidebar = () => {
         aria-label={t('nav.primary')}
         className="flex-1 space-y-1 overflow-y-auto p-3"
       >
-        {NAV_ITEMS.map(({ labelKey, to, icon: Icon }) => (
+        {items.map(({ labelKey, to, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}

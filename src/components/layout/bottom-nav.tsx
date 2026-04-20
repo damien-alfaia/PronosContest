@@ -2,15 +2,21 @@ import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
 import { NAV_ITEMS } from '@/components/layout/nav-items';
+import { useIsAdmin } from '@/features/admin/hooks/use-is-admin';
 import { cn } from '@/lib/utils';
 
 /**
  * Navigation fixe en bas d'écran sur mobile (< 768px).
  * Affiche les items marqués `mobile: true` dans NAV_ITEMS.
+ * L'entrée admin est `adminOnly` (donc non `mobile`) → absente ici ;
+ * sur mobile l'admin passe par la Sidebar ouvrable, ou le menu user.
  */
 export const BottomNav = () => {
   const { t } = useTranslation();
-  const items = NAV_ITEMS.filter((i) => i.mobile);
+  const { isAdmin } = useIsAdmin();
+  const items = NAV_ITEMS.filter(
+    (i) => i.mobile && (!i.adminOnly || isAdmin),
+  );
 
   return (
     <nav
