@@ -52,28 +52,33 @@ const EQUIPE_B = {
   drapeau_url: null,
 } as const;
 
-const makeMatch = (overrides: Partial<MatchWithEquipes> = {}): MatchWithEquipes => ({
-  id: MATCH,
-  competition_id: 'c',
-  equipe_a_id: 'a',
-  equipe_b_id: 'b',
-  phase: 'groupes',
-  round: 1,
-  kick_off_at: '2099-06-11T18:00:00Z', // futur
-  score_a: null,
-  score_b: null,
-  vainqueur_tab: null,
-  penalty_score_a: null,
-  penalty_score_b: null,
-  status: 'scheduled',
-  venue_name: 'Stade Pierre Mauroy',
-  fifa_match_id: null,
-  created_at: '2026-01-01T00:00:00Z',
-  updated_at: '2026-01-01T00:00:00Z',
-  equipe_a: EQUIPE_A,
-  equipe_b: EQUIPE_B,
-  ...overrides,
-});
+const makeMatch = (overrides: Partial<MatchWithEquipes> = {}): MatchWithEquipes => {
+  return {
+    id: MATCH,
+    competition_id: 'c',
+    equipe_a_id: 'a',
+    equipe_b_id: 'b',
+    phase: 'groupes',
+    round: 1,
+    kick_off_at: '2099-06-11T18:00:00Z', // futur
+    score_a: null,
+    score_b: null,
+    vainqueur_tab: null,
+    penalty_score_a: null,
+    penalty_score_b: null,
+    status: 'scheduled',
+    venue_name: 'Stade Pierre Mauroy',
+    fifa_match_id: null,
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+    equipe_a: EQUIPE_A,
+    equipe_b: EQUIPE_B,
+    cote_a: null,
+    cote_b: null,
+    cote_nul: null,
+    ...overrides,
+  } as MatchWithEquipes;
+};
 
 const makeProno = (overrides: Partial<Prono> = {}): Prono => ({
   concours_id: CONCOURS,
