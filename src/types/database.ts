@@ -196,9 +196,12 @@ export type Database = {
       matchs: {
         Row: {
           competition_id: string
+          cote_a: number | null
+          cote_b: number | null
+          cote_nul: number | null
           created_at: string
-          equipe_a_id: string
-          equipe_b_id: string
+          equipe_a_id: string | null
+          equipe_b_id: string | null
           fifa_match_id: number | null
           id: string
           kick_off_at: string
@@ -215,9 +218,12 @@ export type Database = {
         }
         Insert: {
           competition_id: string
+          cote_a?: number | null
+          cote_b?: number | null
+          cote_nul?: number | null
           created_at?: string
-          equipe_a_id: string
-          equipe_b_id: string
+          equipe_a_id?: string | null
+          equipe_b_id?: string | null
           fifa_match_id?: number | null
           id?: string
           kick_off_at: string
@@ -234,9 +240,12 @@ export type Database = {
         }
         Update: {
           competition_id?: string
+          cote_a?: number | null
+          cote_b?: number | null
+          cote_nul?: number | null
           created_at?: string
-          equipe_a_id?: string
-          equipe_b_id?: string
+          equipe_a_id?: string | null
+          equipe_b_id?: string | null
           fifa_match_id?: number | null
           id?: string
           kick_off_at?: string
@@ -361,10 +370,63 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_classement_concours: {
+        Row: {
+          avatar_url: string | null
+          concours_id: string | null
+          nom: string | null
+          points: number | null
+          prenom: string | null
+          pronos_exacts: number | null
+          pronos_gagnes: number | null
+          pronos_joues: number | null
+          rang: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concours_participants_concours_id_fkey"
+            columns: ["concours_id"]
+            isOneToOne: false
+            referencedRelation: "concours"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_pronos_points: {
+        Row: {
+          bonus_ko: number | null
+          concours_id: string | null
+          cote_appliquee: number | null
+          is_exact: boolean | null
+          is_final: boolean | null
+          match_id: string | null
+          match_status: string | null
+          phase: string | null
+          points_base: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pronos_concours_id_fkey"
+            columns: ["concours_id"]
+            isOneToOne: false
+            referencedRelation: "concours"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pronos_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matchs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       generate_concours_code: { Args: never; Returns: string }
+      is_admin: { Args: { p_user_id?: string }; Returns: boolean }
       is_match_locked: { Args: { p_match_id: string }; Returns: boolean }
       is_participant: { Args: { p_concours_id: string }; Returns: boolean }
       join_concours_by_code: { Args: { p_code: string }; Returns: string }
