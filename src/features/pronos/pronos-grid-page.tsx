@@ -181,7 +181,7 @@ export const PronosGridPage = () => {
           </div>
 
           <Button asChild variant="outline" size="sm">
-            <Link to="/app/classement">
+            <Link to={`/app/concours/${id}/classement`}>
               <Trophy className="mr-2 h-4 w-4" aria-hidden />
               {t('pronos.viewClassement')}
             </Link>
