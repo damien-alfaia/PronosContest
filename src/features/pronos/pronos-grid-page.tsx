@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useConcoursDetailQuery } from '@/features/concours/use-concours';
 import { useAuth } from '@/hooks/use-auth';
+import { getGroupColor } from '@/lib/group-colors';
 import { cn } from '@/lib/utils';
 
 import type { MatchWithEquipes, Prono } from './api';
@@ -231,22 +232,30 @@ export const PronosGridPage = () => {
             >
               {t('pronos.filters.allGroups')}
             </button>
-            {allGroups.map((g) => (
-              <button
-                key={g}
-                type="button"
-                onClick={() => setGroupFilter(g)}
-                className={cn(
-                  'rounded-sm border px-2 py-0.5 text-[10px] uppercase transition-colors',
-                  groupFilter === g
-                    ? 'border-primary bg-primary/5 text-foreground'
-                    : 'text-muted-foreground hover:border-primary/40',
-                )}
-                aria-pressed={groupFilter === g}
-              >
-                {g}
-              </button>
-            ))}
+            {allGroups.map((g) => {
+              const color = getGroupColor(g);
+              const active = groupFilter === g;
+              return (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => setGroupFilter(g)}
+                  className={cn(
+                    'flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[10px] uppercase transition-colors',
+                    active
+                      ? cn(color.badge, 'ring-1 ring-offset-1 ring-offset-background')
+                      : 'text-muted-foreground hover:border-primary/40',
+                  )}
+                  aria-pressed={active}
+                >
+                  <span
+                    className={cn('inline-block h-1.5 w-1.5 rounded-full', color.dot)}
+                    aria-hidden
+                  />
+                  {g}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>

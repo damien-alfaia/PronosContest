@@ -2,51 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-/* shadcn/ui — design tokens (palette zinc + primary ajustée) */
+/* ------------------------------------------------------------------
+ * Design tokens (shadcn/ui) — palette "Stade moderne"
+ * ------------------------------------------------------------------
+ *  - primary  : indigo-600 / indigo-500 (plus punchy que le blue-600
+ *    par défaut, tire vers le violet)
+ *  - accent   : amber (moment "trophée" — classement, bonus KO, vainqueur)
+ *  - secondary / muted : base neutre-bleutée (hue 226) pour sortir du
+ *    gris pur "zinc"
+ *  - destructive : rose-500 (un peu plus chaud que le rouge tailwind pur)
+ * ------------------------------------------------------------------ */
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 226 25% 12%;
+
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 226 25% 12%;
+
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 221 83% 53%; /* blue-600 */
+    --popover-foreground: 226 25% 12%;
+
+    /* Indigo-600 — modern, electric, works on both dark & light */
+    --primary: 243 75% 59%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
+
+    /* Base "bleutée" au lieu du zinc pur */
+    --secondary: 226 30% 95%;
+    --secondary-foreground: 226 30% 18%;
+
+    --muted: 226 30% 95%;
+    --muted-foreground: 226 15% 42%;
+
+    /* Amber-500 (moments "trophée") */
+    --accent: 38 92% 50%;
+    --accent-foreground: 30 40% 14%;
+
+    /* Rose-500 */
+    --destructive: 346 77% 50%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 221 83% 53%;
+
+    --border: 226 20% 90%;
+    --input: 226 20% 90%;
+    --ring: 243 75% 59%;
+
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 217 91% 60%; /* blue-500 un peu plus clair en dark */
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --background: 226 30% 8%;
+    --foreground: 226 20% 96%;
+
+    --card: 226 30% 10%;
+    --card-foreground: 226 20% 96%;
+
+    --popover: 226 30% 10%;
+    --popover-foreground: 226 20% 96%;
+
+    --primary: 243 80% 70%;
+    --primary-foreground: 226 30% 12%;
+
+    --secondary: 226 20% 16%;
+    --secondary-foreground: 226 20% 96%;
+
+    --muted: 226 20% 16%;
+    --muted-foreground: 226 15% 65%;
+
+    --accent: 38 92% 55%;
+    --accent-foreground: 30 40% 14%;
+
+    --destructive: 346 77% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 217 91% 60%;
+
+    --border: 226 20% 18%;
+    --input: 226 20% 18%;
+    --ring: 243 80% 70%;
   }
 }
 
@@ -54,10 +84,43 @@
   * {
     @apply border-border;
   }
+
+  html,
   body {
     @apply bg-background text-foreground;
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
+  }
+
+  /* Fond non-monochrome : léger radial gradient indigo/amber en décor,
+   * ultra-subtil pour sortir du blanc/noir pur sans distraire. */
+  body {
+    background-image:
+      radial-gradient(
+        ellipse 80% 60% at 10% 0%,
+        hsl(var(--primary) / 0.07),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 70% 50% at 95% 100%,
+        hsl(var(--accent) / 0.05),
+        transparent 60%
+      );
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(
+        ellipse 80% 60% at 10% 0%,
+        hsl(var(--primary) / 0.10),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 70% 50% at 95% 100%,
+        hsl(var(--accent) / 0.07),
+        transparent 60%
+      );
   }
 }

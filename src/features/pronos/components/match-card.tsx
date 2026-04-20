@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useCountdown } from '@/hooks/use-countdown';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
+import { getGroupColor } from '@/lib/group-colors';
+import { getPhaseColor } from '@/lib/phase-colors';
 import { cn } from '@/lib/utils';
 
 import type { MatchWithEquipes, Prono } from '../api';
@@ -216,21 +218,31 @@ export const MatchCard = ({
   const hasExisting = Boolean(existing);
   const readOnly = locked || disabled;
 
+  // Couleurs : on utilise la teinte du groupe en phase de groupes (plus
+  // identifiant dans une liste longue), et la teinte de la phase en KO.
+  const phaseIsGroupes = match.phase === 'groupes';
+  const groupColor = getGroupColor(match.equipe_a.groupe);
+  const phaseColor = getPhaseColor(match.phase as MatchPhase);
+  const accentBorder = phaseIsGroupes ? groupColor.border : phaseColor.border;
+
   return (
     <Card
       className={cn(
-        'flex flex-col gap-2 transition-colors',
-        locked ? 'border-muted' : 'hover:border-primary/40',
+        'flex flex-col gap-2 border-l-4 transition-colors',
+        accentBorder,
+        locked ? 'opacity-80' : 'hover:border-primary/40',
       )}
     >
       <CardHeader className="flex flex-row items-center justify-between gap-2 p-4 pb-0">
         <div className="flex flex-wrap items-center gap-1.5">
           {groupLabel && (
-            <Badge variant="muted" className="text-[10px] uppercase">
+            <Badge className={cn('text-[10px] uppercase', groupColor.badge)}>
               {groupLabel}
             </Badge>
           )}
-          <span className="text-xs text-muted-foreground">{phaseLabel}</span>
+          <Badge className={cn('text-[10px] uppercase', phaseColor.badge)}>
+            {phaseLabel}
+          </Badge>
           {roundLabel && (
             <span className="text-xs text-muted-foreground">· {roundLabel}</span>
           )}
