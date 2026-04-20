@@ -247,3 +247,88 @@ from (values
 join public.equipes ea on ea.competition_id = '11111111-1111-1111-1111-111111111111' and ea.fifa_id = v.home_fifa_id
 join public.equipes eb on eb.competition_id = '11111111-1111-1111-1111-111111111111' and eb.fifa_id = v.away_fifa_id
 on conflict (competition_id, fifa_match_id) do nothing;
+
+-- ============================================================
+--  Sprint 5 — Placeholders KO (Round of 32 → Finale)
+-- ============================================================
+--
+--  32 matchs d'élimination directe seedés SANS équipes
+--  (equipe_a_id = NULL, equipe_b_id = NULL). L'admin remplira les
+--  équipes au fil des qualifications via la page /app/admin/matchs.
+--
+--  Planning FIFA 2026 :
+--    - Round of 32 (seiziemes) : 28 juin → 3 juillet 2026 — 16 matchs
+--    - Round of 16 (huitiemes) : 4 → 7 juillet 2026 — 8 matchs
+--    - Quarts                   : 9 → 11 juillet 2026 — 4 matchs
+--    - Demis                    : 14 → 15 juillet 2026 — 2 matchs
+--    - Petite finale            : 18 juillet 2026 — 1 match
+--    - Finale                   : 19 juillet 2026 — 1 match (MetLife)
+--
+--  Les horaires et stades sont approximatifs (dispatch raisonnable
+--  sur les 16 sites FIFA WC 2026). L'admin peut les corriger au
+--  cas par cas via l'UI admin. Le fifa_match_id continue la
+--  numérotation des groupes : 73..104.
+--
+--  `round` est null pour tous les KO (pas de notion de journée dans
+--  une phase à élimination directe).
+--
+-- ============================================================
+
+insert into public.matchs
+  (competition_id, fifa_match_id, phase, round, kick_off_at,
+   venue_name, equipe_a_id, equipe_b_id)
+select
+  '11111111-1111-1111-1111-111111111111'::uuid,
+  v.fifa_match_id,
+  v.phase,
+  null::smallint,
+  v.kick_off_at,
+  v.venue_name,
+  null::uuid,
+  null::uuid
+from (values
+  -- ---------- Round of 32 (16 matchs, 28 juin → 3 juillet) ----------
+  (73,  'seiziemes',     '2026-06-28 16:00:00+00'::timestamptz, 'Philadelphia Stadium'),
+  (74,  'seiziemes',     '2026-06-28 20:00:00+00'::timestamptz, 'Dallas Stadium'),
+  (75,  'seiziemes',     '2026-06-29 00:00:00+00'::timestamptz, 'Atlanta Stadium'),
+  (76,  'seiziemes',     '2026-06-29 16:00:00+00'::timestamptz, 'Mexico City Stadium'),
+  (77,  'seiziemes',     '2026-06-29 20:00:00+00'::timestamptz, 'Boston Stadium'),
+  (78,  'seiziemes',     '2026-06-30 00:00:00+00'::timestamptz, 'Seattle Stadium'),
+  (79,  'seiziemes',     '2026-06-30 16:00:00+00'::timestamptz, 'Houston Stadium'),
+  (80,  'seiziemes',     '2026-06-30 20:00:00+00'::timestamptz, 'New York/New Jersey Stadium'),
+  (81,  'seiziemes',     '2026-07-01 00:00:00+00'::timestamptz, 'Los Angeles Stadium'),
+  (82,  'seiziemes',     '2026-07-01 20:00:00+00'::timestamptz, 'Toronto Stadium'),
+  (83,  'seiziemes',     '2026-07-02 00:00:00+00'::timestamptz, 'Monterrey Stadium'),
+  (84,  'seiziemes',     '2026-07-02 20:00:00+00'::timestamptz, 'Guadalajara Stadium'),
+  (85,  'seiziemes',     '2026-07-03 00:00:00+00'::timestamptz, 'BC Place Vancouver'),
+  (86,  'seiziemes',     '2026-07-03 16:00:00+00'::timestamptz, 'Kansas City Stadium'),
+  (87,  'seiziemes',     '2026-07-03 20:00:00+00'::timestamptz, 'Miami Stadium'),
+  (88,  'seiziemes',     '2026-07-04 00:00:00+00'::timestamptz, 'San Francisco Bay Area Stadium'),
+
+  -- ---------- Round of 16 (8 matchs, 4 → 7 juillet) ----------
+  (89,  'huitiemes',     '2026-07-04 20:00:00+00'::timestamptz, 'Philadelphia Stadium'),
+  (90,  'huitiemes',     '2026-07-05 00:00:00+00'::timestamptz, 'Atlanta Stadium'),
+  (91,  'huitiemes',     '2026-07-05 20:00:00+00'::timestamptz, 'Boston Stadium'),
+  (92,  'huitiemes',     '2026-07-06 00:00:00+00'::timestamptz, 'Dallas Stadium'),
+  (93,  'huitiemes',     '2026-07-06 20:00:00+00'::timestamptz, 'Los Angeles Stadium'),
+  (94,  'huitiemes',     '2026-07-07 00:00:00+00'::timestamptz, 'New York/New Jersey Stadium'),
+  (95,  'huitiemes',     '2026-07-07 20:00:00+00'::timestamptz, 'Houston Stadium'),
+  (96,  'huitiemes',     '2026-07-08 00:00:00+00'::timestamptz, 'Mexico City Stadium'),
+
+  -- ---------- Quarts (4 matchs, 9 → 11 juillet) ----------
+  (97,  'quarts',        '2026-07-09 20:00:00+00'::timestamptz, 'Boston Stadium'),
+  (98,  'quarts',        '2026-07-10 00:00:00+00'::timestamptz, 'Los Angeles Stadium'),
+  (99,  'quarts',        '2026-07-11 20:00:00+00'::timestamptz, 'Kansas City Stadium'),
+  (100, 'quarts',        '2026-07-12 00:00:00+00'::timestamptz, 'Miami Stadium'),
+
+  -- ---------- Demis (2 matchs, 14 → 15 juillet) ----------
+  (101, 'demis',         '2026-07-14 20:00:00+00'::timestamptz, 'Dallas Stadium'),
+  (102, 'demis',         '2026-07-15 20:00:00+00'::timestamptz, 'Atlanta Stadium'),
+
+  -- ---------- Petite finale (1 match, 18 juillet) ----------
+  (103, 'petite_finale', '2026-07-18 20:00:00+00'::timestamptz, 'Miami Stadium'),
+
+  -- ---------- Finale (1 match, 19 juillet, MetLife) ----------
+  (104, 'finale',        '2026-07-19 19:00:00+00'::timestamptz, 'New York/New Jersey Stadium')
+) as v(fifa_match_id, phase, kick_off_at, venue_name)
+on conflict (competition_id, fifa_match_id) do nothing;
