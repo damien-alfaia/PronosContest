@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { MyBadgesSection } from '@/features/badges/my-badges-section';
 import { profileUpdateSchema, type ProfileUpdateInput } from '@/features/profile/schemas';
 import { useProfileQuery, useUpdateProfileMutation } from '@/features/profile/use-profile';
 import { useAuth } from '@/hooks/use-auth';
@@ -210,6 +211,8 @@ export const ProfilePage = () => {
           </Form>
         </CardContent>
       </Card>
+
+      <MyBadgesSection userId={userId} />
     </section>
   );
 };

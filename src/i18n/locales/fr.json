@@ -334,6 +334,16 @@
     "updateError": "Impossible d'enregistrer le profil.",
     "loadError": "Impossible de charger le profil."
   },
+  "badges": {
+    "section": {
+      "title": "Mes badges",
+      "progress": "{{earned}} / {{total}} débloqués",
+      "loading": "Chargement des badges…",
+      "loadError": "Impossible de charger les badges.",
+      "empty": "Aucun badge au catalogue pour le moment.",
+      "gridAriaLabel": "Liste des badges"
+    }
+  },
   "admin": {
     "competitions": {
       "title": "Admin — Compétitions",

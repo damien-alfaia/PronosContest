@@ -334,6 +334,16 @@
     "updateError": "Couldn't save the profile.",
     "loadError": "Couldn't load the profile."
   },
+  "badges": {
+    "section": {
+      "title": "My badges",
+      "progress": "{{earned}} / {{total}} unlocked",
+      "loading": "Loading badges…",
+      "loadError": "Couldn't load badges.",
+      "empty": "No badge in the catalog yet.",
+      "gridAriaLabel": "Badge list"
+    }
+  },
   "admin": {
     "competitions": {
       "title": "Admin — Competitions",
