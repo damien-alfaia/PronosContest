@@ -2,8 +2,25 @@
 import path from 'node:path';
 
 import react from '@vitejs/plugin-react';
+import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+
+/**
+ * Bundle analyzer — Sprint 7.B.1
+ *
+ * Activé via `pnpm build:analyze` (variable `ANALYZE=true`). Génère un fichier
+ * `dist/stats.html` interactif (treemap) qui permet de vérifier que le
+ * code-splitting joue bien son rôle :
+ *   - chaque page `/app/*` et `/auth/*` doit apparaître dans son propre chunk
+ *   - les libs partagées (react, react-router, zod, lucide, …) restent dans
+ *     un vendor commun
+ *   - repérer les dépendances inattendues qui gonflent l'entry bundle
+ *
+ * Le plugin n'est PAS chargé en build normal (CI, Vercel) pour ne pas
+ * ralentir la pipeline ni polluer `dist/` avec un stats.html non désiré.
+ */
+const shouldAnalyze = process.env.ANALYZE === 'true';
 
 /**
  * PWA config — Sprint 7.A
@@ -151,6 +168,18 @@ export default defineConfig({
         enabled: false,
       },
     }),
+    // Bundle analyzer — uniquement quand `ANALYZE=true` (voir `build:analyze`).
+    ...(shouldAnalyze
+      ? [
+          visualizer({
+            filename: 'dist/stats.html',
+            open: true,
+            gzipSize: true,
+            brotliSize: true,
+            template: 'treemap',
+          }),
+        ]
+      : []),
   ],
   resolve: {
     alias: {
