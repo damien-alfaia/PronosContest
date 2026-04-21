@@ -22,12 +22,33 @@ export type Equipe = Database['public']['Tables']['equipes']['Row'];
 
 /**
  * Match enrichi avec les 2 équipes.
- * Les FK sont NOT NULL + ON DELETE RESTRICT donc jamais null côté types.
+ *
+ * ⚠️ Sprint 5.A a rendu `equipe_a_id` / `equipe_b_id` nullable pour
+ * accueillir les 32 placeholders de la phase KO (équipes non encore
+ * connues tant que les poules ne sont pas terminées). On reflète cette
+ * nullabilité ici : tout consommateur doit gérer le cas `null`.
  */
 export type MatchWithEquipes = Match & {
+  equipe_a: Pick<Equipe, 'id' | 'code' | 'nom' | 'groupe' | 'drapeau_url'> | null;
+  equipe_b: Pick<Equipe, 'id' | 'code' | 'nom' | 'groupe' | 'drapeau_url'> | null;
+};
+
+/**
+ * Variante "prête à pronostiquer" : les équipes sont garanties non nulles.
+ * Utilisée par `MatchCard` qui ne sait pas rendre de placeholder KO.
+ */
+export type ResolvedMatchWithEquipes = Match & {
   equipe_a: Pick<Equipe, 'id' | 'code' | 'nom' | 'groupe' | 'drapeau_url'>;
   equipe_b: Pick<Equipe, 'id' | 'code' | 'nom' | 'groupe' | 'drapeau_url'>;
 };
+
+/**
+ * Type-guard : renvoie `true` uniquement si les deux équipes sont
+ * résolues. Filtre les placeholders KO non assignés.
+ */
+export const isResolvedMatch = (
+  m: MatchWithEquipes,
+): m is ResolvedMatchWithEquipes => m.equipe_a !== null && m.equipe_b !== null;
 
 const EQUIPE_SELECT = 'id, code, nom, groupe, drapeau_url' as const;
 

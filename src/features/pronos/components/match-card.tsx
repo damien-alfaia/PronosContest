@@ -14,7 +14,7 @@ import { getGroupColor } from '@/lib/group-colors';
 import { getPhaseColor } from '@/lib/phase-colors';
 import { cn } from '@/lib/utils';
 
-import type { MatchWithEquipes, Prono } from '../api';
+import type { Prono, ResolvedMatchWithEquipes } from '../api';
 import {
   type MatchPhase,
   type PronoFormInput,
@@ -28,7 +28,12 @@ import {
 } from '../use-pronos';
 
 type Props = {
-  match: MatchWithEquipes;
+  /**
+   * Match avec les 2 équipes déjà résolues. `PronosGridPage` filtre
+   * en amont les placeholders KO (équipes nullables tant que les poules
+   * ne sont pas terminées), donc `MatchCard` n'a jamais à gérer ce cas.
+   */
+  match: ResolvedMatchWithEquipes;
   existing: Prono | undefined;
   concoursId: string;
   userId: string | undefined;
@@ -83,7 +88,7 @@ const formatCountdown = (
  * Si un prono existe, on le pré-remplit ; sinon tout est vide sauf la phase.
  */
 const makeDefaults = (
-  match: MatchWithEquipes,
+  match: ResolvedMatchWithEquipes,
   existing: Prono | undefined,
 ): PronoFormInput => ({
   phase: match.phase as MatchPhase,

@@ -28,7 +28,7 @@ vi.mock('@/features/pronos/use-pronos', () => ({
   }),
 }));
 
-import type { MatchWithEquipes, Prono } from '@/features/pronos/api';
+import type { Prono, ResolvedMatchWithEquipes } from '@/features/pronos/api';
 import { MatchCard } from '@/features/pronos/components/match-card';
 import { i18n } from '@/i18n';
 
@@ -52,7 +52,9 @@ const EQUIPE_B = {
   drapeau_url: null,
 } as const;
 
-const makeMatch = (overrides: Partial<MatchWithEquipes> = {}): MatchWithEquipes => {
+const makeMatch = (
+  overrides: Partial<ResolvedMatchWithEquipes> = {},
+): ResolvedMatchWithEquipes => {
   return {
     id: MATCH,
     competition_id: 'c',
@@ -77,7 +79,7 @@ const makeMatch = (overrides: Partial<MatchWithEquipes> = {}): MatchWithEquipes 
     cote_b: null,
     cote_nul: null,
     ...overrides,
-  } as MatchWithEquipes;
+  } as ResolvedMatchWithEquipes;
 };
 
 const makeProno = (overrides: Partial<Prono> = {}): Prono => ({
