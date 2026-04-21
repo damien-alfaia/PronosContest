@@ -12,7 +12,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { getGroupColor } from '@/lib/group-colors';
 import { cn } from '@/lib/utils';
 
-import type { MatchWithEquipes, Prono } from './api';
+import type { Prono, ResolvedMatchWithEquipes } from './api';
+import { isResolvedMatch } from './api';
 import { MatchCard } from './components/match-card';
 import {
   useMatchsQuery,
@@ -36,9 +37,9 @@ const FILTER_MODES: readonly FilterMode[] = ['all', 'todo', 'locked'] as const;
  * des premières rencontres par round.
  */
 const groupByRound = (
-  matchs: MatchWithEquipes[],
-): Map<number, MatchWithEquipes[]> => {
-  const byRound = new Map<number, MatchWithEquipes[]>();
+  matchs: ResolvedMatchWithEquipes[],
+): Map<number, ResolvedMatchWithEquipes[]> => {
+  const byRound = new Map<number, ResolvedMatchWithEquipes[]>();
   for (const m of matchs) {
     const key = m.round ?? 0;
     const bucket = byRound.get(key);
@@ -97,18 +98,26 @@ export const PronosGridPage = () => {
     [myPronosQuery.data],
   );
 
+  // Base résolue : on écarte les placeholders KO (équipes non encore
+  // assignées, `equipe_a`/`equipe_b` nullables depuis Sprint 5.A). Ils
+  // réapparaîtront automatiquement une fois qu'un admin aura assigné
+  // les équipes via la page Admin → Matchs.
+  const resolvedMatchs = useMemo<ResolvedMatchWithEquipes[]>(
+    () => (matchsQuery.data ?? []).filter(isResolvedMatch),
+    [matchsQuery.data],
+  );
+
   const allGroups = useMemo(() => {
     const set = new Set<string>();
-    for (const m of matchsQuery.data ?? []) {
+    for (const m of resolvedMatchs) {
       const g = m.equipe_a.groupe ?? m.equipe_b.groupe;
       if (g) set.add(g.toLowerCase());
     }
     return Array.from(set).sort();
-  }, [matchsQuery.data]);
+  }, [resolvedMatchs]);
 
   const filteredMatchs = useMemo(() => {
-    const base = matchsQuery.data ?? [];
-    return base.filter((m) => {
+    return resolvedMatchs.filter((m) => {
       // Filtre par groupe (case-insensitive)
       if (groupFilter) {
         const g = (m.equipe_a.groupe ?? '').toLowerCase();
@@ -125,7 +134,7 @@ export const PronosGridPage = () => {
       }
       return true;
     });
-  }, [matchsQuery.data, filter, groupFilter, pronosByMatch, now]);
+  }, [resolvedMatchs, filter, groupFilter, pronosByMatch, now]);
 
   const grouped = useMemo(() => groupByRound(filteredMatchs), [filteredMatchs]);
 
@@ -149,7 +158,11 @@ export const PronosGridPage = () => {
 
   // ---------- Rendu ----------
 
-  const totalMatchs = matchsQuery.data?.length ?? 0;
+  // `totalMatchs` = matchs pronostiquables (équipes assignées). Les
+  // placeholders KO sont exclus pour que la progression reste lisible :
+  // on ne peut pas compter un match dont on ignore les équipes comme
+  // "à pronostiquer".
+  const totalMatchs = resolvedMatchs.length;
   const pronosCount = myPronosQuery.data?.length ?? 0;
   const isLoadingContent = matchsQuery.isLoading || myPronosQuery.isLoading;
 
