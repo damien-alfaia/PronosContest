@@ -233,9 +233,12 @@ export const MatchCard = ({
   return (
     <Card
       className={cn(
-        'flex flex-col gap-2 border-l-4 transition-colors',
+        'flex flex-col gap-2 rounded-xl border-l-4 shadow-md transition-all',
+        'duration-base ease-standard',
         accentBorder,
-        locked ? 'opacity-80' : 'hover:border-primary/40',
+        locked
+          ? 'opacity-80'
+          : 'hover:border-primary/40 hover:shadow-lg',
       )}
     >
       <CardHeader className="flex flex-row items-center justify-between gap-2 p-4 pb-0">
@@ -301,7 +304,7 @@ export const MatchCard = ({
               disabled={readOnly}
               aria-label={t('pronos.scoreFor', { team: match.equipe_a.nom })}
               aria-invalid={Boolean(errors.score_a)}
-              className="h-10 w-14 text-center text-base font-semibold"
+              className="h-10 w-14 text-center text-lg font-extrabold tabular-nums tracking-tight"
               {...form.register('score_a', { valueAsNumber: true })}
             />
             <span className="text-muted-foreground" aria-hidden>
@@ -316,7 +319,7 @@ export const MatchCard = ({
               disabled={readOnly}
               aria-label={t('pronos.scoreFor', { team: match.equipe_b.nom })}
               aria-invalid={Boolean(errors.score_b)}
-              className="h-10 w-14 text-center text-base font-semibold"
+              className="h-10 w-14 text-center text-lg font-extrabold tabular-nums tracking-tight"
               {...form.register('score_b', { valueAsNumber: true })}
             />
           </div>

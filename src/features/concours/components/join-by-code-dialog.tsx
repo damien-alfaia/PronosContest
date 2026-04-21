@@ -117,6 +117,7 @@ export const JoinByCodeDialog = ({ open, onOpenChange }: Props) => {
                       autoComplete="off"
                       autoCapitalize="characters"
                       spellCheck={false}
+                      className="font-mono text-base font-semibold tracking-widest"
                       {...field}
                       ref={(el) => {
                         field.ref(el);

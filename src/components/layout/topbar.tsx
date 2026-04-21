@@ -15,7 +15,7 @@ export const Topbar = () => {
   const { t } = useTranslation();
 
   return (
-    <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b bg-background/80 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-20 flex h-topbar items-center justify-between border-b bg-background/80 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <Link
         to="/app/dashboard"
         className="flex items-center gap-2 md:invisible md:pointer-events-none"
