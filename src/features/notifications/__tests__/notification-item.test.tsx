@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { act } from 'react';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import {
   afterEach,
   beforeAll,

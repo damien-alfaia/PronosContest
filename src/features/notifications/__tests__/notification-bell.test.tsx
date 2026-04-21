@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import { act } from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import {
   beforeAll,
   beforeEach,
@@ -34,8 +34,37 @@ import { i18n } from '@/i18n';
  *   - Si user absent → la cloche ne rend rien.
  */
 
-const USER = 'u1111111-1111-1111-1111-111111111111';
-const UUID_NOTIF = '22222222-2222-2222-2222-222222222222';
+// ---- Hoisted mocks ----
+//
+// ⚠️ `vi.hoisted` est remonté par le transformeur AVANT les `import` et les
+// `const` module-scope. On ne peut donc PAS référencer `USER` défini plus
+// bas (TDZ). On définit les constantes À L'INTÉRIEUR du hoisted block et on
+// les ré-expose via l'objet retourné pour usage dans le reste du fichier.
+
+const mocks = vi.hoisted(() => {
+  const USER = 'u1111111-1111-1111-1111-111111111111';
+  const UUID_NOTIF = '22222222-2222-2222-2222-222222222222';
+  return {
+    USER,
+    UUID_NOTIF,
+    userState: { user: { id: USER } as { id: string } | null },
+    listState: {
+      data: undefined as NotificationsInfiniteData | undefined,
+      isLoading: false,
+      isError: false,
+      hasNextPage: false,
+      isFetchingNextPage: false,
+      fetchNextPageSpy: vi.fn(),
+    },
+    countState: { data: 0 as number | undefined },
+    realtimeSpy: vi.fn(),
+    markAsReadSpy: vi.fn(),
+    markAllAsReadSpy: vi.fn(),
+  };
+});
+
+const USER = mocks.USER;
+const UUID_NOTIF = mocks.UUID_NOTIF;
 
 const makeNotif = (overrides: Partial<Notification> = {}): Notification =>
   ({
@@ -53,24 +82,6 @@ const makeNotif = (overrides: Partial<Notification> = {}): Notification =>
     created_at: '2026-04-21T10:00:00Z',
     ...overrides,
   }) as Notification;
-
-// ---- Hoisted mocks ----
-
-const mocks = vi.hoisted(() => ({
-  userState: { user: { id: USER } as { id: string } | null },
-  listState: {
-    data: undefined as NotificationsInfiniteData | undefined,
-    isLoading: false,
-    isError: false,
-    hasNextPage: false,
-    isFetchingNextPage: false,
-    fetchNextPageSpy: vi.fn(),
-  },
-  countState: { data: 0 as number | undefined },
-  realtimeSpy: vi.fn(),
-  markAsReadSpy: vi.fn(),
-  markAllAsReadSpy: vi.fn(),
-}));
 
 vi.mock('@/features/notifications/use-notifications', async () => {
   const actual = (await vi.importActual(
