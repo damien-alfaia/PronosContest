@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { defineConfig } from 'vite';
+import { defineConfig, type PluginOption } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 /**
@@ -169,6 +169,9 @@ export default defineConfig({
       },
     }),
     // Bundle analyzer — uniquement quand `ANALYZE=true` (voir `build:analyze`).
+    // Cast vers PluginOption : rollup-plugin-visualizer embarque sa propre copie
+    // des types Rollup qui diverge (très marginalement) de celle bundlée par
+    // Vite 5 — le cast est sûr, le plugin tourne correctement à l'exécution.
     ...(shouldAnalyze
       ? [
           visualizer({
@@ -177,7 +180,7 @@ export default defineConfig({
             gzipSize: true,
             brotliSize: true,
             template: 'treemap',
-          }),
+          }) as PluginOption,
         ]
       : []),
   ],
