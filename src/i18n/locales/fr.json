@@ -379,6 +379,64 @@
       "noConcours": "Concours introuvable."
     }
   },
+  "notifications": {
+    "bell": {
+      "ariaLabel_one": "Notifications ({{count}} non lue)",
+      "ariaLabel_other": "Notifications ({{count}} non lues)",
+      "dialogLabel": "Panneau des notifications",
+      "title": "Notifications",
+      "markAllAsRead": "Tout marquer comme lu"
+    },
+    "list": {
+      "ariaLabel": "Liste des notifications",
+      "loading": "Chargement des notifications…",
+      "loadError": "Impossible de charger les notifications.",
+      "loadMore": "Charger plus",
+      "loadingMore": "Chargement…",
+      "empty": {
+        "title": "Aucune notification",
+        "description": "Les nouvelles notifications apparaîtront ici."
+      }
+    },
+    "item": {
+      "ariaLabel": "{{title}} — {{time}}",
+      "unreadDot": "Non lue"
+    },
+    "time": {
+      "justNow": "à l'instant",
+      "seconds_one": "il y a {{count}} s",
+      "seconds_other": "il y a {{count}} s",
+      "minutes_one": "il y a {{count}} min",
+      "minutes_other": "il y a {{count}} min",
+      "hours_one": "il y a {{count}} h",
+      "hours_other": "il y a {{count}} h",
+      "days_one": "il y a {{count}} j",
+      "days_other": "il y a {{count}} j"
+    },
+    "types": {
+      "matchResult": {
+        "title": "Match terminé",
+        "body": {
+          "withScore": "Score final : {{a}} - {{b}}",
+          "noScore": "Résultat disponible."
+        }
+      },
+      "badgeEarned": {
+        "title": "Nouveau badge",
+        "body": "Tu viens de débloquer un badge !"
+      },
+      "concoursNewMember": {
+        "title": "Nouveau membre",
+        "body": "Quelqu'un a rejoint « {{concours}} »."
+      },
+      "chatMention": {
+        "title": "Mention dans le chat"
+      }
+    },
+    "errors": {
+      "noUser": "Session expirée, reconnecte-toi."
+    }
+  },
   "admin": {
     "competitions": {
       "title": "Admin — Compétitions",

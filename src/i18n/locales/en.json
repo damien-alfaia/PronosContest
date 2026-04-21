@@ -379,6 +379,64 @@
       "noConcours": "Contest not found."
     }
   },
+  "notifications": {
+    "bell": {
+      "ariaLabel_one": "Notifications ({{count}} unread)",
+      "ariaLabel_other": "Notifications ({{count}} unread)",
+      "dialogLabel": "Notifications panel",
+      "title": "Notifications",
+      "markAllAsRead": "Mark all as read"
+    },
+    "list": {
+      "ariaLabel": "Notifications list",
+      "loading": "Loading notifications…",
+      "loadError": "Couldn't load the notifications.",
+      "loadMore": "Load more",
+      "loadingMore": "Loading…",
+      "empty": {
+        "title": "No notifications yet",
+        "description": "New notifications will appear here."
+      }
+    },
+    "item": {
+      "ariaLabel": "{{title}} — {{time}}",
+      "unreadDot": "Unread"
+    },
+    "time": {
+      "justNow": "just now",
+      "seconds_one": "{{count}}s ago",
+      "seconds_other": "{{count}}s ago",
+      "minutes_one": "{{count}}m ago",
+      "minutes_other": "{{count}}m ago",
+      "hours_one": "{{count}}h ago",
+      "hours_other": "{{count}}h ago",
+      "days_one": "{{count}}d ago",
+      "days_other": "{{count}}d ago"
+    },
+    "types": {
+      "matchResult": {
+        "title": "Match finished",
+        "body": {
+          "withScore": "Final score: {{a}} - {{b}}",
+          "noScore": "Result available."
+        }
+      },
+      "badgeEarned": {
+        "title": "New badge",
+        "body": "You just unlocked a badge!"
+      },
+      "concoursNewMember": {
+        "title": "New member",
+        "body": "Someone joined \"{{concours}}\"."
+      },
+      "chatMention": {
+        "title": "Mention in chat"
+      }
+    },
+    "errors": {
+      "noUser": "Session expired, please sign in again."
+    }
+  },
   "admin": {
     "competitions": {
       "title": "Admin — Competitions",

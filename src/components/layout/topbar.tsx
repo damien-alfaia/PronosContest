@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { LanguageSwitcher } from '@/components/common/language-switcher';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { UserMenu } from '@/components/layout/user-menu';
+import { NotificationBell } from '@/features/notifications/notification-bell';
 
 /**
  * Barre supérieure fixe :
@@ -27,6 +28,7 @@ export const Topbar = () => {
         </span>
       </Link>
       <div className="flex items-center gap-1">
+        <NotificationBell />
         <LanguageSwitcher />
         <ThemeToggle />
         <UserMenu />
