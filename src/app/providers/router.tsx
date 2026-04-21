@@ -12,6 +12,7 @@ import { ForgotPasswordPage } from '@/features/auth/pages/forgot-password-page';
 import { LoginPage } from '@/features/auth/pages/login-page';
 import { ResetPasswordPage } from '@/features/auth/pages/reset-password-page';
 import { SignupPage } from '@/features/auth/pages/signup-page';
+import { ConcoursChatPage } from '@/features/chat/concours-chat-page';
 import { ClassementPage } from '@/features/classement/classement-page';
 import { ConcoursClassementPage } from '@/features/classement/concours-classement-page';
 import { ConcoursDetailPage } from '@/features/concours/concours-detail-page';
@@ -56,6 +57,7 @@ export const router = createBrowserRouter([
             path: '/app/concours/:id/classement',
             element: <ConcoursClassementPage />,
           },
+          { path: '/app/concours/:id/chat', element: <ConcoursChatPage /> },
           { path: '/app/pronos', element: <PronosPage /> },
           { path: '/app/classement', element: <ClassementPage /> },
           { path: '/app/profile', element: <ProfilePage /> },

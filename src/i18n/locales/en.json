@@ -143,7 +143,8 @@
       "copied": "Code copied",
       "back": "Back to contests",
       "goToPronos": "Enter my predictions",
-      "goToClassement": "View leaderboard"
+      "goToClassement": "View leaderboard",
+      "goToChat": "Open chat"
     },
     "tabs": {
       "mine": "My contests",
@@ -342,6 +343,40 @@
       "loadError": "Couldn't load badges.",
       "empty": "No badge in the catalog yet.",
       "gridAriaLabel": "Badge list"
+    }
+  },
+  "chat": {
+    "title": "Contest chat",
+    "backToConcours": "Back to contest",
+    "goToPronos": "Enter my predictions",
+    "goToClassement": "View leaderboard",
+    "loading": "Loading messages…",
+    "loadOlder": "Load older messages",
+    "noMoreMessages": "Beginning of the conversation",
+    "empty": {
+      "title": "No message yet",
+      "description": "Be the first to say something!"
+    },
+    "days": {
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "composer": {
+      "placeholder": "Write a message… (Ctrl+Enter to send)",
+      "placeholderDisabled": "Join the contest to take part in the chat",
+      "send": "Send",
+      "hint": "Ctrl+Enter to send, Enter for a new line",
+      "ariaLabel": "Message input"
+    },
+    "errors": {
+      "bodyRequired": "Message can't be empty.",
+      "bodyTooLong": "Message is longer than 1000 characters.",
+      "sendFailed": "Couldn't send the message.",
+      "loadFailed": "Couldn't load the messages.",
+      "forbidden": "You are no longer a member of this contest.",
+      "notAuthenticated": "Session expired, please sign in again.",
+      "insertFailed": "The message couldn't be saved.",
+      "noConcours": "Contest not found."
     }
   },
   "admin": {

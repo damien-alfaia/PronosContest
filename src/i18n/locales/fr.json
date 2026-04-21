@@ -143,7 +143,8 @@
       "copied": "Code copié",
       "back": "Retour aux concours",
       "goToPronos": "Saisir mes pronostics",
-      "goToClassement": "Voir le classement"
+      "goToClassement": "Voir le classement",
+      "goToChat": "Ouvrir le chat"
     },
     "tabs": {
       "mine": "Mes concours",
@@ -342,6 +343,40 @@
       "loadError": "Impossible de charger les badges.",
       "empty": "Aucun badge au catalogue pour le moment.",
       "gridAriaLabel": "Liste des badges"
+    }
+  },
+  "chat": {
+    "title": "Chat du concours",
+    "backToConcours": "Retour au concours",
+    "goToPronos": "Saisir mes pronostics",
+    "goToClassement": "Voir le classement",
+    "loading": "Chargement des messages…",
+    "loadOlder": "Charger les messages plus anciens",
+    "noMoreMessages": "Début de la conversation",
+    "empty": {
+      "title": "Aucun message pour le moment",
+      "description": "Sois le premier à écrire quelque chose !"
+    },
+    "days": {
+      "today": "Aujourd'hui",
+      "yesterday": "Hier"
+    },
+    "composer": {
+      "placeholder": "Écris un message… (Ctrl+Entrée pour envoyer)",
+      "placeholderDisabled": "Rejoins le concours pour participer à la discussion",
+      "send": "Envoyer",
+      "hint": "Ctrl+Entrée pour envoyer, Entrée pour un retour à la ligne",
+      "ariaLabel": "Zone de saisie du message"
+    },
+    "errors": {
+      "bodyRequired": "Le message ne peut pas être vide.",
+      "bodyTooLong": "Le message dépasse 1000 caractères.",
+      "sendFailed": "Impossible d'envoyer le message.",
+      "loadFailed": "Impossible de charger les messages.",
+      "forbidden": "Tu n'es plus membre de ce concours.",
+      "notAuthenticated": "Session expirée, reconnecte-toi.",
+      "insertFailed": "Le message n'a pas pu être enregistré.",
+      "noConcours": "Concours introuvable."
     }
   },
   "admin": {
