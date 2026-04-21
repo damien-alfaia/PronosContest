@@ -359,6 +359,39 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          payload: Json
+          read_at: string | null
+          title: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          read_at?: string | null
+          title?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          read_at?: string | null
+          title?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -538,6 +571,10 @@ export type Database = {
       is_match_locked: { Args: { p_match_id: string }; Returns: boolean }
       is_participant: { Args: { p_concours_id: string }; Returns: boolean }
       join_concours_by_code: { Args: { p_code: string }; Returns: string }
+      push_notification: {
+        Args: { p_payload?: Json; p_type: string; p_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       user_role: "user" | "admin"
