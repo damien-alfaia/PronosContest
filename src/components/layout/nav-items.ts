@@ -1,10 +1,8 @@
 import {
-  BarChart3,
   Flag,
   LayoutDashboard,
   ListOrdered,
   ShieldCheck,
-  Target,
   Trophy,
   User,
 } from 'lucide-react';
@@ -39,13 +37,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
     labelKey: 'nav.concours',
     to: '/app/concours',
     icon: Trophy,
-    mobile: true,
-  },
-  { labelKey: 'nav.pronos', to: '/app/pronos', icon: Target, mobile: true },
-  {
-    labelKey: 'nav.classement',
-    to: '/app/classement',
-    icon: BarChart3,
     mobile: true,
   },
   { labelKey: 'nav.profile', to: '/app/profile', icon: User, mobile: true },

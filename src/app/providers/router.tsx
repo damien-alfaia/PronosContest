@@ -144,24 +144,6 @@ export const router = createBrowserRouter([
             },
           },
           {
-            path: '/app/pronos',
-            lazy: async () => {
-              const { PronosPage } = await import(
-                '@/features/pronos/pronos-page'
-              );
-              return { Component: PronosPage };
-            },
-          },
-          {
-            path: '/app/classement',
-            lazy: async () => {
-              const { ClassementPage } = await import(
-                '@/features/classement/classement-page'
-              );
-              return { Component: ClassementPage };
-            },
-          },
-          {
             path: '/app/profile',
             lazy: async () => {
               const { ProfilePage } = await import(

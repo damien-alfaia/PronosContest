@@ -2,8 +2,7 @@
   "app": {
     "title": "PronosticsContest",
     "tagline": "Crée un concours, invite tes amis, pronostique, gagne.",
-    "cta": "Commencer",
-    "sprintStatus": "Sprint 1 en cours — auth Supabase, layout, thème."
+    "cta": "Commencer"
   },
   "theme": {
     "label": "Thème",
@@ -37,8 +36,6 @@
     "signup": "Créer un compte",
     "dashboard": "Tableau de bord",
     "concours": "Concours",
-    "pronos": "Pronostics",
-    "classement": "Classement",
     "profile": "Profil",
     "adminMatchs": "Admin — Matchs",
     "adminCompetitions": "Admin — Compétitions",
@@ -115,20 +112,30 @@
   },
   "dashboard": {
     "welcome": "Salut {{name}} 👋",
-    "placeholder": "Le tableau de bord arrive au Sprint 2."
-  },
-  "pages": {
-    "concours": {
-      "title": "Concours",
-      "placeholder": "La liste des concours arrive au Sprint 2."
+    "subtitle": "Retrouve tes concours et ta progression.",
+    "loading": "Chargement…",
+    "loadError": "Impossible de charger tes données.",
+    "myConcours": {
+      "title": "Mes concours",
+      "empty": "Tu n'as pas encore rejoint de concours.",
+      "seeAll": "Voir tous",
+      "pronos": "Pronostics",
+      "classement": "Classement",
+      "moreCount_one": "+ {{count}} autre",
+      "moreCount_other": "+ {{count}} autres"
     },
-    "pronos": {
-      "title": "Pronostics",
-      "placeholder": "Ouvre la fiche d'un concours pour saisir tes pronostics."
+    "quickActions": {
+      "title": "Actions rapides",
+      "create": "Créer un concours",
+      "joinByCode": "Rejoindre par code",
+      "browse": "Parcourir les concours"
     },
-    "classement": {
-      "title": "Classement",
-      "placeholder": "Le classement temps réel arrive au Sprint 4."
+    "badges": {
+      "title": "Mes derniers badges",
+      "count_one": "{{count}} badge débloqué",
+      "count_other": "{{count}} badges débloqués",
+      "empty": "Pas encore de badge. Saisis des pronos pour en débloquer.",
+      "seeAll": "Voir mes badges"
     }
   },
   "concours": {

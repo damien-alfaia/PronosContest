@@ -2,8 +2,7 @@
   "app": {
     "title": "PronosticsContest",
     "tagline": "Start a contest, invite your friends, predict, win.",
-    "cta": "Get started",
-    "sprintStatus": "Sprint 1 in progress — Supabase auth, layout, theme."
+    "cta": "Get started"
   },
   "theme": {
     "label": "Theme",
@@ -37,8 +36,6 @@
     "signup": "Create account",
     "dashboard": "Dashboard",
     "concours": "Contests",
-    "pronos": "Predictions",
-    "classement": "Leaderboard",
     "profile": "Profile",
     "adminMatchs": "Admin — Matches",
     "adminCompetitions": "Admin — Competitions",
@@ -115,20 +112,30 @@
   },
   "dashboard": {
     "welcome": "Hi {{name}} 👋",
-    "placeholder": "Dashboard coming in Sprint 2."
-  },
-  "pages": {
-    "concours": {
-      "title": "Contests",
-      "placeholder": "Contest list coming in Sprint 2."
+    "subtitle": "Your contests and your progress.",
+    "loading": "Loading…",
+    "loadError": "Unable to load your data.",
+    "myConcours": {
+      "title": "My contests",
+      "empty": "You haven't joined any contest yet.",
+      "seeAll": "See all",
+      "pronos": "Predictions",
+      "classement": "Leaderboard",
+      "moreCount_one": "+ {{count}} more",
+      "moreCount_other": "+ {{count}} more"
     },
-    "pronos": {
-      "title": "Predictions",
-      "placeholder": "Open a contest page to enter your predictions."
+    "quickActions": {
+      "title": "Quick actions",
+      "create": "Create a contest",
+      "joinByCode": "Join with a code",
+      "browse": "Browse contests"
     },
-    "classement": {
-      "title": "Leaderboard",
-      "placeholder": "Real-time leaderboard coming in Sprint 4."
+    "badges": {
+      "title": "My latest badges",
+      "count_one": "{{count}} badge unlocked",
+      "count_other": "{{count}} badges unlocked",
+      "empty": "No badge yet. Submit predictions to unlock some.",
+      "seeAll": "See my badges"
     }
   },
   "concours": {

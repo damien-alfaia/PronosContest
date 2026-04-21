@@ -53,7 +53,6 @@ export function LandingPage() {
           </>
         )}
       </div>
-      <p className="text-xs text-muted-foreground">{t('app.sprintStatus')}</p>
     </main>
   );
 }
