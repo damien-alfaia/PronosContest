@@ -34,6 +34,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      badges: {
+        Row: {
+          category: string
+          code: string
+          created_at: string
+          description: Json
+          icon: string
+          libelle: Json
+          sort_order: number
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string
+          description: Json
+          icon: string
+          libelle: Json
+          sort_order?: number
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string
+          description?: Json
+          icon?: string
+          libelle?: Json
+          sort_order?: number
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       competitions: {
         Row: {
           code: string
@@ -368,6 +404,35 @@ export type Database = {
           },
         ]
       }
+      user_badges: {
+        Row: {
+          badge_code: string
+          earned_at: string
+          metadata: Json
+          user_id: string
+        }
+        Insert: {
+          badge_code: string
+          earned_at?: string
+          metadata?: Json
+          user_id: string
+        }
+        Update: {
+          badge_code?: string
+          earned_at?: string
+          metadata?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_code_fkey"
+            columns: ["badge_code"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
     }
     Views: {
       v_classement_concours: {
@@ -425,6 +490,10 @@ export type Database = {
       }
     }
     Functions: {
+      award_badge: {
+        Args: { p_badge_code: string; p_metadata?: Json; p_user_id: string }
+        Returns: undefined
+      }
       generate_concours_code: { Args: never; Returns: string }
       is_admin: { Args: { p_user_id?: string }; Returns: boolean }
       is_match_locked: { Args: { p_match_id: string }; Returns: boolean }
