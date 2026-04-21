@@ -5,9 +5,13 @@ Réécriture moderne de l'application de pronostics sportifs (concours privés a
 Historique : migration d'une app .NET MVC 5 / Entity Framework / SQL Server vers **React + TypeScript + Supabase**.
 
 > Les specs détaillées vivent dans `docs/` :
+>
+> - [`README-user.md`](./docs/README-user.md) — guide **utilisateur** (comptes, concours, pronos, classement, chat, badges, notifs, PWA)
+> - [`README-admin.md`](./docs/README-admin.md) — guide **admin** (rôle global, pages `/app/admin/*`, invariants SQL)
+> - [`perf-checklist.md`](./docs/perf-checklist.md) — cibles Lighthouse + procédure d'audit + bundle analyzer
 > - [`PROMPT_REGENERATION_REACT_SUPABASE.md`](./docs/PROMPT_REGENERATION_REACT_SUPABASE.md) — analyse de l'existant + schéma Supabase + roadmap
 > - [`AGENTS_ET_SKILLS_CLAUDE.md`](./docs/AGENTS_ET_SKILLS_CLAUDE.md) — plan d'agents & skills Claude pour automatiser l'app
-> - [`adr/`](./docs/adr) — Architecture Decision Records
+> - [`adr/`](./docs/adr) — Architecture Decision Records (0001 stack, 0002 state, 0003 PWA)
 >
 > Le fichier [`CLAUDE.md`](./CLAUDE.md) à la racine sert de contexte permanent pour Claude.
 
@@ -27,6 +31,7 @@ Historique : migration d'une app .NET MVC 5 / Entity Framework / SQL Server vers
 | i18n | react-i18next (FR par défaut, EN en complément) |
 | Qualité | ESLint + Prettier + Husky + lint-staged + commitlint |
 | Déploiement | Vercel (front) + Supabase (back) |
+| PWA | `vite-plugin-pwa` + Workbox + `workbox-window` (Sprint 7.A, voir [ADR-0003](./docs/adr/0003-pwa-service-worker.md)) |
 
 ---
 
@@ -50,6 +55,7 @@ cp .env.example .env.local   # puis remplir les valeurs
 # Dev
 pnpm dev                         # Vite en mode dev (http://localhost:5173)
 pnpm build                       # Build prod
+pnpm build:analyze               # Build prod + ouvre dist/stats.html (treemap)
 pnpm preview                     # Preview du build prod
 
 # Qualité
@@ -125,13 +131,14 @@ Plus de règles dans [`CLAUDE.md`](./CLAUDE.md).
 Voir [`docs/PROMPT_REGENERATION_REACT_SUPABASE.md §8`](./docs/PROMPT_REGENERATION_REACT_SUPABASE.md).
 
 - [x] **Sprint 0** — Setup (Vite + TS + Tailwind + shadcn + Supabase structure + CI-ready)
-- [ ] **Sprint 1** — Auth + layout + i18n complet + theme
-- [ ] **Sprint 2** — Concours & compétitions (liste, création, recherche)
-- [ ] **Sprint 3** — Saisie de pronos
-- [ ] **Sprint 4** — Scoring & classement Realtime *(cœur)*
-- [ ] **Sprint 5** — Admin & import auto des matchs
-- [ ] **Sprint 6** — Social & gamification (badges, chat, notifs)
-- [ ] **Sprint 7** — PWA, perf, docs, lancement
+- [x] **Sprint 1** — Auth + layout + i18n + theme
+- [x] **Sprint 2** — Concours & compétitions (liste, création, recherche)
+- [x] **Sprint 3** — Saisie de pronos
+- [x] **Sprint 4** — Scoring & classement Realtime *(cœur)*
+- [x] **Sprint 5** — Admin manuel (CRUD matchs + référentiel)
+- [x] **Sprint 6** — Social & gamification (badges, chat, notifs)
+- [x] **Sprint 7** — PWA, perf, docs *(en cours)*
+- [ ] **Sprint 7 bonus** — import auto des matchs via API-Football *(reporté)*
 
 ## Licence
 
