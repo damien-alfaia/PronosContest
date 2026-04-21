@@ -3,11 +3,15 @@ import { Outlet } from 'react-router-dom';
 import { BottomNav } from '@/components/layout/bottom-nav';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Topbar } from '@/components/layout/topbar';
+import { InstallPrompt } from '@/features/pwa/install-prompt';
+import { OfflineBanner } from '@/features/pwa/offline-banner';
+import { UpdatePrompt } from '@/features/pwa/update-prompt';
 
 /**
  * Shell applicatif (pages sous `/app/*`).
  *
  * Layout :
+ *  - OfflineBanner (si hors-ligne) tout en haut
  *  - Sidebar fixe à gauche (md+)
  *  - Topbar collante en haut
  *  - Zone de contenu (Outlet)
@@ -17,6 +21,7 @@ import { Topbar } from '@/components/layout/topbar';
  */
 export const AppLayout = () => (
   <div className="min-h-screen bg-background text-foreground">
+    <OfflineBanner />
     <Sidebar />
     <div className="md:pl-56">
       <Topbar />
@@ -25,5 +30,7 @@ export const AppLayout = () => (
       </main>
     </div>
     <BottomNav />
+    <InstallPrompt />
+    <UpdatePrompt />
   </div>
 );

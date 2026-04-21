@@ -561,5 +561,29 @@
       "fifaIdInteger": "FIFA ID must be an integer.",
       "fifaIdRange": "FIFA ID must be greater than zero."
     }
+  },
+  "pwa": {
+    "offline": {
+      "banner": "You're offline",
+      "hint": "Some features may be limited"
+    },
+    "install": {
+      "title": "Install PronosticsContest",
+      "description": "Add the app to your home screen for quick access, even offline.",
+      "cta": "Install",
+      "later": "Later",
+      "close": "Close",
+      "bannerAriaLabel": "App install prompt"
+    },
+    "update": {
+      "title": "New version available",
+      "description": "Reload the app to get the latest improvements.",
+      "reload": "Reload",
+      "later": "Later"
+    },
+    "offlineReady": {
+      "title": "App ready offline",
+      "description": "You'll be able to browse your contests even without connection."
+    }
   }
 }

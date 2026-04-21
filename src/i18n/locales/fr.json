@@ -561,5 +561,29 @@
       "fifaIdInteger": "L'ID FIFA doit être un entier.",
       "fifaIdRange": "L'ID FIFA doit être supérieur à zéro."
     }
+  },
+  "pwa": {
+    "offline": {
+      "banner": "Vous êtes hors ligne",
+      "hint": "Certaines fonctionnalités peuvent être limitées"
+    },
+    "install": {
+      "title": "Installer PronosticsContest",
+      "description": "Ajoute l'app à ton écran d'accueil pour un accès rapide, même hors ligne.",
+      "cta": "Installer",
+      "later": "Plus tard",
+      "close": "Fermer",
+      "bannerAriaLabel": "Proposition d'installation de l'application"
+    },
+    "update": {
+      "title": "Nouvelle version disponible",
+      "description": "Recharge l'app pour profiter des dernières améliorations.",
+      "reload": "Recharger",
+      "later": "Plus tard"
+    },
+    "offlineReady": {
+      "title": "App prête hors ligne",
+      "description": "Tu pourras continuer à consulter tes concours même sans connexion."
+    }
   }
 }

@@ -24,7 +24,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
-      injectRegister: 'auto',
+      // On enregistre le SW via `useRegisterSW()` dans `<UpdatePrompt />`
+      // (hook React), pas besoin que Vite injecte un second script. Éviter
+      // `'auto'` ici ou on enregistrerait le SW deux fois.
+      injectRegister: false,
       includeAssets: [
         'favicon.svg',
         'apple-touch-icon.png',
@@ -71,6 +74,76 @@ export default defineConfig({
         navigateFallback: 'index.html',
         navigateFallbackDenylist: [/^\/api/, /^\/auth/, /^\/rest/],
         cleanupOutdatedCaches: true,
+        // `skipWaiting: false` : on attend la décision user via
+        // `useRegisterSW().updateServiceWorker()` (toast "Recharger",
+        // branché en 7.A.3). Sinon le SW swap immédiatement → perte de
+        // state React en plein formulaire.
+        skipWaiting: false,
+        clientsClaim: false,
+        runtimeCaching: [
+          // --- Supabase REST (read queries, views) -----------------------
+          // NetworkFirst avec timeout court : on veut la vérité serveur
+          // quand on est online (classement live, pronos ouverts…), mais
+          // on accepte un fallback cache si le réseau flanche.
+          // ⚠️ On n'applique PAS ça aux requêtes d'écriture (POST/PATCH/
+          // DELETE) — Workbox ne cache de toute façon que les GET.
+          {
+            urlPattern: ({ url, request }) =>
+              request.method === 'GET' &&
+              /\.supabase\.co$/i.test(url.hostname) &&
+              /^\/rest\/v1\//.test(url.pathname),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'supabase-rest',
+              networkTimeoutSeconds: 3,
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24, // 24 h
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          // --- Supabase Storage (avatars, drapeaux, médias) --------------
+          // CacheFirst : ces ressources changent rarement et sont lourdes.
+          {
+            urlPattern: ({ url, request }) =>
+              request.method === 'GET' &&
+              /\.supabase\.co$/i.test(url.hostname) &&
+              /^\/storage\/v1\/object\/public\//.test(url.pathname),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'supabase-storage',
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 jours
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          // --- Auth + Realtime : JAMAIS cachés ---------------------------
+          // Workbox n'intercepte pas les WebSockets (realtime) et on laisse
+          // les appels Auth/token passer en network-only par sécurité.
+          {
+            urlPattern: ({ url }) =>
+              /\.supabase\.co$/i.test(url.hostname) &&
+              (/^\/auth\/v1\//.test(url.pathname) ||
+                /^\/realtime\/v1\//.test(url.pathname)),
+            handler: 'NetworkOnly',
+          },
+          // --- Drapeaux Wikipedia Commons (fallback si pas en Storage) ---
+          {
+            urlPattern: /^https:\/\/upload\.wikimedia\.org\/.*\.(png|svg|webp)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'external-flags',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 jours
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
       devOptions: {
         // Désactivé en dev : le SW complique le hot-reload et n'apporte rien
