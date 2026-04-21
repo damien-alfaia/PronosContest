@@ -73,7 +73,7 @@ export const useUserBadgesQuery = (userId: string | undefined) =>
   });
 
 /**
- * Compteur de badges d'un user (pour dashboard / sidebar).
+ * Compteur de badges d'un user (pour dashboard / widgets).
  * Pas de dépendance à la liste complète : requête `count: 'exact'`
  * pure, plus légère si on n'a pas besoin du détail.
  */

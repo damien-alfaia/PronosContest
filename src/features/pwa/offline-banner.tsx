@@ -8,10 +8,10 @@ import { cn } from '@/lib/utils';
  * Bannière affichée en haut de l'app quand `navigator.onLine === false`.
  *
  * UX :
- *   - Bloc en flux normal tout en haut de l'app (avant Topbar / Sidebar).
+ *   - Bloc en flux normal tout en haut de l'app (avant Topbar).
  *     Quand elle apparaît, elle pousse le contenu vers le bas — la Topbar
- *     sticky reste juste en-dessous. Pas de `fixed` pour ne pas masquer le
- *     Topbar / l'entrée de menu.
+ *     sticky reste juste en-dessous. Pas de `fixed` pour ne pas masquer
+ *     la Topbar.
  *   - Fond ambre (warning, pas destructive) — on peut toujours naviguer
  *     dans le cache, on n'est pas "en erreur".
  *   - Icône WifiOff + message localisé + hint "certaines fonctionnalités

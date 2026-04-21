@@ -102,7 +102,7 @@ export const listUserBadges = async (
 /**
  * Compte uniquement le nombre de badges gagnés par un user.
  *
- * Sert aux compteurs globaux (header, sidebar) sans rapatrier tout le
+ * Sert aux compteurs globaux (header, widgets) sans rapatrier tout le
  * détail. `head: true` + `count: 'exact'` : Supabase ne retourne pas
  * les lignes, juste le total.
  */
