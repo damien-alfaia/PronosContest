@@ -6,6 +6,7 @@ import { LanguageSwitcher } from '@/components/common/language-switcher';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { NAV_ITEMS } from '@/components/layout/nav-items';
 import { UserMenu } from '@/components/layout/user-menu';
+import { NotificationBell } from '@/features/notifications/notification-bell';
 import { cn } from '@/lib/utils';
 
 /**
@@ -72,6 +73,7 @@ export const Topbar = () => {
 
       {/* Droite : actions */}
       <div className="flex shrink-0 items-center gap-1">
+        <NotificationBell />
         <LanguageSwitcher />
         <ThemeToggle />
         <UserMenu />

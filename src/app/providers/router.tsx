@@ -152,6 +152,15 @@ export const router = createBrowserRouter([
               return { Component: ProfilePage };
             },
           },
+          {
+            path: '/app/concours/:id/chat',
+            lazy: async () => {
+              const { ConcoursChatPage } = await import(
+                '@/features/chat/concours-chat-page'
+              );
+              return { Component: ConcoursChatPage };
+            },
+          },
 
           // Routes admin (filtrées par RequireAdmin)
           {

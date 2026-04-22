@@ -156,6 +156,45 @@ export type Database = {
           },
         ]
       }
+      concours_messages: {
+        Row: {
+          body: string
+          concours_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          concours_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          concours_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concours_messages_concours_id_fkey"
+            columns: ["concours_id"]
+            isOneToOne: false
+            referencedRelation: "concours"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concours_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       concours_participants: {
         Row: {
           concours_id: string
@@ -319,6 +358,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          payload: Json
+          read_at: string | null
+          title: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          read_at?: string | null
+          title?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          read_at?: string | null
+          title?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -499,6 +571,10 @@ export type Database = {
       is_match_locked: { Args: { p_match_id: string }; Returns: boolean }
       is_participant: { Args: { p_concours_id: string }; Returns: boolean }
       join_concours_by_code: { Args: { p_code: string }; Returns: string }
+      push_notification: {
+        Args: { p_payload?: Json; p_type: string; p_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       user_role: "user" | "admin"

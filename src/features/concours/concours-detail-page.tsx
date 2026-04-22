@@ -7,6 +7,7 @@ import {
   Globe,
   Loader2,
   Lock,
+  MessageSquare,
   Shield,
   Target,
   Trophy,
@@ -173,6 +174,12 @@ export const ConcoursDetailPage = () => {
                   <Link to={`/app/concours/${concours.id}/classement`}>
                     <Trophy className="mr-2 h-4 w-4" aria-hidden />
                     {t('concours.actions.goToClassement')}
+                  </Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to={`/app/concours/${concours.id}/chat`}>
+                    <MessageSquare className="mr-2 h-4 w-4" aria-hidden />
+                    {t('concours.actions.goToChat')}
                   </Link>
                 </Button>
               </>

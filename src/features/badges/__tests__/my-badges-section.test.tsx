@@ -1,10 +1,12 @@
 import { render, screen, within } from '@testing-library/react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { MyBadgesSection } from '@/features/badges/my-badges-section';
 import type {
   BadgeCatalogRow,
   UserBadgeWithCatalog,
 } from '@/features/badges/schemas';
+import { i18n } from '@/i18n';
 
 /**
  * Tests de rendu de `<MyBadgesSection />`.
@@ -55,9 +57,6 @@ vi.mock('@/features/badges/use-badges', () => ({
     mocks.realtimeSpy(userId);
   },
 }));
-
-import { MyBadgesSection } from '@/features/badges/my-badges-section';
-import { i18n } from '@/i18n';
 
 // ------------------------------------------------------------------
 //  Factories
