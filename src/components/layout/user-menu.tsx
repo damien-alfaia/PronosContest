@@ -2,6 +2,7 @@ import { LogOut, User as UserIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { NAV_ITEMS } from '@/components/layout/nav-items';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useIsAdmin } from '@/features/admin/hooks/use-is-admin';
 import { useAuth } from '@/hooks/use-auth';
 
 const pickInitials = (first?: string | null, last?: string | null, email?: string | null) => {
@@ -23,7 +25,14 @@ const pickInitials = (first?: string | null, last?: string | null, email?: strin
 };
 
 /**
- * Avatar + menu utilisateur (profil, déconnexion).
+ * Avatar + menu utilisateur.
+ *
+ * Contient :
+ *   - Profil + déconnexion (toujours).
+ *   - Section "Admin" (conditionnelle sur `useIsAdmin`) avec les
+ *     liens vers les 3 pages back-office. Depuis qu'on a retiré la
+ *     Sidebar, c'est le seul point d'entrée admin — discret, invisible
+ *     pour les non-concernés.
  *
  * Les initiales sont calculées à partir des metadata du user Supabase
  * (`prenom`/`nom`) ou, en dernier recours, de la première lettre de l'e-mail.
@@ -31,6 +40,7 @@ const pickInitials = (first?: string | null, last?: string | null, email?: strin
 export const UserMenu = () => {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
 
   if (!user) return null;
@@ -43,6 +53,8 @@ export const UserMenu = () => {
     [prenom, nom].filter(Boolean).join(' ').trim() ||
     user.email?.split('@')[0] ||
     '';
+
+  const adminItems = NAV_ITEMS.filter((i) => i.adminOnly);
 
   const handleSignOut = async () => {
     await signOut();
@@ -79,6 +91,24 @@ export const UserMenu = () => {
             {t('nav.profile')}
           </Link>
         </DropdownMenuItem>
+
+        {isAdmin && adminItems.length > 0 ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {t('nav.adminSection')}
+            </DropdownMenuLabel>
+            {adminItems.map(({ labelKey, to, icon: Icon }) => (
+              <DropdownMenuItem key={to} asChild>
+                <Link to={to} className="cursor-pointer">
+                  <Icon className="mr-2 h-4 w-4" aria-hidden />
+                  {t(labelKey)}
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </>
+        ) : null}
+
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={(e) => {

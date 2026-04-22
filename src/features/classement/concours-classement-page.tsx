@@ -49,10 +49,19 @@ import {
  *     annotée `aria-label` pour les lecteurs d'écran.
  */
 
+/**
+ * Badges de rang pour le podium.
+ *
+ * On utilise les tokens DS `podium-{gold,silver,bronze}` (définis dans
+ * globals.css + tailwind.config.ts) plutôt que les couleurs brutes
+ * `amber/slate/orange`, pour rester cohérent avec le reste du système
+ * (shadow-accent, badges, etc.) et permettre au dark mode de réajuster
+ * automatiquement la lumière via les variables HSL.
+ */
 const RANK_BADGE_CLASSES: Record<number, string> = {
-  1: 'border-transparent bg-amber-500/15 text-amber-800 dark:bg-amber-500/20 dark:text-amber-200',
-  2: 'border-transparent bg-slate-400/20 text-slate-800 dark:bg-slate-400/25 dark:text-slate-100',
-  3: 'border-transparent bg-orange-500/15 text-orange-800 dark:bg-orange-500/20 dark:text-orange-200',
+  1: 'border-transparent bg-podium-gold/20 text-podium-gold shadow-sm dark:bg-podium-gold/25',
+  2: 'border-transparent bg-podium-silver/25 text-podium-silver dark:bg-podium-silver/30',
+  3: 'border-transparent bg-podium-bronze/20 text-podium-bronze dark:bg-podium-bronze/25',
 };
 
 const getRankClass = (rang: number): string | null =>
@@ -132,7 +141,7 @@ export const ConcoursClassementPage = () => {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex flex-col gap-1">
             <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-              <Trophy className="h-6 w-6 text-amber-500" aria-hidden />
+              <Trophy className="h-6 w-6 text-podium-gold" aria-hidden />
               {t('classement.title')}
             </h1>
             <p className="text-sm text-muted-foreground">

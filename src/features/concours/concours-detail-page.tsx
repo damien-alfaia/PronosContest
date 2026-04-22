@@ -257,7 +257,7 @@ export const ConcoursDetailPage = () => {
                 {t('concours.detail.codeDescription')}
               </p>
               <div className="flex items-center gap-2">
-                <code className="flex-1 rounded-md border border-input bg-muted px-3 py-2 text-sm font-mono">
+                <code className="flex-1 rounded-md border border-input bg-muted px-3 py-2 font-mono text-base font-semibold tracking-widest text-primary">
                   {concours.code_invitation}
                 </code>
                 <Button type="button" variant="outline" size="sm" onClick={onCopyCode}>

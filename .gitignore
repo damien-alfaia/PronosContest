@@ -71,3 +71,8 @@ supabase/seed.local.sql
 .history/
 _tmp_*
 
+
+# --- Design assets (zip references, not for git) ---
+*.zip
+design-system/
+PronosticsContest Design System.zip

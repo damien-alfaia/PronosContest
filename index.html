@@ -36,6 +36,12 @@
     />
     <meta name="twitter:image" content="/icon-512.png" />
 
+    <!-- Preconnect fonts (Inter + JetBrains Mono) pour accélérer le
+         premier rendu. Le @import CSS reste la source (dans globals.css)
+         mais preconnect ouvre la connexion TLS à l'avance. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <title>PronosticsContest v2</title>
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased">

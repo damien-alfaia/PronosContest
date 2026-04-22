@@ -25,6 +25,19 @@ const TIER_STYLES: Record<BadgeTier, string> = {
 };
 
 /**
+ * Shadows teintées par tier : les badges prestigieux (gold / legendary)
+ * récupèrent la shadow colorée `shadow-accent` du DS ; les plus communs
+ * restent sur une ombre neutre. Hover légèrement amplifié pour un feel
+ * tactile sur mobile.
+ */
+const TIER_SHADOWS: Record<BadgeTier, string> = {
+  bronze: 'shadow-sm hover:shadow-md',
+  silver: 'shadow-sm hover:shadow-md',
+  gold: 'shadow-md hover:shadow-accent',
+  legendary: 'shadow-accent hover:shadow-accent',
+};
+
+/**
  * Couleurs de l'icône (plus saturée que le fond pour ressortir).
  */
 const TIER_ICON_STYLES: Record<BadgeTier, string> = {
@@ -70,9 +83,9 @@ export const BadgeTile = ({ badge, earned, earnedAt }: BadgeTileProps) => {
       aria-label={libelle}
       data-earned={earned}
       className={cn(
-        'flex flex-col items-center gap-2 rounded-lg border p-3 text-center transition',
+        'flex flex-col items-center gap-2 rounded-xl border p-3 text-center transition-all duration-base ease-standard',
         earned
-          ? TIER_STYLES[badge.tier]
+          ? cn(TIER_STYLES[badge.tier], TIER_SHADOWS[badge.tier])
           : 'border-dashed border-muted bg-muted/30 text-muted-foreground opacity-60 grayscale',
       )}
     >
