@@ -353,6 +353,37 @@
       "gridAriaLabel": "Badge list"
     }
   },
+  "jokers": {
+    "section": {
+      "title": "My jokers",
+      "progress": "{{owned}} / {{total}} available",
+      "loading": "Loading jokers…",
+      "loadError": "Couldn't load jokers.",
+      "empty": "No joker yet — come back once you've joined a contest or earned a related badge.",
+      "gridAriaLabel": "Joker list",
+      "acquiredOn": "Acquired on {{date}}",
+      "usedOn": "Used on {{date}}"
+    },
+    "acquiredFrom": {
+      "starter": "Starter",
+      "badge": "Badge",
+      "gift": "Gift"
+    },
+    "toggle": {
+      "title": "Jokers & bonuses",
+      "descriptionEnabled": "Jokers are enabled on this contest. Every participant receives a starter pack.",
+      "descriptionDisabled": "Jokers are disabled. Enable them to distribute the starter pack to every participant.",
+      "on": "Enabled",
+      "off": "Disabled",
+      "ariaLabel": "Enable or disable jokers on this contest",
+      "hint": "Only the contest owner can change this.",
+      "toast": {
+        "enabled": "Jokers enabled: the starter pack is distributed to participants.",
+        "disabled": "Jokers disabled. Already-granted slots are preserved.",
+        "error": "Couldn't update the jokers flag."
+      }
+    }
+  },
   "chat": {
     "title": "Contest chat",
     "backToConcours": "Back to contest",
