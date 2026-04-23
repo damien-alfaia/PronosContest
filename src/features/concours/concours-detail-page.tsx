@@ -362,6 +362,7 @@ export const ConcoursDetailPage = () => {
         <MyJokersSection
           userId={userId}
           concoursId={concours.id}
+          competitionId={concours.competition_id}
           enabled={jokersEnabled}
         />
       ) : null}

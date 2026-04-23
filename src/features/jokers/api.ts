@@ -2,8 +2,10 @@ import { supabase } from '@/lib/supabase';
 
 import {
   type JokerCatalogRow,
+  type UserJokerRow,
   type UserJokerWithCatalog,
   normalizeJokerCatalogRow,
+  normalizeUserJokerRow,
   normalizeUserJokerWithCatalog,
 } from './schemas';
 
@@ -162,4 +164,176 @@ export const setConcoursJokersEnabled = async (
     .eq('id', concoursId);
 
   if (error) throw error;
+};
+
+// ------------------------------------------------------------------
+//  CONSOMMATION (RPC use_joker — Sprint 8.B)
+// ------------------------------------------------------------------
+
+/**
+ * Codes d'erreur Postgres remontés par le RPC `use_joker` (cf.
+ * migration `20260427120000_jokers_consumption.sql`). On les ré-expose
+ * côté front pour que la UI mappe chaque code à un libellé i18n.
+ *
+ * `postgres-js` remonte l'erreur avec `message` = le string après
+ * `raise exception '...'`. On teste donc `message.includes(code)` dans
+ * les composants plutôt que `code` (sql-state) qui est plus générique.
+ */
+export const JOKER_CONSUMPTION_ERROR_CODES = [
+  'not_authenticated',
+  'joker_not_found',
+  'not_owner',
+  'already_used',
+  'concours_not_found',
+  'jokers_disabled',
+  'target_match_required',
+  'target_match_forbidden',
+  'target_user_required',
+  'target_user_forbidden',
+  'target_user_not_in_concours',
+  'target_match_not_found',
+  'target_match_wrong_competition',
+  'target_is_self',
+  'match_locked',
+  'category_already_used_on_match',
+  'payload_missing_gifted_code',
+  'cannot_gift_a_gift',
+  'gifted_joker_not_owned',
+  'unknown_joker_code',
+] as const;
+export type JokerConsumptionErrorCode =
+  (typeof JOKER_CONSUMPTION_ERROR_CODES)[number];
+
+/**
+ * Paramètres RPC pour `use_joker`. Le backend dispatche sur
+ * `user_joker.joker_code` — chaque code impose sa propre combinaison
+ * de cibles (cf. table de mapping dans la migration 8.B.1).
+ */
+export type ConsumeJokerArgs = {
+  /** UUID du slot `user_jokers` à consommer (owned, self). */
+  userJokerId: string;
+  /** Match ciblé — requis pour boost / info / challenge, interdit pour gift. */
+  targetMatchId?: string | null;
+  /** User ciblé — requis pour challenge / gift, interdit pour boost / info. */
+  targetUserId?: string | null;
+  /** Payload contextuel — boussole : auto-généré côté SQL ; gift : { gifted_joker_code }. */
+  payload?: Record<string, unknown> | null;
+};
+
+/**
+ * Consomme un joker via la RPC `use_joker` (SECURITY DEFINER côté SQL).
+ * Le backend valide l'ownership, le verrouillage temporel, le category
+ * stacking et la cohérence des cibles. En cas de succès, retourne la
+ * ligne `user_jokers` mise à jour (used_at / used_on_* renseignés).
+ *
+ * Les erreurs remontent sous la forme d'un `Error` avec message issu
+ * de `raise exception '<code>'` côté SQL — la UI fait un `includes()`
+ * pour mapper vers un libellé i18n.
+ */
+export const consumeJoker = async (
+  args: ConsumeJokerArgs,
+): Promise<UserJokerRow> => {
+  const { data, error } = await supabase.rpc('use_joker', {
+    p_user_joker_id: args.userJokerId,
+    p_target_match_id: args.targetMatchId ?? undefined,
+    p_target_user_id: args.targetUserId ?? undefined,
+    p_payload: args.payload ?? undefined,
+  });
+
+  if (error) throw error;
+
+  // `data` est typé `unknown` tant que `supabase gen types` n'a pas
+  // régénéré la signature de la RPC — on normalise via Zod pour
+  // récupérer une ligne strictement typée côté front.
+  const row = data as {
+    id: string | null;
+    user_id: string | null;
+    concours_id: string | null;
+    joker_code: string | null;
+    acquired_from: string | null;
+    acquired_at: string | null;
+    used_at: string | null;
+    used_on_match_id: string | null;
+    used_on_target_user_id: string | null;
+    used_payload: unknown;
+  };
+
+  const normalized = normalizeUserJokerRow(row);
+  if (!normalized) {
+    throw new Error('use_joker_invalid_response');
+  }
+  return normalized;
+};
+
+// ------------------------------------------------------------------
+//  PARTICIPANTS DU CONCOURS (pour les pickers challenge / gift)
+// ------------------------------------------------------------------
+
+/**
+ * Ligne jointe `concours_participants × profiles` minimale pour les
+ * pickers de cible (challenge, gift). On ne remonte que les colonnes
+ * utilisées côté UI (nom d'affichage + avatar).
+ */
+export type ConcoursParticipantForPicker = {
+  user_id: string;
+  role: string | null;
+  joined_at: string;
+  prenom: string | null;
+  nom: string | null;
+  avatar_url: string | null;
+};
+
+/**
+ * Liste les participants d'un concours avec leur profil (prenom / nom /
+ * avatar) pour alimenter les pickers "cible" des jokers challenge et
+ * gift.
+ *
+ * La RLS de `concours_participants` + policy `profiles_select_same_concours`
+ * garantissent déjà que le caller ne voit que les participants des
+ * concours auxquels il appartient (Sprint 4).
+ *
+ * Tri : nouveaux arrivants en premier (`joined_at desc`) — utile pour
+ * retrouver rapidement un nouvel arrivant qu'on veut challenger/gifter,
+ * et fallback stable (join desc = ordre d'apparition inverse).
+ */
+export const listConcoursParticipantsForPicker = async (
+  concoursId: string,
+): Promise<ConcoursParticipantForPicker[]> => {
+  const { data, error } = await supabase
+    .from('concours_participants')
+    .select(
+      `
+        user_id,
+        role,
+        joined_at,
+        profile:profiles (
+          id,
+          prenom,
+          nom,
+          avatar_url
+        )
+      `,
+    )
+    .eq('concours_id', concoursId)
+    .order('joined_at', { ascending: false });
+
+  if (error) throw error;
+
+  return (data ?? [])
+    .map((row) => {
+      if (!row.user_id) return null;
+      // Supabase retourne le nested profile comme objet (FK 1-1) mais
+      // certains types générés le sérialisent en tableau → unwrap
+      // défensivement.
+      const profile = Array.isArray(row.profile) ? row.profile[0] : row.profile;
+      return {
+        user_id: row.user_id,
+        role: row.role ?? null,
+        joined_at: row.joined_at,
+        prenom: profile?.prenom ?? null,
+        nom: profile?.nom ?? null,
+        avatar_url: profile?.avatar_url ?? null,
+      } satisfies ConcoursParticipantForPicker;
+    })
+    .filter((r): r is ConcoursParticipantForPicker => r !== null);
 };

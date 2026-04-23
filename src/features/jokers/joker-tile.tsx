@@ -53,6 +53,14 @@ export type JokerTileProps = {
   acquiredAt?: string;
   /** Date ISO d'utilisation, affichée si `owned === false`. */
   usedAt?: string | null;
+  /**
+   * Callback d'activation : si fourni ET `owned=true`, la tuile devient
+   * un `<button type="button">` cliquable (focus ring, curseur pointer,
+   * hover ring). Si non fourni, la tuile reste un `<div role="listitem">`
+   * inerte (cas Sprint 8.A, ou slots used). Le caller gère l'ouverture
+   * du `ConsumeJokerDialog`.
+   */
+  onActivate?: () => void;
 };
 
 /**
@@ -75,6 +83,7 @@ export const JokerTile = ({
   acquiredFrom,
   acquiredAt,
   usedAt,
+  onActivate,
 }: JokerTileProps) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language.startsWith('en') ? 'en' : 'fr';
@@ -89,19 +98,20 @@ export const JokerTile = ({
       year: 'numeric',
     });
 
-  return (
-    <div
-      role="listitem"
-      aria-label={libelleText}
-      data-owned={owned}
-      data-category={category}
-      className={cn(
-        'flex flex-col items-center gap-2 rounded-xl border p-3 text-center transition-all duration-base ease-standard',
-        owned
-          ? cn(CATEGORY_STYLES[category], CATEGORY_SHADOWS[category])
-          : 'border-dashed border-muted bg-muted/30 text-muted-foreground opacity-60 grayscale',
-      )}
-    >
+  // La tuile est interactive uniquement si le slot est owned ET qu'un
+  // callback d'activation est fourni. Les slots `used` ne sont jamais
+  // cliquables (le joker a déjà été consommé).
+  const isActivatable = owned && typeof onActivate === 'function';
+
+  const baseClasses = cn(
+    'flex flex-col items-center gap-2 rounded-xl border p-3 text-center transition-all duration-base ease-standard',
+    owned
+      ? cn(CATEGORY_STYLES[category], CATEGORY_SHADOWS[category])
+      : 'border-dashed border-muted bg-muted/30 text-muted-foreground opacity-60 grayscale',
+  );
+
+  const content = (
+    <>
       <Icon
         className={cn(
           'h-8 w-8',
@@ -135,6 +145,39 @@ export const JokerTile = ({
           {t('jokers.section.usedOn', { date: formatDate(usedAt) })}
         </span>
       ) : null}
+    </>
+  );
+
+  if (isActivatable) {
+    return (
+      <button
+        type="button"
+        role="listitem"
+        aria-label={t('jokers.section.activateAriaLabel', {
+          joker: libelleText,
+        })}
+        data-owned={owned}
+        data-category={category}
+        onClick={onActivate}
+        className={cn(
+          baseClasses,
+          'cursor-pointer hover:ring-2 hover:ring-ring/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        )}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div
+      role="listitem"
+      aria-label={libelleText}
+      data-owned={owned}
+      data-category={category}
+      className={baseClasses}
+    >
+      {content}
     </div>
   );
 };

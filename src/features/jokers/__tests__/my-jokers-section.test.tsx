@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MyJokersSection } from '@/features/jokers/my-jokers-section';
@@ -32,6 +32,7 @@ const mocks = vi.hoisted(() => {
       isError: false,
     },
     realtimeSpy: vi.fn(),
+    dialogSpy: vi.fn(),
   };
 });
 
@@ -47,6 +48,45 @@ vi.mock('@/features/jokers/use-jokers', () => ({
     options: { enabled?: boolean } = {},
   ) => {
     mocks.realtimeSpy(userId, concoursId, options);
+  },
+}));
+
+/**
+ * Stub du dialog : on ne veut pas faire tourner ses hooks internes
+ * (`useMatchsQuery`, `useConsumeJokerMutation`, …) ici — ils sont
+ * testés dans `consume-joker-dialog.test.tsx`. On se contente de
+ * rendre un marqueur qui prouve que le dialog a bien été monté, et
+ * d'exposer un bouton qui simule la fermeture (onOpenChange(false)).
+ */
+vi.mock('@/features/jokers/consume-joker-dialog', () => ({
+  ConsumeJokerDialog: (props: {
+    userJoker: UserJokerWithCatalog | null;
+    concoursId: string;
+    competitionId: string | undefined;
+    currentUserId: string | undefined;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+  }) => {
+    mocks.dialogSpy({
+      userJokerId: props.userJoker?.id,
+      concoursId: props.concoursId,
+      competitionId: props.competitionId,
+      currentUserId: props.currentUserId,
+      open: props.open,
+    });
+    if (!props.open || !props.userJoker) return null;
+    return (
+      <div data-testid="consume-joker-dialog-stub">
+        <span data-testid="consume-slot-id">{props.userJoker.id}</span>
+        <button
+          type="button"
+          onClick={() => props.onOpenChange(false)}
+          data-testid="consume-close"
+        >
+          close
+        </button>
+      </div>
+    );
   },
 }));
 
@@ -101,6 +141,7 @@ beforeEach(() => {
   mocks.userState.isLoading = false;
   mocks.userState.isError = false;
   mocks.realtimeSpy.mockReset();
+  mocks.dialogSpy.mockReset();
 });
 
 // ------------------------------------------------------------------
@@ -224,5 +265,119 @@ describe('<MyJokersSection />', () => {
       CONCOURS,
       expect.objectContaining({ enabled: false }),
     );
+  });
+
+  // ----- Activation : click sur tuile owned → dialog monté -----
+
+  it('dialog NON monté tant qu aucune tuile n est cliquée', () => {
+    mocks.userState.data = [makeSlot({ id: 'slot-a', joker_code: 'double' })];
+    render(
+      <MyJokersSection
+        userId={USER}
+        concoursId={CONCOURS}
+        competitionId="comp-1"
+        enabled={true}
+      />,
+    );
+    expect(
+      screen.queryByTestId('consume-joker-dialog-stub'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('click sur tuile owned → mount dialog avec le bon slot + competitionId', () => {
+    mocks.userState.data = [makeSlot({ id: 'slot-a', joker_code: 'double' })];
+    render(
+      <MyJokersSection
+        userId={USER}
+        concoursId={CONCOURS}
+        competitionId="comp-1"
+        enabled={true}
+      />,
+    );
+
+    // La tuile owned est un <button role="listitem"> cliquable.
+    const items = screen.getAllByRole('listitem');
+    fireEvent.click(items[0]!);
+
+    expect(screen.getByTestId('consume-joker-dialog-stub')).toBeInTheDocument();
+    expect(screen.getByTestId('consume-slot-id')).toHaveTextContent('slot-a');
+
+    // Le spy du stub doit avoir reçu les bonnes props.
+    const lastCall = mocks.dialogSpy.mock.calls.at(-1)?.[0];
+    expect(lastCall).toMatchObject({
+      userJokerId: 'slot-a',
+      concoursId: CONCOURS,
+      competitionId: 'comp-1',
+      currentUserId: USER,
+      open: true,
+    });
+  });
+
+  it('click sur tuile used n ouvre PAS le dialog', () => {
+    mocks.userState.data = [
+      makeSlot({
+        id: 'slot-used',
+        joker_code: 'double',
+        used_at: '2026-04-25T12:00:00Z',
+      }),
+    ];
+    render(
+      <MyJokersSection
+        userId={USER}
+        concoursId={CONCOURS}
+        competitionId="comp-1"
+        enabled={true}
+      />,
+    );
+
+    // La tuile used reste un <div role="listitem"> non cliquable — un
+    // éventuel click ne déclenche rien.
+    const items = screen.getAllByRole('listitem');
+    fireEvent.click(items[0]!);
+
+    expect(
+      screen.queryByTestId('consume-joker-dialog-stub'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('onOpenChange(false) depuis le dialog → dialog démonté', () => {
+    mocks.userState.data = [makeSlot({ id: 'slot-a', joker_code: 'double' })];
+    render(
+      <MyJokersSection
+        userId={USER}
+        concoursId={CONCOURS}
+        competitionId="comp-1"
+        enabled={true}
+      />,
+    );
+
+    // Ouvrir
+    fireEvent.click(screen.getAllByRole('listitem')[0]!);
+    expect(screen.getByTestId('consume-joker-dialog-stub')).toBeInTheDocument();
+
+    // Fermer
+    fireEvent.click(screen.getByTestId('consume-close'));
+    expect(
+      screen.queryByTestId('consume-joker-dialog-stub'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('dialog non monté si concoursId manquant (garde caller)', () => {
+    mocks.userState.data = [makeSlot({ id: 'slot-a', joker_code: 'double' })];
+    render(
+      <MyJokersSection
+        userId={USER}
+        concoursId={undefined}
+        competitionId="comp-1"
+        enabled={true}
+      />,
+    );
+    // Pas de concoursId → même un click ne monte pas le dialog (le
+    // caller garantit `concoursId && selectedUserJoker ? ...`).
+    const items = screen.queryAllByRole('listitem');
+    if (items[0]) fireEvent.click(items[0]);
+    expect(
+      screen.queryByTestId('consume-joker-dialog-stub'),
+    ).not.toBeInTheDocument();
   });
 });

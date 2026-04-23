@@ -1,5 +1,5 @@
 import { Loader2, Sparkles } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
+import { ConsumeJokerDialog } from './consume-joker-dialog';
 import { JokerTile } from './joker-tile';
 import {
   compareUserJokerForInventory,
@@ -23,6 +24,12 @@ import {
 type Props = {
   userId: string | undefined;
   concoursId: string | undefined;
+  /**
+   * UUID de la compétition parente — alimente le picker de match dans
+   * `ConsumeJokerDialog`. Optionnel (si absent, le dialog affichera un
+   * état vide pour les jokers qui ciblent un match).
+   */
+  competitionId?: string | undefined;
   /** Si false → section non montée (concours avec jokers_enabled=false). */
   enabled: boolean;
 };
@@ -45,7 +52,12 @@ type Props = {
  * Layout : grid 2 → 3 → 4 → 5 colonnes (cohérent avec la section badges
  * sur la page profil).
  */
-export const MyJokersSection = ({ userId, concoursId, enabled }: Props) => {
+export const MyJokersSection = ({
+  userId,
+  concoursId,
+  competitionId,
+  enabled,
+}: Props) => {
   const { t } = useTranslation();
 
   const jokersQuery = useUserJokersInConcoursQuery(
@@ -53,6 +65,11 @@ export const MyJokersSection = ({ userId, concoursId, enabled }: Props) => {
     enabled ? concoursId : undefined,
   );
   useUserJokersRealtime(userId, concoursId, { enabled });
+
+  // Slot en cours de consommation (ouvre `ConsumeJokerDialog`).
+  // `null` = dialog fermé, une ligne = dialog ouvert sur ce slot.
+  const [selectedUserJoker, setSelectedUserJoker] =
+    useState<UserJokerWithCatalog | null>(null);
 
   const sorted = useMemo<UserJokerWithCatalog[]>(() => {
     const data = jokersQuery.data ?? [];
@@ -103,22 +120,48 @@ export const MyJokersSection = ({ userId, concoursId, enabled }: Props) => {
             aria-label={t('jokers.section.gridAriaLabel')}
             className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
           >
-            {sorted.map((row) => (
-              <JokerTile
-                key={row.id}
-                libelle={row.joker.libelle}
-                description={row.joker.description}
-                icon={row.joker.icon}
-                category={row.joker.category}
-                owned={row.used_at === null}
-                acquiredFrom={row.acquired_from}
-                acquiredAt={row.acquired_at}
-                usedAt={row.used_at}
-              />
-            ))}
+            {sorted.map((row) => {
+              const isOwned = row.used_at === null;
+              return (
+                <JokerTile
+                  key={row.id}
+                  libelle={row.joker.libelle}
+                  description={row.joker.description}
+                  icon={row.joker.icon}
+                  category={row.joker.category}
+                  owned={isOwned}
+                  acquiredFrom={row.acquired_from}
+                  acquiredAt={row.acquired_at}
+                  usedAt={row.used_at}
+                  onActivate={
+                    isOwned ? () => setSelectedUserJoker(row) : undefined
+                  }
+                />
+              );
+            })}
           </div>
         )}
       </CardContent>
+
+      {/*
+        Dialog de consommation : monté uniquement quand un slot est
+        sélectionné. On n'appelle pas les queries (matchs, participants,
+        jokers) tant que le dialog n'est pas visible — et on évite aussi
+        que les tests de 8.A aient besoin de mocker les hooks internes
+        du dialog. `concoursId` est requis pour les pickers.
+      */}
+      {concoursId && selectedUserJoker ? (
+        <ConsumeJokerDialog
+          userJoker={selectedUserJoker}
+          concoursId={concoursId}
+          competitionId={competitionId}
+          currentUserId={userId}
+          open={true}
+          onOpenChange={(next) => {
+            if (!next) setSelectedUserJoker(null);
+          }}
+        />
+      ) : null}
     </Card>
   );
 };

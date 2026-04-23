@@ -4,12 +4,20 @@ import { useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
 import {
+  type ConcoursParticipantForPicker,
+  type ConsumeJokerArgs,
+  consumeJoker,
   countUserOwnedJokersInConcours,
+  listConcoursParticipantsForPicker,
   listJokersCatalog,
   listUserJokersInConcours,
   setConcoursJokersEnabled,
 } from './api';
-import { type JokerCatalogRow, type UserJokerWithCatalog } from './schemas';
+import {
+  type JokerCatalogRow,
+  type UserJokerRow,
+  type UserJokerWithCatalog,
+} from './schemas';
 
 /**
  * Hooks TanStack Query + Realtime pour les jokers (Sprint 8.A).
@@ -54,6 +62,8 @@ export const jokersKeys = {
       concoursId ?? 'none',
       'count',
     ] as const,
+  participants: (concoursId: string | undefined) =>
+    ['jokers', 'participants', concoursId ?? 'none'] as const,
 };
 
 // ------------------------------------------------------------------
@@ -105,6 +115,25 @@ export const useUserOwnedJokersCountQuery = (
     staleTime: 30_000,
   });
 
+/**
+ * Participants d'un concours (avec nom/prenom/avatar) pour les pickers
+ * "cible" des jokers challenge / gift. Filtrage "exclure soi-même"
+ * fait côté composant.
+ *
+ * `staleTime` court (30s) : la liste bouge rarement mais on veut
+ * refléter un nouvel arrivant sans forcer un refresh manuel.
+ */
+export const useConcoursParticipantsForPickerQuery = (
+  concoursId: string | undefined,
+  options: { enabled?: boolean } = {},
+) =>
+  useQuery<ConcoursParticipantForPicker[]>({
+    queryKey: jokersKeys.participants(concoursId),
+    queryFn: () => listConcoursParticipantsForPicker(concoursId as string),
+    enabled: Boolean(concoursId) && (options.enabled ?? true),
+    staleTime: 30_000,
+  });
+
 // ------------------------------------------------------------------
 //  MUTATIONS
 // ------------------------------------------------------------------
@@ -144,6 +173,53 @@ export const useSetConcoursJokersEnabledMutation = () => {
       // participant — cas rare).
       void queryClient.invalidateQueries({
         queryKey: jokersKeys.all,
+      });
+    },
+  });
+};
+
+/**
+ * Consomme un joker via la RPC `use_joker` (Sprint 8.B.1).
+ *
+ * Le caller passe :
+ *   - `userJokerId` : UUID du slot à consommer.
+ *   - `targetMatchId` / `targetUserId` / `payload` : selon le code du
+ *     joker (cf. `consumeJoker` dans api.ts).
+ *
+ * Invalidations onSuccess :
+ *   1. `jokersKeys.all` — mes jokers (slot passe à "used"), + participants
+ *      potentiellement impactés (gift crée un slot chez le target).
+ *   2. `['classement', concoursId]` — les effets scoring (double/triple/
+ *      safety_net/challenge/double_down) changent le classement agrégé.
+ *      Realtime sur `matchs` / `pronos` (Sprint 4) ne couvre PAS les
+ *      écritures sur `user_jokers` → on invalide manuellement.
+ *   3. `['pronos', concoursId, 'me']` — boussole révèle un agrégat que
+ *      la UI peut surfacer dans la grille de pronos (non couvert par
+ *      Realtime pronos non plus).
+ *
+ * NB : on n'a pas besoin du `concoursId` en argument — on le récupère
+ * depuis la ligne retournée par la RPC (concours_id est dans
+ * `user_jokers`). Ça évite au caller de le passer deux fois.
+ */
+export const useConsumeJokerMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<UserJokerRow, Error, ConsumeJokerArgs>({
+    mutationFn: (args) => consumeJoker(args),
+
+    onSuccess: (data) => {
+      // 1. Tous les listings jokers (le slot est passé à "used" ; en cas
+      // de gift, un nouveau slot est créé chez la cible → catch-all).
+      void queryClient.invalidateQueries({ queryKey: jokersKeys.all });
+
+      // 2. Classement du concours (effets scoring jokers).
+      void queryClient.invalidateQueries({
+        queryKey: ['classement', data.concours_id],
+      });
+
+      // 3. Mes pronos (boussole révèle un agrégat que la UI peut afficher).
+      void queryClient.invalidateQueries({
+        queryKey: ['pronos', data.concours_id, 'me'],
       });
     },
   });
