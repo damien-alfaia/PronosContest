@@ -82,6 +82,32 @@ const formatName = (prenom: string | null, nom: string | null): string => {
   return full.length > 0 ? full : '—';
 };
 
+/**
+ * Formate un delta challenge signé pour affichage : `+5`, `-10`, `±0`.
+ * L'UI s'en sert pour ne pas afficher juste "5" (perte d'info sur le
+ * signe) et pour garantir un tabular-nums stable visuellement.
+ */
+const formatChallengeDelta = (delta: number): string => {
+  if (delta > 0) return `+${delta}`;
+  if (delta < 0) return `${delta}`; // le signe "-" est déjà là côté int
+  return '±0';
+};
+
+/**
+ * Teinte Tailwind du badge `challenge_delta` selon le signe.
+ * Neutre en dark/light pour le cas 0, vert pour positif, rouge pour négatif.
+ * On reste sur des classes complètes pour garantir le tree-shaking de Tailwind.
+ */
+const challengeDeltaClass = (delta: number): string => {
+  if (delta > 0) {
+    return 'border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200';
+  }
+  if (delta < 0) {
+    return 'border-rose-300 bg-rose-50 text-rose-800 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200';
+  }
+  return 'border-muted bg-muted/30 text-muted-foreground';
+};
+
 export const ConcoursClassementPage = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
@@ -181,6 +207,20 @@ export const ConcoursClassementPage = () => {
                 gagnes: myRow.pronos_gagnes,
               })}
             </span>
+            {myRow.challenge_delta !== 0 ? (
+              <Badge
+                variant="outline"
+                className={cn(
+                  'font-semibold tabular-nums',
+                  challengeDeltaClass(myRow.challenge_delta),
+                )}
+                title={t('classement.challengeDeltaTooltip')}
+              >
+                {t('classement.challengeDeltaLabel', {
+                  delta: formatChallengeDelta(myRow.challenge_delta),
+                })}
+              </Badge>
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -208,6 +248,12 @@ export const ConcoursClassementPage = () => {
                 <TableHead>{t('classement.columns.player')}</TableHead>
                 <TableHead className="w-20 text-right">
                   {t('classement.columns.points')}
+                </TableHead>
+                <TableHead
+                  className="hidden w-32 text-right md:table-cell"
+                  title={t('classement.columns.breakdownTooltip')}
+                >
+                  {t('classement.columns.breakdown')}
                 </TableHead>
                 <TableHead className="hidden w-24 text-right md:table-cell">
                   {t('classement.columns.pronosJoues')}
@@ -276,6 +322,34 @@ export const ConcoursClassementPage = () => {
                     </TableCell>
                     <TableCell className="text-right font-semibold tabular-nums">
                       {row.points}
+                    </TableCell>
+                    <TableCell className="hidden text-right tabular-nums md:table-cell">
+                      <div
+                        className="flex items-center justify-end gap-1.5"
+                        aria-label={t('classement.columns.breakdownAriaLabel', {
+                          prono: row.prono_points,
+                          delta: formatChallengeDelta(row.challenge_delta),
+                        })}
+                      >
+                        <span className="text-muted-foreground">
+                          {row.prono_points}
+                        </span>
+                        {row.challenge_delta !== 0 ? (
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              'text-[10px] tabular-nums',
+                              challengeDeltaClass(row.challenge_delta),
+                            )}
+                          >
+                            {formatChallengeDelta(row.challenge_delta)}
+                          </Badge>
+                        ) : (
+                          <span className="text-[10px] text-muted-foreground/60">
+                            ±0
+                          </span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="hidden text-right tabular-nums text-muted-foreground md:table-cell">
                       {row.pronos_joues}

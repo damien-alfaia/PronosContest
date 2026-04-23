@@ -61,7 +61,18 @@ export const listClassement = async (
 
   if (error) throw error;
 
-  return (data ?? [])
+  // Cast défensif : `prono_points` et `challenge_delta` ont été ajoutés
+  // par la migration Sprint 8.B.3 (refactor vues scoring), mais les types
+  // générés par `supabase gen types` ne les exposent pas forcément si
+  // le CLI n'a pas été relancé côté user. Le wildcard `select('*')` les
+  // ramène toujours — on les rend visibles au normalizer en widenant
+  // ponctuellement la forme.
+  type RawWithJokersBreakdown = RawClassementRow & {
+    prono_points?: number | null;
+    challenge_delta?: number | null;
+  };
+
+  return ((data ?? []) as RawWithJokersBreakdown[])
     .map(normalizeClassementRow)
     .filter((row): row is ClassementRow => row !== null);
 };

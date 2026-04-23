@@ -21,13 +21,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { JoinByCodeDialog } from '@/features/concours/components/join-by-code-dialog';
-import { useMyConcoursQuery } from '@/features/concours/use-concours';
+import { pickLocalized } from '@/features/badges/schemas';
 import {
   useUserBadgesCountQuery,
   useUserBadgesQuery,
 } from '@/features/badges/use-badges';
-import { pickLocalized } from '@/features/badges/schemas';
+import { JoinByCodeDialog } from '@/features/concours/components/join-by-code-dialog';
+import { useMyConcoursQuery } from '@/features/concours/use-concours';
 import { useAuth } from '@/hooks/use-auth';
 
 /**

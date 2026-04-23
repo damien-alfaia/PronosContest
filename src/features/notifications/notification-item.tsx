@@ -2,7 +2,9 @@ import {
   AtSign,
   Award,
   Bell as BellIcon,
+  Gift,
   type LucideIcon,
+  Swords,
   Trophy,
   UserPlus,
 } from 'lucide-react';
@@ -61,6 +63,19 @@ const TYPE_VISUALS: Record<NotificationType, TypeVisual> = {
     iconClassName: 'text-sky-700 dark:text-sky-300',
     bgClassName: 'bg-sky-100 dark:bg-sky-950/50',
   },
+  // Jokers sociaux (Sprint 8.C.4) — on reprend la teinte rose du picker
+  // de challenge et l'emerald du picker gift, pour garder une cohérence
+  // visuelle entre la consommation et la réception.
+  challenge_received: {
+    icon: Swords,
+    iconClassName: 'text-rose-700 dark:text-rose-300',
+    bgClassName: 'bg-rose-100 dark:bg-rose-950/50',
+  },
+  gift_received: {
+    icon: Gift,
+    iconClassName: 'text-emerald-700 dark:text-emerald-300',
+    bgClassName: 'bg-emerald-100 dark:bg-emerald-950/50',
+  },
 };
 
 // ------------------------------------------------------------------
@@ -87,6 +102,10 @@ const resolveTitle = (
       return t('notifications.types.concoursNewMember.title');
     case 'chat_mention':
       return t('notifications.types.chatMention.title');
+    case 'challenge_received':
+      return t('notifications.types.challengeReceived.title');
+    case 'gift_received':
+      return t('notifications.types.giftReceived.title');
   }
 };
 
@@ -119,6 +138,31 @@ const resolveBody = (
       });
     case 'chat_mention':
       return n.payload.body_preview;
+    case 'challenge_received': {
+      // On choisit le template selon le code du joker pour que le body
+      // traduise "challenge 5 pts" vs "double_down 10 pts".
+      // Fallback sur `.generic` si jamais un nouveau code 'challenge'
+      // apparaît un jour sans clé i18n dédiée — l'UI reste lisible.
+      const stakes =
+        typeof n.payload.stakes === 'number' ? n.payload.stakes : null;
+      if (n.payload.joker_code === 'double_down') {
+        return t('notifications.types.challengeReceived.body.doubleDown', {
+          stakes: stakes ?? 10,
+        });
+      }
+      if (n.payload.joker_code === 'challenge') {
+        return t('notifications.types.challengeReceived.body.challenge', {
+          stakes: stakes ?? 5,
+        });
+      }
+      return t('notifications.types.challengeReceived.body.generic', {
+        stakes: stakes ?? 0,
+      });
+    }
+    case 'gift_received':
+      return t('notifications.types.giftReceived.body', {
+        code: n.payload.gifted_joker_code,
+      });
   }
 };
 
@@ -195,6 +239,17 @@ const resolveRoute = (n: Notification): string => {
       return `/app/concours/${n.payload.concours_id}`;
     case 'chat_mention':
       return `/app/concours/${n.payload.concours_id}/chat`;
+    case 'challenge_received':
+      // On renvoie directement sur la grille de pronos du concours
+      // pour que le destinataire puisse vérifier son prono sur le
+      // match ciblé — pas d'URL anchor `?match=...` pour rester
+      // robuste tant qu'on n'a pas posé les ancres côté PronosGridPage.
+      return `/app/concours/${n.payload.concours_id}/pronos`;
+    case 'gift_received':
+      // On envoie sur la fiche concours : c'est là que la section
+      // "Mes jokers" est visible (sous le toggle owner) et que le
+      // nouveau slot apparaît.
+      return `/app/concours/${n.payload.concours_id}`;
   }
 };
 

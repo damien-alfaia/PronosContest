@@ -317,10 +317,15 @@
     "pointsSummary": "{{points}} pts · {{exacts}} exact · {{gagnes}} won",
     "youLabel": "You",
     "rowMeAriaLabel": "Your row",
+    "challengeDeltaLabel": "Challenges: {{delta}}",
+    "challengeDeltaTooltip": "Net balance of challenges won and lost.",
     "columns": {
       "rank": "Rank",
       "player": "Player",
       "points": "Points",
+      "breakdown": "Detail",
+      "breakdownTooltip": "Prediction points + challenge balance.",
+      "breakdownAriaLabel": "{{prono}} prediction points, {{delta}} from challenges",
       "pronosJoues": "Played",
       "pronosGagnes": "Won",
       "pronosExacts": "Exact"
@@ -365,6 +370,21 @@
       "usedOn": "Used on {{date}}",
       "activateAriaLabel": "Activate joker {{joker}}"
     },
+    "history": {
+      "title": "Joker history",
+      "progress": "{{owned}} active · {{used}} used · {{total}} total",
+      "loading": "Loading history…",
+      "loadError": "Couldn't load history.",
+      "empty": "No jokers yet. Join a contest with jokers enabled to receive some.",
+      "listAriaLabel": "Joker history across all contests",
+      "item": {
+        "concoursLabel": "Contest",
+        "acquiredLabel": "Acquired on {{date}}",
+        "usedLabel": "Used on {{date}}",
+        "statusOwned": "Active",
+        "statusUsed": "Used"
+      }
+    },
     "acquiredFrom": {
       "starter": "Starter",
       "badge": "Badge",
@@ -383,6 +403,17 @@
         "disabled": "Jokers disabled. Already-granted slots are preserved.",
         "error": "Couldn't update the jokers flag."
       }
+    },
+    "display": {
+      "ariaLabel": "Active joker effects on this match",
+      "multiplier": "×{{factor}} points",
+      "safetyNet": "Safety net",
+      "boussoleLoading": "Compass: loading…",
+      "boussoleResult": "Compass: {{scoreA}}-{{scoreB}} ({{count}}×)",
+      "boussoleEmpty": "Compass: no predictions yet",
+      "challengeReceived": "Challenged by {{from}} · {{stakes}} pts at stake",
+      "doubleDownReceived": "Double Down from {{from}} · {{stakes}} pts at stake",
+      "unknownPlayer": "another player"
     },
     "consume": {
       "title": "Activate \"{{joker}}\"",
@@ -516,6 +547,18 @@
       },
       "chatMention": {
         "title": "Mention in chat"
+      },
+      "challengeReceived": {
+        "title": "You've been challenged",
+        "body": {
+          "challenge": "A player challenged you ({{stakes}} pts at stake).",
+          "doubleDown": "A player dared you to double down ({{stakes}} pts at stake).",
+          "generic": "A player challenged you ({{stakes}} pts at stake)."
+        }
+      },
+      "giftReceived": {
+        "title": "You received a joker",
+        "body": "A player gifted you a \"{{code}}\" joker."
       }
     },
     "errors": {

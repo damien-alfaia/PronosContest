@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 /**
- * Schémas Zod pour la feature notifications (Sprint 6.C).
+ * Schémas Zod pour la feature notifications (Sprints 6.C + 8.C.4).
  *
  * La table `public.notifications` stocke des notifications in-app
- * alimentées exclusivement par 4 triggers SECURITY DEFINER :
+ * alimentées exclusivement par des triggers SECURITY DEFINER :
  *
  *   - match_result         : match terminé dans une compétition où
  *                            l'user participe à au moins un concours
@@ -12,6 +12,9 @@ import { z } from 'zod';
  *   - concours_new_member  : un participant rejoint un concours dont
  *                            l'user est owner
  *   - chat_mention         : `@Prénom Nom` ou `@Prénom` dans le chat
+ *   - challenge_received   : un user t'a challengé (challenge ou
+ *                            double_down) sur un match donné
+ *   - gift_received        : un user t'a offert un joker via `gift`
  *
  * Chaque type a une forme de `payload` (jsonb) bien définie par son
  * trigger SQL. Côté front on exprime ça via une **union discriminée**
@@ -35,11 +38,24 @@ export const NOTIFICATION_TYPE_VALUES = [
   'badge_earned',
   'concours_new_member',
   'chat_mention',
+  'challenge_received',
+  'gift_received',
 ] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPE_VALUES)[number];
 
 export const CHAT_MENTION_MATCH_TYPES = ['full_name', 'first_name'] as const;
 export type ChatMentionMatchType = (typeof CHAT_MENTION_MATCH_TYPES)[number];
+
+/**
+ * Codes de joker transportés dans les payloads de notifications sociales
+ * (`challenge_received`, `gift_received`). On reste volontairement
+ * permissif au niveau TypeScript (`string`) : la valeur fait partie du
+ * catalogue SQL et l'UI sait déjà afficher le libellé via i18n. On
+ * n'introduit pas ici d'enum fermé pour ne pas ré-imposer une liste
+ * figée à chaque ajout de joker.
+ */
+export const CHALLENGE_JOKER_CODES = ['challenge', 'double_down'] as const;
+export type ChallengeJokerCode = (typeof CHALLENGE_JOKER_CODES)[number];
 
 // ------------------------------------------------------------------
 //  PAYLOADS (une forme par `type`)
@@ -111,6 +127,42 @@ export const chatMentionPayloadSchema = z.object({
 });
 export type ChatMentionPayload = z.infer<typeof chatMentionPayloadSchema>;
 
+/**
+ * Payload `challenge_received` — produit par le trigger
+ * `handle_notifications_on_joker_consumed` (Sprint 8.C.4) quand un user
+ * consomme un joker de catégorie `challenge` (`challenge` ou
+ * `double_down`) en te ciblant sur un match précis. `stakes` reproduit
+ * en payload la valeur numérique convenue par le RPC (5 pour challenge,
+ * 10 pour double_down) → l'UI peut afficher "il risque 5 pts" ou
+ * "10 pts" sans re-lookup du catalogue.
+ */
+export const challengeReceivedPayloadSchema = z.object({
+  concours_id: z.string().uuid(),
+  match_id: z.string().uuid(),
+  sender_id: z.string().uuid(),
+  joker_code: z.string().min(1),
+  stakes: z.number().int().nonnegative().nullable(),
+});
+export type ChallengeReceivedPayload = z.infer<
+  typeof challengeReceivedPayloadSchema
+>;
+
+/**
+ * Payload `gift_received` — produit par le trigger
+ * `handle_notifications_on_joker_consumed` (Sprint 8.C.4) quand un user
+ * consomme son slot `gift` en ton nom. Le slot offert est déjà présent
+ * dans ton inventaire au moment où tu reçois la notif (INSERT
+ * `acquired_from = 'gift'` fait en amont dans le RPC `use_joker`) : il
+ * n'y a donc pas d'action utilisateur à dérouler, la notif est purement
+ * informative.
+ */
+export const giftReceivedPayloadSchema = z.object({
+  concours_id: z.string().uuid(),
+  sender_id: z.string().uuid(),
+  gifted_joker_code: z.string().min(1),
+});
+export type GiftReceivedPayload = z.infer<typeof giftReceivedPayloadSchema>;
+
 // ------------------------------------------------------------------
 //  ROW (union discriminée par `type`)
 // ------------------------------------------------------------------
@@ -150,6 +202,16 @@ export const notificationSchema = z.discriminatedUnion('type', [
     type: z.literal('chat_mention'),
     payload: chatMentionPayloadSchema,
   }),
+  z.object({
+    ...notificationBaseShape,
+    type: z.literal('challenge_received'),
+    payload: challengeReceivedPayloadSchema,
+  }),
+  z.object({
+    ...notificationBaseShape,
+    type: z.literal('gift_received'),
+    payload: giftReceivedPayloadSchema,
+  }),
 ]);
 export type Notification = z.infer<typeof notificationSchema>;
 
@@ -160,6 +222,12 @@ export type ConcoursNewMemberNotification = Notification & {
   type: 'concours_new_member';
 };
 export type ChatMentionNotification = Notification & { type: 'chat_mention' };
+export type ChallengeReceivedNotification = Notification & {
+  type: 'challenge_received';
+};
+export type GiftReceivedNotification = Notification & {
+  type: 'gift_received';
+};
 
 // ------------------------------------------------------------------
 //  NORMALIZER

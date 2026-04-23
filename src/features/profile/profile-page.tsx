@@ -26,6 +26,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MyBadgesSection } from '@/features/badges/my-badges-section';
+import { HistoriqueJokersSection } from '@/features/jokers/historique-jokers-section';
 import { profileUpdateSchema, type ProfileUpdateInput } from '@/features/profile/schemas';
 import { useProfileQuery, useUpdateProfileMutation } from '@/features/profile/use-profile';
 import { useAuth } from '@/hooks/use-auth';
@@ -213,6 +214,8 @@ export const ProfilePage = () => {
       </Card>
 
       <MyBadgesSection userId={userId} />
+
+      <HistoriqueJokersSection userId={userId} />
     </section>
   );
 };

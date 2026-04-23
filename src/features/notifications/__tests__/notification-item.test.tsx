@@ -222,6 +222,134 @@ describe('<NotificationItem /> — titre/body par type', () => {
     expect(screen.getByText('Broadcast admin')).toBeInTheDocument();
     expect(screen.getByText('Service indispo à 23 h')).toBeInTheDocument();
   });
+
+  it('challenge_received (code = challenge) : body = "challenged / 5 pts"', () => {
+    const onMark = vi.fn();
+    const notif: Notification = {
+      id: UUID_A,
+      user_id: UUID_B,
+      type: 'challenge_received',
+      title: null,
+      body: null,
+      payload: {
+        concours_id: UUID_C,
+        match_id: UUID_A,
+        sender_id: UUID_B,
+        joker_code: 'challenge',
+        stakes: 5,
+      },
+      read_at: null,
+      created_at: '2026-04-21T11:59:00Z',
+    };
+
+    renderWithRouter(
+      <NotificationItem notification={notif} onMarkAsRead={onMark} />,
+    );
+    expect(
+      screen.getByText(i18n.t('notifications.types.challengeReceived.title')),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        i18n.t('notifications.types.challengeReceived.body.challenge', {
+          stakes: 5,
+        }),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('challenge_received (code = double_down) : body = "double_down / 10 pts"', () => {
+    const onMark = vi.fn();
+    const notif: Notification = {
+      id: UUID_A,
+      user_id: UUID_B,
+      type: 'challenge_received',
+      title: null,
+      body: null,
+      payload: {
+        concours_id: UUID_C,
+        match_id: UUID_A,
+        sender_id: UUID_B,
+        joker_code: 'double_down',
+        stakes: 10,
+      },
+      read_at: null,
+      created_at: '2026-04-21T11:59:00Z',
+    };
+
+    renderWithRouter(
+      <NotificationItem notification={notif} onMarkAsRead={onMark} />,
+    );
+    expect(
+      screen.getByText(
+        i18n.t('notifications.types.challengeReceived.body.doubleDown', {
+          stakes: 10,
+        }),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('challenge_received (stakes=null) : fallback sur 0 dans le body', () => {
+    const onMark = vi.fn();
+    const notif: Notification = {
+      id: UUID_A,
+      user_id: UUID_B,
+      type: 'challenge_received',
+      title: null,
+      body: null,
+      payload: {
+        concours_id: UUID_C,
+        match_id: UUID_A,
+        sender_id: UUID_B,
+        // Un code inconnu + stakes null tombent sur `.generic` avec 0
+        // comme fallback numérique.
+        joker_code: 'mystery_code',
+        stakes: null,
+      },
+      read_at: null,
+      created_at: '2026-04-21T11:59:00Z',
+    };
+
+    renderWithRouter(
+      <NotificationItem notification={notif} onMarkAsRead={onMark} />,
+    );
+    expect(
+      screen.getByText(
+        i18n.t('notifications.types.challengeReceived.body.generic', {
+          stakes: 0,
+        }),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('gift_received : title + body interpolant le code du joker offert', () => {
+    const onMark = vi.fn();
+    const notif: Notification = {
+      id: UUID_A,
+      user_id: UUID_B,
+      type: 'gift_received',
+      title: null,
+      body: null,
+      payload: {
+        concours_id: UUID_C,
+        sender_id: UUID_B,
+        gifted_joker_code: 'triple',
+      },
+      read_at: null,
+      created_at: '2026-04-21T11:59:00Z',
+    };
+
+    renderWithRouter(
+      <NotificationItem notification={notif} onMarkAsRead={onMark} />,
+    );
+    expect(
+      screen.getByText(i18n.t('notifications.types.giftReceived.title')),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        i18n.t('notifications.types.giftReceived.body', { code: 'triple' }),
+      ),
+    ).toBeInTheDocument();
+  });
 });
 
 // ------------------------------------------------------------------
@@ -426,6 +554,60 @@ describe('<NotificationItem /> — click', () => {
     });
     expect(screen.getByTestId('loc').textContent).toBe(
       `/app/concours/${UUID_C}/chat`,
+    );
+  });
+
+  it('challenge_received navigue vers /app/concours/:id/pronos', () => {
+    const notif: Notification = {
+      id: UUID_A,
+      user_id: UUID_B,
+      type: 'challenge_received',
+      title: null,
+      body: null,
+      payload: {
+        concours_id: UUID_C,
+        match_id: UUID_A,
+        sender_id: UUID_B,
+        joker_code: 'challenge',
+        stakes: 5,
+      },
+      read_at: null,
+      created_at: '2026-04-21T11:59:00Z',
+    };
+    renderWithRouter(
+      <NotificationItem notification={notif} onMarkAsRead={vi.fn()} />,
+    );
+    act(() => {
+      screen.getByRole('button').click();
+    });
+    expect(screen.getByTestId('loc').textContent).toBe(
+      `/app/concours/${UUID_C}/pronos`,
+    );
+  });
+
+  it('gift_received navigue vers /app/concours/:id (fiche concours)', () => {
+    const notif: Notification = {
+      id: UUID_A,
+      user_id: UUID_B,
+      type: 'gift_received',
+      title: null,
+      body: null,
+      payload: {
+        concours_id: UUID_C,
+        sender_id: UUID_B,
+        gifted_joker_code: 'cote_boost',
+      },
+      read_at: null,
+      created_at: '2026-04-21T11:59:00Z',
+    };
+    renderWithRouter(
+      <NotificationItem notification={notif} onMarkAsRead={vi.fn()} />,
+    );
+    act(() => {
+      screen.getByRole('button').click();
+    });
+    expect(screen.getByTestId('loc').textContent).toBe(
+      `/app/concours/${UUID_C}`,
     );
   });
 });

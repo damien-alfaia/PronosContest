@@ -8,6 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useConcoursDetailQuery } from '@/features/concours/use-concours';
+import type { IncomingChallengeRow } from '@/features/jokers/api';
+import type { UserJokerWithCatalog } from '@/features/jokers/schemas';
+import {
+  useIncomingChallengesInConcoursQuery,
+  useUserJokersInConcoursQuery,
+} from '@/features/jokers/use-jokers';
 import { useAuth } from '@/hooks/use-auth';
 import { getGroupColor } from '@/lib/group-colors';
 import { cn } from '@/lib/utils';
@@ -67,6 +73,40 @@ const isMatchLocked = (isoKickOff: string, nowMs: number): boolean =>
 const hasProno = (matchId: string, pronosByMatch: Map<string, Prono>): boolean =>
   pronosByMatch.has(matchId);
 
+/**
+ * Indexe une liste de `UserJokerWithCatalog` (slots `used` ciblant un
+ * match) par `used_on_match_id`. On retourne une `Map<matchId, UserJoker[]>`
+ * pour autoriser plusieurs jokers sur un même match (boussole + multiplier
+ * + safety_net sont cumulables — la SQL empêche seulement le stacking
+ * de deux multiplier ou deux challenge sur un match).
+ */
+const indexUsedJokersByMatch = (
+  jokers: UserJokerWithCatalog[],
+): Map<string, UserJokerWithCatalog[]> => {
+  const map = new Map<string, UserJokerWithCatalog[]>();
+  for (const uj of jokers) {
+    if (!uj.used_on_match_id) continue;
+    const key = uj.used_on_match_id;
+    const bucket = map.get(key);
+    if (bucket) bucket.push(uj);
+    else map.set(key, [uj]);
+  }
+  return map;
+};
+
+const indexIncomingChallengesByMatch = (
+  rows: IncomingChallengeRow[],
+): Map<string, IncomingChallengeRow[]> => {
+  const map = new Map<string, IncomingChallengeRow[]>();
+  for (const r of rows) {
+    const key = r.used_on_match_id;
+    const bucket = map.get(key);
+    if (bucket) bucket.push(r);
+    else map.set(key, [r]);
+  }
+  return map;
+};
+
 export const PronosGridPage = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
@@ -79,6 +119,22 @@ export const PronosGridPage = () => {
   const competitionId = concours?.competition_id;
   const matchsQuery = useMatchsQuery(competitionId);
   const myPronosQuery = useMyPronosInConcoursQuery(id);
+
+  // Sprint 8.C.1 : jokers consommés + challenges reçus. On gate via
+  // `jokers_enabled` sur le concours pour ne pas tirer de données
+  // inutiles quand le système de jokers est OFF. Le cast défensif
+  // `jokers_enabled?: boolean | null` reproduit celui de 8.A en
+  // attendant que `supabase gen types` ait été relancé côté user.
+  const jokersEnabled = Boolean(
+    (concours as { jokers_enabled?: boolean | null } | undefined)
+      ?.jokers_enabled,
+  );
+  const userJokersQuery = useUserJokersInConcoursQuery(userId, id);
+  const incomingChallengesQuery = useIncomingChallengesInConcoursQuery(
+    id,
+    userId,
+    { enabled: jokersEnabled },
+  );
 
   const [filter, setFilter] = useState<FilterMode>('all');
   const [groupFilter, setGroupFilter] = useState<string | null>(null);
@@ -96,6 +152,21 @@ export const PronosGridPage = () => {
   const pronosByMatch = useMemo(
     () => indexPronosByMatch(myPronosQuery.data ?? []),
     [myPronosQuery.data],
+  );
+
+  const usedJokersByMatch = useMemo(
+    () =>
+      indexUsedJokersByMatch(
+        (userJokersQuery.data ?? []).filter(
+          (uj) => uj.used_at !== null && uj.used_on_match_id !== null,
+        ),
+      ),
+    [userJokersQuery.data],
+  );
+
+  const incomingChallengesByMatch = useMemo(
+    () => indexIncomingChallengesByMatch(incomingChallengesQuery.data ?? []),
+    [incomingChallengesQuery.data],
   );
 
   // Base résolue : on écarte les placeholders KO (équipes non encore
@@ -313,6 +384,10 @@ export const PronosGridPage = () => {
                     existing={pronosByMatch.get(match.id)}
                     concoursId={id}
                     userId={userId}
+                    usedJokers={usedJokersByMatch.get(match.id) ?? []}
+                    incomingChallenges={
+                      incomingChallengesByMatch.get(match.id) ?? []
+                    }
                   />
                 ))}
               </div>

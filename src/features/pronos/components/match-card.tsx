@@ -8,6 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import type { IncomingChallengeRow } from '@/features/jokers/api';
+import { MatchJokersBadges } from '@/features/jokers/match-jokers-badges';
+import type { UserJokerWithCatalog } from '@/features/jokers/schemas';
 import { useCountdown } from '@/hooks/use-countdown';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 import { getGroupColor } from '@/lib/group-colors';
@@ -39,6 +42,17 @@ type Props = {
   userId: string | undefined;
   /** Désactive la saisie (ex : visiteur non-membre du concours). */
   disabled?: boolean;
+  /**
+   * Jokers consommés par l'utilisateur courant sur CE match.
+   * Pré-filtré par `PronosGridPage`. Optionnel — si le concours n'a
+   * pas activé les jokers, on passe un tableau vide (ou on omet la prop).
+   */
+  usedJokers?: UserJokerWithCatalog[];
+  /**
+   * Challenges reçus sur ce match (l'utilisateur courant est la cible
+   * d'un `challenge` / `double_down`). Pré-filtré par `PronosGridPage`.
+   */
+  incomingChallenges?: IncomingChallengeRow[];
 };
 
 const AUTO_SAVE_DELAY_MS = 600;
@@ -103,6 +117,8 @@ export const MatchCard = ({
   concoursId,
   userId,
   disabled = false,
+  usedJokers,
+  incomingChallenges,
 }: Props) => {
   const { t, i18n } = useTranslation();
   const countdown = useCountdown(match.kick_off_at);
@@ -274,6 +290,18 @@ export const MatchCard = ({
       </CardHeader>
 
       <CardContent className="flex flex-col gap-3 p-4 pt-2">
+        {/* Badges jokers (Sprint 8.C) : multiplier / safety_net /
+            boussole / challenges reçus. Le composant court-circuite si
+            les deux listes sont vides, donc pas besoin de conditionner
+            ici. On passe des tableaux par défaut pour rester compatible
+            avec les anciens callers qui n'ont pas encore câblé les jokers. */}
+        <MatchJokersBadges
+          usedByMe={usedJokers ?? []}
+          incomingChallenges={incomingChallenges ?? []}
+          concoursId={concoursId}
+          matchId={match.id}
+        />
+
         <form
           onSubmit={(e) => e.preventDefault()}
           className="flex items-center justify-between gap-3"

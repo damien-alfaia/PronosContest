@@ -28,6 +28,14 @@ vi.mock('@/features/pronos/use-pronos', () => ({
   }),
 }));
 
+// Le composant `MatchJokersBadges` utilise `useBoussoleScoreQuery` qui
+// requiert un QueryClient. On le stub par un composant vide : les tests
+// de cette suite valident la MatchCard elle-même, pas l'affichage des
+// badges jokers (couvert par `match-jokers-badges.test.tsx`).
+vi.mock('@/features/jokers/match-jokers-badges', () => ({
+  MatchJokersBadges: () => null,
+}));
+
 import type { Prono, ResolvedMatchWithEquipes } from '@/features/pronos/api';
 import { MatchCard } from '@/features/pronos/components/match-card';
 import { i18n } from '@/i18n';

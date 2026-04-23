@@ -1,13 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  CHALLENGE_JOKER_CODES,
   CHAT_MENTION_MATCH_TYPES,
   NOTIFICATION_TYPE_VALUES,
   type Notification,
   badgeEarnedPayloadSchema,
+  challengeReceivedPayloadSchema,
   chatMentionPayloadSchema,
   compareNotificationByRecent,
   concoursNewMemberPayloadSchema,
+  giftReceivedPayloadSchema,
   isUnread,
   matchResultPayloadSchema,
   normalizeNotification,
@@ -19,12 +22,14 @@ import {
 // ------------------------------------------------------------------
 
 describe('NOTIFICATION_TYPE_VALUES', () => {
-  it('expose exactement les 4 types supportés (Sprint 6.C)', () => {
+  it('expose les 6 types supportés (Sprint 6.C + 8.C.4)', () => {
     expect(NOTIFICATION_TYPE_VALUES).toEqual([
       'match_result',
       'badge_earned',
       'concours_new_member',
       'chat_mention',
+      'challenge_received',
+      'gift_received',
     ]);
   });
 });
@@ -32,6 +37,12 @@ describe('NOTIFICATION_TYPE_VALUES', () => {
 describe('CHAT_MENTION_MATCH_TYPES', () => {
   it('expose full_name + first_name (2-pass matching)', () => {
     expect(CHAT_MENTION_MATCH_TYPES).toEqual(['full_name', 'first_name']);
+  });
+});
+
+describe('CHALLENGE_JOKER_CODES', () => {
+  it('expose challenge + double_down (catégorie challenge)', () => {
+    expect(CHALLENGE_JOKER_CODES).toEqual(['challenge', 'double_down']);
   });
 });
 
@@ -159,6 +170,103 @@ describe('concoursNewMemberPayloadSchema', () => {
   });
 });
 
+describe('challengeReceivedPayloadSchema', () => {
+  it('accepte un payload challenge avec stakes=5', () => {
+    const ok = challengeReceivedPayloadSchema.safeParse({
+      concours_id: UUID_A,
+      match_id: UUID_B,
+      sender_id: UUID_C,
+      joker_code: 'challenge',
+      stakes: 5,
+    });
+    expect(ok.success).toBe(true);
+  });
+
+  it('accepte un payload double_down avec stakes=10', () => {
+    const ok = challengeReceivedPayloadSchema.safeParse({
+      concours_id: UUID_A,
+      match_id: UUID_B,
+      sender_id: UUID_C,
+      joker_code: 'double_down',
+      stakes: 10,
+    });
+    expect(ok.success).toBe(true);
+  });
+
+  it('accepte stakes null (payload malformé côté SQL, défense en profondeur)', () => {
+    const ok = challengeReceivedPayloadSchema.safeParse({
+      concours_id: UUID_A,
+      match_id: UUID_B,
+      sender_id: UUID_C,
+      joker_code: 'challenge',
+      stakes: null,
+    });
+    expect(ok.success).toBe(true);
+  });
+
+  it('rejette un match_id non-UUID', () => {
+    const ko = challengeReceivedPayloadSchema.safeParse({
+      concours_id: UUID_A,
+      match_id: 'not-a-uuid',
+      sender_id: UUID_C,
+      joker_code: 'challenge',
+      stakes: 5,
+    });
+    expect(ko.success).toBe(false);
+  });
+
+  it('rejette stakes négatif', () => {
+    const ko = challengeReceivedPayloadSchema.safeParse({
+      concours_id: UUID_A,
+      match_id: UUID_B,
+      sender_id: UUID_C,
+      joker_code: 'challenge',
+      stakes: -1,
+    });
+    expect(ko.success).toBe(false);
+  });
+
+  it('rejette joker_code vide', () => {
+    const ko = challengeReceivedPayloadSchema.safeParse({
+      concours_id: UUID_A,
+      match_id: UUID_B,
+      sender_id: UUID_C,
+      joker_code: '',
+      stakes: 5,
+    });
+    expect(ko.success).toBe(false);
+  });
+});
+
+describe('giftReceivedPayloadSchema', () => {
+  it('accepte un payload valide', () => {
+    const ok = giftReceivedPayloadSchema.safeParse({
+      concours_id: UUID_A,
+      sender_id: UUID_B,
+      gifted_joker_code: 'triple',
+    });
+    expect(ok.success).toBe(true);
+  });
+
+  it('rejette concours_id non-UUID', () => {
+    const ko = giftReceivedPayloadSchema.safeParse({
+      concours_id: 'x',
+      sender_id: UUID_B,
+      gifted_joker_code: 'triple',
+    });
+    expect(ko.success).toBe(false);
+  });
+
+  it('rejette gifted_joker_code vide', () => {
+    const ko = giftReceivedPayloadSchema.safeParse({
+      concours_id: UUID_A,
+      sender_id: UUID_B,
+      gifted_joker_code: '',
+    });
+    expect(ko.success).toBe(false);
+  });
+});
+
 describe('chatMentionPayloadSchema', () => {
   it('accepte match_type = full_name', () => {
     const ok = chatMentionPayloadSchema.safeParse({
@@ -263,6 +371,49 @@ describe('notificationSchema (union discriminée sur `type`)', () => {
       ...baseFields,
       type: 'unknown_type',
       payload: {},
+    });
+    expect(ko.success).toBe(false);
+  });
+
+  it('accepte une notif challenge_received', () => {
+    const ok = notificationSchema.safeParse({
+      ...baseFields,
+      type: 'challenge_received',
+      payload: {
+        concours_id: UUID_A,
+        match_id: UUID_B,
+        sender_id: UUID_C,
+        joker_code: 'double_down',
+        stakes: 10,
+      },
+    });
+    expect(ok.success).toBe(true);
+  });
+
+  it('accepte une notif gift_received', () => {
+    const ok = notificationSchema.safeParse({
+      ...baseFields,
+      type: 'gift_received',
+      payload: {
+        concours_id: UUID_A,
+        sender_id: UUID_B,
+        gifted_joker_code: 'triple',
+      },
+    });
+    expect(ok.success).toBe(true);
+  });
+
+  it('rejette un gift_received avec match_id (payload du mauvais type)', () => {
+    const ko = notificationSchema.safeParse({
+      ...baseFields,
+      type: 'gift_received',
+      payload: {
+        concours_id: UUID_A,
+        match_id: UUID_B,
+        sender_id: UUID_C,
+        joker_code: 'challenge',
+        stakes: 5,
+      },
     });
     expect(ko.success).toBe(false);
   });
@@ -376,6 +527,71 @@ describe('normalizeNotification', () => {
       created_at: '2026-04-20T12:00:00Z',
     });
     expect(out?.type).toBe('match_result');
+  });
+
+  it('accepte une challenge_received et préserve stakes', () => {
+    const out = normalizeNotification({
+      id: UUID_A,
+      user_id: UUID_B,
+      type: 'challenge_received',
+      title: null,
+      body: null,
+      payload: {
+        concours_id: UUID_A,
+        match_id: UUID_B,
+        sender_id: UUID_C,
+        joker_code: 'challenge',
+        stakes: 5,
+      },
+      read_at: null,
+      created_at: '2026-04-29T12:00:00Z',
+    });
+    expect(out?.type).toBe('challenge_received');
+    if (out?.type === 'challenge_received') {
+      expect(out.payload.stakes).toBe(5);
+      expect(out.payload.joker_code).toBe('challenge');
+    }
+  });
+
+  it('accepte une gift_received et préserve gifted_joker_code', () => {
+    const out = normalizeNotification({
+      id: UUID_A,
+      user_id: UUID_B,
+      type: 'gift_received',
+      title: null,
+      body: null,
+      payload: {
+        concours_id: UUID_A,
+        sender_id: UUID_C,
+        gifted_joker_code: 'triple',
+      },
+      read_at: null,
+      created_at: '2026-04-29T12:00:00Z',
+    });
+    expect(out?.type).toBe('gift_received');
+    if (out?.type === 'gift_received') {
+      expect(out.payload.gifted_joker_code).toBe('triple');
+    }
+  });
+
+  it('retourne null pour une challenge_received sans stakes', () => {
+    // La clé `stakes` est requise par le schéma (nullable, mais présente).
+    const out = normalizeNotification({
+      id: UUID_A,
+      user_id: UUID_B,
+      type: 'challenge_received',
+      title: null,
+      body: null,
+      payload: {
+        concours_id: UUID_A,
+        match_id: UUID_B,
+        sender_id: UUID_C,
+        joker_code: 'challenge',
+      },
+      read_at: null,
+      created_at: '2026-04-29T12:00:00Z',
+    });
+    expect(out).toBeNull();
   });
 
   it('accepte un chat_mention avec match_type first_name', () => {

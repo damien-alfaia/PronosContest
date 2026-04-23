@@ -1,9 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import { i18n } from '@/i18n';
-
 import { OfflineBanner } from '@/features/pwa/offline-banner';
+import { i18n } from '@/i18n';
 
 const setNavigatorOnline = (value: boolean) => {
   Object.defineProperty(window.navigator, 'onLine', {

@@ -30,7 +30,16 @@ const makeBuilder = () => {
       return builder;
     };
 
-  for (const op of ['select', 'eq', 'is', 'order', 'limit', 'in', 'update']) {
+  for (const op of [
+    'select',
+    'eq',
+    'is',
+    'not',
+    'order',
+    'limit',
+    'in',
+    'update',
+  ]) {
     builder[op] = chain(op);
   }
 
@@ -59,8 +68,11 @@ vi.mock('@/lib/supabase', () => {
 import {
   consumeJoker,
   countUserOwnedJokersInConcours,
+  getBoussoleMostCommonScore,
   listConcoursParticipantsForPicker,
+  listIncomingChallengesInConcours,
   listJokersCatalog,
+  listUserJokersHistory,
   listUserJokersInConcours,
   setConcoursJokersEnabled,
 } from '@/features/jokers/api';
@@ -521,5 +533,305 @@ describe('listConcoursParticipantsForPicker', () => {
     await expect(
       listConcoursParticipantsForPicker(CONCOURS),
     ).rejects.toMatchObject({ code: '42501' });
+  });
+});
+
+// ==================================================================
+//  getBoussoleMostCommonScore (Sprint 8.C)
+// ==================================================================
+
+describe('getBoussoleMostCommonScore', () => {
+  const MATCH = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
+  it('appelle rpc("boussole_most_common_score", ...)', async () => {
+    mockRpcResponse = {
+      data: { score_a: 1, score_b: 0, count: 3 },
+      error: null,
+    };
+    await getBoussoleMostCommonScore(CONCOURS, MATCH);
+
+    const rpc = calls.find((c) => c.op === 'rpc');
+    expect(rpc?.args[0]).toBe('boussole_most_common_score');
+    expect(rpc?.args[1]).toMatchObject({
+      p_concours_id: CONCOURS,
+      p_match_id: MATCH,
+    });
+  });
+
+  it('retourne le shape {score_a, score_b, count} si valide', async () => {
+    mockRpcResponse = {
+      data: { score_a: 2, score_b: 1, count: 5 },
+      error: null,
+    };
+    const res = await getBoussoleMostCommonScore(CONCOURS, MATCH);
+    expect(res).toEqual({ score_a: 2, score_b: 1, count: 5 });
+  });
+
+  it('retourne null si la RPC renvoie null (pas de prono)', async () => {
+    mockRpcResponse = { data: null, error: null };
+    const res = await getBoussoleMostCommonScore(CONCOURS, MATCH);
+    expect(res).toBeNull();
+  });
+
+  it('retourne null si la payload ne respecte pas le schéma', async () => {
+    mockRpcResponse = {
+      data: { score_a: 'bad', score_b: 0, count: 1 },
+      error: null,
+    };
+    const res = await getBoussoleMostCommonScore(CONCOURS, MATCH);
+    expect(res).toBeNull();
+  });
+
+  it('propage une erreur SQL', async () => {
+    mockRpcResponse = {
+      data: null,
+      error: { code: '42501', message: 'rls' },
+    };
+    await expect(
+      getBoussoleMostCommonScore(CONCOURS, MATCH),
+    ).rejects.toMatchObject({ code: '42501' });
+  });
+});
+
+// ==================================================================
+//  listIncomingChallengesInConcours (Sprint 8.C)
+// ==================================================================
+
+describe('listIncomingChallengesInConcours', () => {
+  const ME = '99999999-9999-9999-9999-999999999999';
+  const FROM_USER = '88888888-8888-8888-8888-888888888888';
+  const MATCH = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
+  const SLOT_CH = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
+
+  const validRow = {
+    id: SLOT_CH,
+    user_id: FROM_USER,
+    used_on_match_id: MATCH,
+    used_at: '2026-04-27T12:00:00Z',
+    used_payload: { stakes: 5 },
+    joker_code: 'challenge',
+    joker: { code: 'challenge', category: 'challenge' },
+    profile: {
+      id: FROM_USER,
+      prenom: 'Bob',
+      nom: 'Dupont',
+      avatar_url: null,
+    },
+  };
+
+  it('requête user_jokers avec eq concours_id + target + not null used_at/match_id', async () => {
+    mockResponse = { data: [], error: null };
+    await listIncomingChallengesInConcours(CONCOURS, ME);
+
+    expect(
+      calls.some((c) => c.op === 'from' && c.args[0] === 'user_jokers'),
+    ).toBe(true);
+
+    const selects = calls.filter((c) => c.op === 'select');
+    expect(selects[0]?.args[0]).toMatch(/joker:jokers/);
+    expect(selects[0]?.args[0]).toMatch(/profile:profiles/);
+
+    const eqs = calls.filter((c) => c.op === 'eq');
+    expect(eqs[0]).toMatchObject({ args: ['concours_id', CONCOURS] });
+    expect(eqs[1]).toMatchObject({ args: ['used_on_target_user_id', ME] });
+
+    const nots = calls.filter((c) => c.op === 'not');
+    expect(nots[0]).toMatchObject({ args: ['used_at', 'is', null] });
+    expect(nots[1]).toMatchObject({ args: ['used_on_match_id', 'is', null] });
+  });
+
+  it('normalise une ligne challenge valide avec profile objet', async () => {
+    mockResponse = { data: [validRow], error: null };
+    const rows = await listIncomingChallengesInConcours(CONCOURS, ME);
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      id: SLOT_CH,
+      joker_code: 'challenge',
+      joker_category: 'challenge',
+      used_on_match_id: MATCH,
+      from_user_id: FROM_USER,
+      from_prenom: 'Bob',
+      from_nom: 'Dupont',
+    });
+    expect(rows[0]?.used_payload).toEqual({ stakes: 5 });
+  });
+
+  it('unwrap le profile livré en tableau (types générés défensifs)', async () => {
+    mockResponse = {
+      data: [{ ...validRow, profile: [validRow.profile] }],
+      error: null,
+    };
+    const rows = await listIncomingChallengesInConcours(CONCOURS, ME);
+    expect(rows[0]?.from_prenom).toBe('Bob');
+  });
+
+  it('filtre les lignes hors catégorie challenge', async () => {
+    mockResponse = {
+      data: [
+        { ...validRow, joker: { code: 'double', category: 'boost' } },
+        validRow,
+      ],
+      error: null,
+    };
+    const rows = await listIncomingChallengesInConcours(CONCOURS, ME);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.joker_category).toBe('challenge');
+  });
+
+  it('filtre les lignes incomplètes (user_id / match / used_at manquants)', async () => {
+    mockResponse = {
+      data: [
+        { ...validRow, user_id: null },
+        { ...validRow, used_on_match_id: null },
+        { ...validRow, used_at: null },
+        validRow,
+      ],
+      error: null,
+    };
+    const rows = await listIncomingChallengesInConcours(CONCOURS, ME);
+    expect(rows).toHaveLength(1);
+  });
+
+  it('coerce used_payload non-objet en null', async () => {
+    mockResponse = {
+      data: [{ ...validRow, used_payload: 'not-an-object' }],
+      error: null,
+    };
+    const rows = await listIncomingChallengesInConcours(CONCOURS, ME);
+    expect(rows[0]?.used_payload).toBeNull();
+  });
+
+  it('retourne [] si data null', async () => {
+    mockResponse = { data: null, error: null };
+    const rows = await listIncomingChallengesInConcours(CONCOURS, ME);
+    expect(rows).toEqual([]);
+  });
+
+  it('propage une erreur RLS 42501', async () => {
+    mockResponse = { data: null, error: { code: '42501', message: 'rls' } };
+    await expect(
+      listIncomingChallengesInConcours(CONCOURS, ME),
+    ).rejects.toMatchObject({ code: '42501' });
+  });
+});
+
+// ==================================================================
+//  listUserJokersHistory (Sprint 8.C.3 — profil cross-concours)
+// ==================================================================
+
+describe('listUserJokersHistory', () => {
+  const CONCOURS_A = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  const CONCOURS_B = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
+
+  const makeRaw = (overrides: Record<string, unknown> = {}) => ({
+    ...validUserJokerRaw,
+    concours_id: CONCOURS_A,
+    joker: validCatalogRaw,
+    concours: { id: CONCOURS_A, nom: 'Concours A' },
+    ...overrides,
+  });
+
+  it('from("user_jokers") + select join joker+concours + eq user_id + order used_at desc nullsFirst:false + order acquired_at desc', async () => {
+    mockResponse = { data: [], error: null };
+    await listUserJokersHistory(USER);
+
+    expect(
+      calls.some((c) => c.op === 'from' && c.args[0] === 'user_jokers'),
+    ).toBe(true);
+
+    const selects = calls.filter((c) => c.op === 'select');
+    expect(selects[0]?.args[0]).toMatch(/joker:jokers/);
+    expect(selects[0]?.args[0]).toMatch(/concours:concours/);
+
+    const eqs = calls.filter((c) => c.op === 'eq');
+    expect(eqs).toHaveLength(1);
+    expect(eqs[0]).toMatchObject({ args: ['user_id', USER] });
+
+    const orders = calls.filter((c) => c.op === 'order');
+    expect(orders[0]).toMatchObject({
+      args: ['used_at', { ascending: false, nullsFirst: false }],
+    });
+    expect(orders[1]).toMatchObject({
+      args: ['acquired_at', { ascending: false }],
+    });
+  });
+
+  it('unwrap le concours joint comme objet et expose id + nom', async () => {
+    mockResponse = { data: [makeRaw()], error: null };
+
+    const rows = await listUserJokersHistory(USER);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      id: SLOT,
+      joker: { code: 'double' },
+      concours: { id: CONCOURS_A, nom: 'Concours A' },
+    });
+  });
+
+  it('unwrap le concours livré en tableau (types générés défensifs)', async () => {
+    mockResponse = {
+      data: [
+        makeRaw({
+          concours: [{ id: CONCOURS_B, nom: 'Concours B' }],
+          concours_id: CONCOURS_B,
+        }),
+      ],
+      error: null,
+    };
+
+    const rows = await listUserJokersHistory(USER);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.concours).toMatchObject({
+      id: CONCOURS_B,
+      nom: 'Concours B',
+    });
+  });
+
+  it('filtre les lignes avec concours joint absent / id manquant', async () => {
+    mockResponse = {
+      data: [
+        makeRaw({ concours: null }),
+        makeRaw({ concours: { id: null, nom: 'X' } }),
+        makeRaw({ concours: { id: CONCOURS_A } }), // pas de nom
+        makeRaw({ id: 'dddddddd-dddd-dddd-dddd-dddddddddddd' }), // OK
+      ],
+      error: null,
+    };
+
+    const rows = await listUserJokersHistory(USER);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.id).toBe('dddddddd-dddd-dddd-dddd-dddddddddddd');
+  });
+
+  it('filtre aussi les lignes avec joker catalogue cassé', async () => {
+    mockResponse = {
+      data: [
+        makeRaw({ joker: null }), // cassée
+        makeRaw({
+          id: 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee',
+          joker: { ...validCatalogRaw, libelle: { fr: 'only-fr' } }, // cassée : pas d'en
+        }),
+        makeRaw({ id: 'ffffffff-ffff-ffff-ffff-ffffffffffff' }), // OK
+      ],
+      error: null,
+    };
+
+    const rows = await listUserJokersHistory(USER);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.id).toBe('ffffffff-ffff-ffff-ffff-ffffffffffff');
+  });
+
+  it('retourne [] si data null', async () => {
+    mockResponse = { data: null, error: null };
+    const rows = await listUserJokersHistory(USER);
+    expect(rows).toEqual([]);
+  });
+
+  it('propage une erreur RLS 42501', async () => {
+    mockResponse = { data: null, error: { code: '42501', message: 'rls' } };
+    await expect(listUserJokersHistory(USER)).rejects.toMatchObject({
+      code: '42501',
+    });
   });
 });

@@ -44,6 +44,8 @@ type ClassementState = {
     user_id: string;
     rang: number;
     points: number;
+    prono_points: number;
+    challenge_delta: number;
     pronos_joues: number;
     pronos_gagnes: number;
     pronos_exacts: number;
@@ -168,6 +170,8 @@ describe('<ConcoursClassementPage /> rendu', () => {
         user_id: USER,
         rang: 1,
         points: 42,
+        prono_points: 42,
+        challenge_delta: 0,
         pronos_joues: 10,
         pronos_gagnes: 8,
         pronos_exacts: 3,
@@ -180,6 +184,8 @@ describe('<ConcoursClassementPage /> rendu', () => {
         user_id: OTHER,
         rang: 2,
         points: 30,
+        prono_points: 30,
+        challenge_delta: 0,
         pronos_joues: 10,
         pronos_gagnes: 5,
         pronos_exacts: 1,
@@ -211,6 +217,8 @@ describe('<ConcoursClassementPage /> rendu', () => {
         user_id: USER,
         rang: 1,
         points: 81,
+        prono_points: 81,
+        challenge_delta: 0,
         pronos_joues: 3,
         pronos_gagnes: 3,
         pronos_exacts: 2,
@@ -236,6 +244,8 @@ describe('<ConcoursClassementPage /> rendu', () => {
         user_id: USER,
         rang: 1,
         points: 0,
+        prono_points: 0,
+        challenge_delta: 0,
         pronos_joues: 0,
         pronos_gagnes: 0,
         pronos_exacts: 0,
@@ -258,6 +268,8 @@ describe('<ConcoursClassementPage /> rendu', () => {
         user_id: USER,
         rang: 1,
         points: 0,
+        prono_points: 0,
+        challenge_delta: 0,
         pronos_joues: 0,
         pronos_gagnes: 0,
         pronos_exacts: 0,
@@ -268,6 +280,168 @@ describe('<ConcoursClassementPage /> rendu', () => {
     ];
     renderPage();
     expect(screen.getByText('?')).toBeInTheDocument();
+  });
+});
+
+// ------------------------------------------------------------------
+//  Décomposition prono_points + challenge_delta (Sprint 8.C.2)
+// ------------------------------------------------------------------
+
+describe('<ConcoursClassementPage /> décomposition jokers', () => {
+  it('affiche un badge challenge_delta positif sur la bannière "Ma position"', () => {
+    setConcours(true);
+    classementState.data = [
+      {
+        concours_id: CONCOURS,
+        user_id: USER,
+        rang: 1,
+        points: 55,
+        prono_points: 45,
+        challenge_delta: 10,
+        pronos_joues: 8,
+        pronos_gagnes: 6,
+        pronos_exacts: 2,
+        prenom: 'Alice',
+        nom: 'Martin',
+        avatar_url: null,
+      },
+    ];
+    renderPage();
+
+    // Bannière "Ma position" contient bien le delta signé
+    expect(screen.getByText(/challenges\s*:\s*\+10/i)).toBeInTheDocument();
+  });
+
+  it('affiche un badge challenge_delta négatif sur la bannière "Ma position"', () => {
+    setConcours(true);
+    classementState.data = [
+      {
+        concours_id: CONCOURS,
+        user_id: USER,
+        rang: 2,
+        points: 20,
+        prono_points: 25,
+        challenge_delta: -5,
+        pronos_joues: 5,
+        pronos_gagnes: 3,
+        pronos_exacts: 1,
+        prenom: 'Alice',
+        nom: 'Martin',
+        avatar_url: null,
+      },
+    ];
+    renderPage();
+
+    // Signe "-" déjà intégré au nombre côté int → pas de "+"
+    expect(screen.getByText(/challenges\s*:\s*-5/i)).toBeInTheDocument();
+  });
+
+  it('masque le badge challenge_delta sur la bannière quand delta = 0', () => {
+    setConcours(true);
+    classementState.data = [
+      {
+        concours_id: CONCOURS,
+        user_id: USER,
+        rang: 1,
+        points: 30,
+        prono_points: 30,
+        challenge_delta: 0,
+        pronos_joues: 5,
+        pronos_gagnes: 4,
+        pronos_exacts: 2,
+        prenom: 'Alice',
+        nom: 'Martin',
+        avatar_url: null,
+      },
+    ];
+    renderPage();
+
+    expect(screen.getByText(/ma position/i)).toBeInTheDocument();
+    // Aucun badge "Challenges : …" ne doit apparaître.
+    expect(screen.queryByText(/challenges\s*:/i)).not.toBeInTheDocument();
+  });
+
+  it('affiche la colonne "Détail" avec prono_points + delta signé', () => {
+    setConcours(true);
+    classementState.data = [
+      {
+        concours_id: CONCOURS,
+        user_id: USER,
+        rang: 1,
+        points: 40,
+        prono_points: 45,
+        challenge_delta: -5,
+        pronos_joues: 6,
+        pronos_gagnes: 5,
+        pronos_exacts: 2,
+        prenom: 'Alice',
+        nom: 'Martin',
+        avatar_url: null,
+      },
+    ];
+    renderPage();
+
+    // En-tête de colonne "Détail"
+    expect(
+      screen.getByRole('columnheader', { name: /détail/i }),
+    ).toBeInTheDocument();
+
+    // La ligne "Ta ligne" contient prono_points=45 et le delta signé -5.
+    const meRow = screen.getByRole('row', { name: /ta ligne/i });
+    // prono_points brut
+    expect(within(meRow).getByText('45')).toBeInTheDocument();
+    // badge delta signé — le signe "-" est déjà inclus dans la String
+    expect(within(meRow).getByText('-5')).toBeInTheDocument();
+  });
+
+  it('affiche "±0" dans la colonne Détail quand challenge_delta = 0', () => {
+    setConcours(true);
+    classementState.data = [
+      {
+        concours_id: CONCOURS,
+        user_id: USER,
+        rang: 1,
+        points: 40,
+        prono_points: 40,
+        challenge_delta: 0,
+        pronos_joues: 5,
+        pronos_gagnes: 4,
+        pronos_exacts: 2,
+        prenom: 'Alice',
+        nom: 'Martin',
+        avatar_url: null,
+      },
+    ];
+    renderPage();
+
+    const meRow = screen.getByRole('row', { name: /ta ligne/i });
+    // Placeholder ±0 pour les users sans interaction challenge
+    expect(within(meRow).getByText('±0')).toBeInTheDocument();
+  });
+
+  it('préserve le signe + sur un delta challenge positif côté colonne Détail', () => {
+    setConcours(true);
+    classementState.data = [
+      {
+        concours_id: CONCOURS,
+        user_id: USER,
+        rang: 1,
+        points: 55,
+        prono_points: 45,
+        challenge_delta: 10,
+        pronos_joues: 6,
+        pronos_gagnes: 5,
+        pronos_exacts: 2,
+        prenom: 'Alice',
+        nom: 'Martin',
+        avatar_url: null,
+      },
+    ];
+    renderPage();
+
+    const meRow = screen.getByRole('row', { name: /ta ligne/i });
+    // Badge affiche "+10" (pas "10")
+    expect(within(meRow).getByText('+10')).toBeInTheDocument();
   });
 });
 

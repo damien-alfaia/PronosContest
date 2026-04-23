@@ -130,6 +130,64 @@ describe('listClassement', () => {
     expect(rows).toHaveLength(1);
     expect(rows[0]?.rang).toBe(1);
     expect(rows[0]?.points).toBe(0);
+    // Fallback rétrocompat : pas de prono_points / challenge_delta dans
+    // la vue legacy → on coalesce proprement.
+    expect(rows[0]?.prono_points).toBe(0);
+    expect(rows[0]?.challenge_delta).toBe(0);
+  });
+
+  it('expose prono_points et challenge_delta quand la vue les renvoie', async () => {
+    mockResponse = {
+      data: [
+        {
+          concours_id: CONCOURS,
+          user_id: USER,
+          rang: 1,
+          points: 47,
+          prono_points: 52,
+          challenge_delta: -5,
+          pronos_joues: 10,
+          pronos_gagnes: 7,
+          pronos_exacts: 3,
+          prenom: 'Alice',
+          nom: 'Martin',
+          avatar_url: null,
+        },
+      ],
+      error: null,
+    };
+
+    const rows = await listClassement(CONCOURS);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.points).toBe(47);
+    expect(rows[0]?.prono_points).toBe(52);
+    expect(rows[0]?.challenge_delta).toBe(-5);
+  });
+
+  it('supporte un challenge_delta positif (gagné net en challenges)', async () => {
+    mockResponse = {
+      data: [
+        {
+          concours_id: CONCOURS,
+          user_id: USER,
+          rang: 1,
+          points: 55,
+          prono_points: 45,
+          challenge_delta: 10,
+          pronos_joues: 8,
+          pronos_gagnes: 6,
+          pronos_exacts: 2,
+          prenom: 'Alice',
+          nom: 'Martin',
+          avatar_url: null,
+        },
+      ],
+      error: null,
+    };
+
+    const rows = await listClassement(CONCOURS);
+    expect(rows[0]?.challenge_delta).toBe(10);
+    expect(rows[0]?.prono_points).toBe(45);
   });
 
   it('ignore les lignes invalides (user_id manquant)', async () => {

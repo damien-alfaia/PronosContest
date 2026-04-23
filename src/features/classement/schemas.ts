@@ -28,12 +28,25 @@ import { z } from 'zod';
  * `prenom` / `nom` / `avatar_url` restent nullable :
  *   - un profil peut exister sans avoir rempli prenom / nom,
  *   - l'avatar est optionnel.
+ *
+ * Décomposition Sprint 8.B.3 / 8.C.2 :
+ *   - `prono_points` : somme des `points_final` (toujours ≥ 0, inclut
+ *     les effets `double`/`triple`/`safety_net` côté SQL).
+ *   - `challenge_delta` : somme algébrique des transferts challenge /
+ *     double_down (`> 0` si l'user a gagné net, `< 0` sinon, `0` si
+ *     aucune interaction).
+ *   - `points = prono_points + challenge_delta` (peut théoriquement être
+ *     < 0 si les deltas négatifs excèdent les pronos_points, la vue
+ *     n'applique pas de floor). On garde donc `points` sans min côté
+ *     Zod (int signé).
  */
 export const classementRowSchema = z.object({
   concours_id: z.string().uuid(),
   user_id: z.string().uuid(),
   rang: z.number().int().min(1),
-  points: z.number().int().min(0),
+  points: z.number().int(),
+  prono_points: z.number().int().min(0),
+  challenge_delta: z.number().int(),
   pronos_joues: z.number().int().min(0),
   pronos_gagnes: z.number().int().min(0),
   pronos_exacts: z.number().int().min(0),
@@ -50,12 +63,20 @@ export type ClassementRow = z.infer<typeof classementRowSchema>;
  *
  * Retourne `null` si la ligne est inutilisable (pas de user_id /
  * concours_id) pour qu'on puisse la filtrer côté api.
+ *
+ * `prono_points` et `challenge_delta` ont été ajoutés par la migration
+ * 8.B.3. On les accepte `undefined` (rétrocompat avec une vue non
+ * régénérée localement ou un `gen types` pas encore rejoué) : dans ce
+ * cas, on coalesce `prono_points = points` et `challenge_delta = 0`
+ * pour que la UI continue d'afficher un classement cohérent.
  */
 export const normalizeClassementRow = (raw: {
   concours_id: string | null;
   user_id: string | null;
   rang: number | null;
   points: number | null;
+  prono_points?: number | null;
+  challenge_delta?: number | null;
   pronos_joues: number | null;
   pronos_gagnes: number | null;
   pronos_exacts: number | null;
@@ -65,11 +86,18 @@ export const normalizeClassementRow = (raw: {
 }): ClassementRow | null => {
   if (!raw.concours_id || !raw.user_id) return null;
 
+  const points = raw.points ?? 0;
+  const prono_points =
+    raw.prono_points ?? Math.max(0, points - (raw.challenge_delta ?? 0));
+  const challenge_delta = raw.challenge_delta ?? 0;
+
   const candidate = {
     concours_id: raw.concours_id,
     user_id: raw.user_id,
     rang: raw.rang ?? 1,
-    points: raw.points ?? 0,
+    points,
+    prono_points,
+    challenge_delta,
     pronos_joues: raw.pronos_joues ?? 0,
     pronos_gagnes: raw.pronos_gagnes ?? 0,
     pronos_exacts: raw.pronos_exacts ?? 0,

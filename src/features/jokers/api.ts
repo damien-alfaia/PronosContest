@@ -1,9 +1,11 @@
 import { supabase } from '@/lib/supabase';
 
 import {
+  type BoussoleResult,
   type JokerCatalogRow,
   type UserJokerRow,
   type UserJokerWithCatalog,
+  boussoleResultSchema,
   normalizeJokerCatalogRow,
   normalizeUserJokerRow,
   normalizeUserJokerWithCatalog,
@@ -136,6 +138,213 @@ export const countUserOwnedJokersInConcours = async (
 };
 
 // ------------------------------------------------------------------
+//  HISTORIQUE USER (cross-concours, pour la page profil)
+// ------------------------------------------------------------------
+
+/**
+ * Ligne d'historique : `user_jokers` + catalogue `jokers` + nom du
+ * concours parent. Sert à la section "Historique jokers" sur la page
+ * profil (Sprint 8.C.3), qui affiche TOUS les slots d'un user toutes
+ * concours confondues, triés par activité la plus récente.
+ */
+export type UserJokerHistoryRow = UserJokerWithCatalog & {
+  concours: {
+    id: string;
+    nom: string;
+  };
+};
+
+/**
+ * Liste TOUS les slots `user_jokers` d'un user, jointés avec le catalogue
+ * `jokers` ET avec le concours parent (pour afficher le nom).
+ *
+ * RLS :
+ *   - `user_jokers_select_self_or_same_concours` autorise lecture self.
+ *   - `concours` — la policy `concours_select_participant_or_public`
+ *     (Sprint 2) laisse passer toute ligne où l'user est participant,
+ *     ce qui est toujours le cas ici (pour avoir un user_joker il faut
+ *     avoir été participant d'un concours).
+ *
+ * Tri server-side :
+ *   - `used_at desc nulls last` : les slots utilisés récemment en premier,
+ *     puis les slots actifs (used_at null).
+ *   - `acquired_at desc` : tie-break dans chaque bucket.
+ *
+ * Le tri client-side final (`compareUserJokerByLastActivity`) réassemble
+ * une timeline par activité la plus récente (max(used_at, acquired_at))
+ * pour que la UI reste cohérente quel que soit l'état d'un slot.
+ */
+export const listUserJokersHistory = async (
+  userId: string,
+): Promise<UserJokerHistoryRow[]> => {
+  const { data, error } = await supabase
+    .from('user_jokers')
+    .select(
+      `
+        id,
+        user_id,
+        concours_id,
+        joker_code,
+        acquired_from,
+        acquired_at,
+        used_at,
+        used_on_match_id,
+        used_on_target_user_id,
+        used_payload,
+        joker:jokers (
+          code,
+          category,
+          libelle,
+          description,
+          icon,
+          sort_order
+        ),
+        concours:concours (
+          id,
+          nom
+        )
+      `,
+    )
+    .eq('user_id', userId)
+    .order('used_at', { ascending: false, nullsFirst: false })
+    .order('acquired_at', { ascending: false });
+
+  if (error) throw error;
+
+  return (data ?? [])
+    .map((row) => {
+      const base = normalizeUserJokerWithCatalog(row);
+      if (!base) return null;
+
+      // Supabase peut retourner le nested concours comme objet ou array
+      // selon la cardinalité détectée : on unwrap défensivement.
+      const concoursEmbed = Array.isArray(row.concours)
+        ? row.concours[0]
+        : row.concours;
+      if (!concoursEmbed?.id || !concoursEmbed?.nom) return null;
+
+      return {
+        ...base,
+        concours: {
+          id: concoursEmbed.id,
+          nom: concoursEmbed.nom,
+        },
+      } satisfies UserJokerHistoryRow;
+    })
+    .filter((row): row is UserJokerHistoryRow => row !== null);
+};
+
+// ------------------------------------------------------------------
+//  CHALLENGES REÇUS (pour les badges MatchCard)
+// ------------------------------------------------------------------
+
+/**
+ * Ligne jointe `user_jokers × jokers × profiles` pour l'affichage des
+ * challenges reçus dans la MatchCard. Le `user_id` est celui du CALLER
+ * du joker (pas du target !) — autrement dit, qui nous a défié.
+ */
+export type IncomingChallengeRow = {
+  id: string;
+  joker_code: string;
+  joker_category: string;
+  used_on_match_id: string;
+  used_at: string;
+  used_payload: Record<string, unknown> | null;
+  from_user_id: string;
+  from_prenom: string | null;
+  from_nom: string | null;
+  from_avatar_url: string | null;
+};
+
+/**
+ * Liste les jokers `challenge` / `double_down` qu'on a reçus (qu'un
+ * autre participant a lancés contre nous) sur un concours, rangés par
+ * match.
+ *
+ * RLS : la policy `user_jokers_select_self_or_same_concours` autorise
+ * la lecture cross-user dès qu'on est dans le même concours — donc
+ * l'auth de `auth.uid()` suffit, pas besoin de `SECURITY DEFINER`.
+ *
+ * Filtre côté client sur `joker.category === 'challenge'` après
+ * normalisation du catalog embed : Supabase n'expose pas `joker.category`
+ * comme filtre natif sur le join.
+ */
+export const listIncomingChallengesInConcours = async (
+  concoursId: string,
+  userId: string,
+): Promise<IncomingChallengeRow[]> => {
+  const { data, error } = await supabase
+    .from('user_jokers')
+    .select(
+      `
+        id,
+        user_id,
+        used_on_match_id,
+        used_at,
+        used_payload,
+        joker_code,
+        joker:jokers (
+          code,
+          category
+        ),
+        profile:profiles!user_jokers_user_id_fkey (
+          id,
+          prenom,
+          nom,
+          avatar_url
+        )
+      `,
+    )
+    .eq('concours_id', concoursId)
+    .eq('used_on_target_user_id', userId)
+    .not('used_at', 'is', null)
+    .not('used_on_match_id', 'is', null);
+
+  if (error) throw error;
+
+  return (data ?? [])
+    .map((row) => {
+      if (
+        !row.id ||
+        !row.user_id ||
+        !row.used_on_match_id ||
+        !row.used_at ||
+        !row.joker_code
+      ) {
+        return null;
+      }
+      const jokerEmbed = Array.isArray(row.joker) ? row.joker[0] : row.joker;
+      const category = jokerEmbed?.category;
+      if (category !== 'challenge') return null;
+
+      const profileEmbed = Array.isArray(row.profile)
+        ? row.profile[0]
+        : row.profile;
+
+      const payload: Record<string, unknown> | null =
+        typeof row.used_payload === 'object' &&
+        row.used_payload !== null &&
+        !Array.isArray(row.used_payload)
+          ? (row.used_payload as Record<string, unknown>)
+          : null;
+
+      return {
+        id: row.id,
+        joker_code: row.joker_code,
+        joker_category: category,
+        used_on_match_id: row.used_on_match_id,
+        used_at: row.used_at,
+        used_payload: payload,
+        from_user_id: row.user_id,
+        from_prenom: profileEmbed?.prenom ?? null,
+        from_nom: profileEmbed?.nom ?? null,
+        from_avatar_url: profileEmbed?.avatar_url ?? null,
+      } satisfies IncomingChallengeRow;
+    })
+    .filter((r): r is IncomingChallengeRow => r !== null);
+};
+
+// ------------------------------------------------------------------
 //  CONCOURS TOGGLE (owner only via RLS)
 // ------------------------------------------------------------------
 
@@ -263,6 +472,38 @@ export const consumeJoker = async (
     throw new Error('use_joker_invalid_response');
   }
   return normalized;
+};
+
+// ------------------------------------------------------------------
+//  BOUSSOLE (RPC boussole_most_common_score — Sprint 8.C)
+// ------------------------------------------------------------------
+
+/**
+ * Récupère l'agrégat anonymisé du score majoritaire parmi les pronos
+ * d'un concours sur un match donné (helper `SECURITY DEFINER` côté SQL).
+ *
+ * Utilisé par le badge "Boussole" dans la MatchCard : après consommation
+ * d'un joker `boussole`, on affiche le score le plus fréquent + le
+ * nombre de pronos qui le partagent — jamais la liste individuelle, ce
+ * qui garantit la RLS `pronos` (lecture verrouillée avant kick-off).
+ *
+ * Retourne `null` si la RPC retourne `null` (pas de prono sur le match)
+ * ou si la payload ne respecte pas le schéma — défensif pour éviter de
+ * faire planter la UI sur une réponse inattendue.
+ */
+export const getBoussoleMostCommonScore = async (
+  concoursId: string,
+  matchId: string,
+): Promise<BoussoleResult> => {
+  const { data, error } = await supabase.rpc('boussole_most_common_score', {
+    p_concours_id: concoursId,
+    p_match_id: matchId,
+  });
+
+  if (error) throw error;
+
+  const parsed = boussoleResultSchema.safeParse(data);
+  return parsed.success ? parsed.data : null;
 };
 
 // ------------------------------------------------------------------

@@ -6,14 +6,20 @@ import { supabase } from '@/lib/supabase';
 import {
   type ConcoursParticipantForPicker,
   type ConsumeJokerArgs,
+  type IncomingChallengeRow,
+  type UserJokerHistoryRow,
   consumeJoker,
   countUserOwnedJokersInConcours,
+  getBoussoleMostCommonScore,
   listConcoursParticipantsForPicker,
+  listIncomingChallengesInConcours,
   listJokersCatalog,
+  listUserJokersHistory,
   listUserJokersInConcours,
   setConcoursJokersEnabled,
 } from './api';
 import {
+  type BoussoleResult,
   type JokerCatalogRow,
   type UserJokerRow,
   type UserJokerWithCatalog,
@@ -62,8 +68,27 @@ export const jokersKeys = {
       concoursId ?? 'none',
       'count',
     ] as const,
+  userHistory: (userId: string | undefined) =>
+    ['jokers', 'user', userId ?? 'none', 'history'] as const,
   participants: (concoursId: string | undefined) =>
     ['jokers', 'participants', concoursId ?? 'none'] as const,
+  boussole: (concoursId: string | undefined, matchId: string | undefined) =>
+    [
+      'jokers',
+      'boussole',
+      concoursId ?? 'none',
+      matchId ?? 'none',
+    ] as const,
+  incomingChallenges: (
+    concoursId: string | undefined,
+    userId: string | undefined,
+  ) =>
+    [
+      'jokers',
+      'incomingChallenges',
+      concoursId ?? 'none',
+      userId ?? 'none',
+    ] as const,
 };
 
 // ------------------------------------------------------------------
@@ -112,6 +137,77 @@ export const useUserOwnedJokersCountQuery = (
     queryFn: () =>
       countUserOwnedJokersInConcours(userId as string, concoursId as string),
     enabled: Boolean(userId) && Boolean(concoursId),
+    staleTime: 30_000,
+  });
+
+/**
+ * Historique cross-concours des jokers d'un user (owned + used toutes
+ * compétitions confondues). Utilisé par la `HistoriqueJokersSection`
+ * sur la page profil — vue d'ensemble qui survit à la suppression
+ * d'un concours (via `ON DELETE CASCADE` côté SQL).
+ *
+ * Pas de Realtime dédié : les mutations de consommation (`useConsumeJokerMutation`)
+ * invalident déjà `jokersKeys.all` qui englobe cette clé. Les attributions
+ * par trigger (starter pack / badge / gift reçu) sont propagées par le
+ * Realtime `user_jokers` déjà monté côté concours courant ; pour la page
+ * profil, un `staleTime: 30s` est suffisant (on ne reste pas des heures
+ * sur cette page).
+ */
+export const useUserJokersHistoryQuery = (userId: string | undefined) =>
+  useQuery<UserJokerHistoryRow[]>({
+    queryKey: jokersKeys.userHistory(userId),
+    queryFn: () => listUserJokersHistory(userId as string),
+    enabled: Boolean(userId),
+    staleTime: 30_000,
+  });
+
+/**
+ * Résultat de la boussole pour un (concours, match) — agrégat anonymisé
+ * du score majoritaire. À activer uniquement quand l'utilisateur a déjà
+ * consommé un joker `boussole` sur ce match (sinon on révèle rien).
+ *
+ * `staleTime: 60s` : la boussole est un "snapshot" — on tolère qu'elle
+ * ne soit pas strictement temps réel, le Realtime sur `pronos` invalide
+ * déjà la grille de pronos à chaque nouveau prono saisi, ce qui refetch
+ * la boussole à la prochaine navigation.
+ */
+export const useBoussoleScoreQuery = (
+  concoursId: string | undefined,
+  matchId: string | undefined,
+  options: { enabled?: boolean } = {},
+) =>
+  useQuery<BoussoleResult>({
+    queryKey: jokersKeys.boussole(concoursId, matchId),
+    queryFn: () =>
+      getBoussoleMostCommonScore(concoursId as string, matchId as string),
+    enabled:
+      Boolean(concoursId) && Boolean(matchId) && (options.enabled ?? true),
+    staleTime: 60_000,
+  });
+
+/**
+ * Liste les jokers `challenge` / `double_down` qu'un autre participant
+ * a lancés contre l'utilisateur courant sur un concours — utilisé par
+ * `MatchJokersBadges` pour afficher "Tu es défié par X" au-dessus des
+ * scores dans la grille de pronos.
+ *
+ * `staleTime: 30s` + invalidation via `useConsumeJokerMutation`
+ * (clé `jokersKeys.all`) → quand un adversaire nous challenge, la liste
+ * est rafraîchie à la prochaine interaction. Le Realtime sur
+ * `user_jokers` filtre sur `user_id=eq.me` et ne couvre donc PAS les
+ * challenges reçus ; on garde un refetch opportuniste via staleTime.
+ */
+export const useIncomingChallengesInConcoursQuery = (
+  concoursId: string | undefined,
+  userId: string | undefined,
+  options: { enabled?: boolean } = {},
+) =>
+  useQuery<IncomingChallengeRow[]>({
+    queryKey: jokersKeys.incomingChallenges(concoursId, userId),
+    queryFn: () =>
+      listIncomingChallengesInConcours(concoursId as string, userId as string),
+    enabled:
+      Boolean(concoursId) && Boolean(userId) && (options.enabled ?? true),
     staleTime: 30_000,
   });
 

@@ -1,8 +1,10 @@
+/* eslint-disable import/order -- import scindé intentionnellement autour
+ * des `vi.mock(...)` ci-dessous : `UpdatePrompt` doit être importé APRÈS
+ * les mocks pour que la résolution vienne bien du mock `useRegisterSW`. */
 import { render } from '@testing-library/react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { i18n } from '@/i18n';
-
 // ─── Mocks hoistés ───────────────────────────────────────────────────────
 // `vi.hoisted` est exécuté avant tout `import` → parfait pour exposer des spies
 // partagés entre le mock et le test. Ne PAS référencer de const du module ici

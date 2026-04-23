@@ -317,10 +317,15 @@
     "pointsSummary": "{{points}} pts · {{exacts}} exact(s) · {{gagnes}} gagné(s)",
     "youLabel": "Toi",
     "rowMeAriaLabel": "Ta ligne",
+    "challengeDeltaLabel": "Challenges : {{delta}}",
+    "challengeDeltaTooltip": "Solde net des défis gagnés et perdus.",
     "columns": {
       "rank": "Rang",
       "player": "Joueur",
       "points": "Points",
+      "breakdown": "Détail",
+      "breakdownTooltip": "Points de pronos + solde de challenges.",
+      "breakdownAriaLabel": "{{prono}} points de pronos, {{delta}} de challenges",
       "pronosJoues": "Joués",
       "pronosGagnes": "Gagnés",
       "pronosExacts": "Exacts"
@@ -365,6 +370,21 @@
       "usedOn": "Utilisé le {{date}}",
       "activateAriaLabel": "Activer le joker {{joker}}"
     },
+    "history": {
+      "title": "Historique des jokers",
+      "progress": "{{owned}} actif(s) · {{used}} utilisé(s) · {{total}} au total",
+      "loading": "Chargement de l'historique…",
+      "loadError": "Impossible de charger l'historique.",
+      "empty": "Pas encore de jokers. Rejoins un concours avec jokers activés pour en recevoir.",
+      "listAriaLabel": "Historique des jokers, toutes compétitions confondues",
+      "item": {
+        "concoursLabel": "Concours",
+        "acquiredLabel": "Obtenu le {{date}}",
+        "usedLabel": "Utilisé le {{date}}",
+        "statusOwned": "Actif",
+        "statusUsed": "Utilisé"
+      }
+    },
     "acquiredFrom": {
       "starter": "Starter",
       "badge": "Badge",
@@ -383,6 +403,17 @@
         "disabled": "Jokers désactivés. Les slots déjà attribués sont conservés.",
         "error": "Impossible de modifier l'état des jokers."
       }
+    },
+    "display": {
+      "ariaLabel": "Effets jokers actifs sur ce match",
+      "multiplier": "×{{factor}} points",
+      "safetyNet": "Filet de sécurité",
+      "boussoleLoading": "Boussole : chargement…",
+      "boussoleResult": "Boussole : {{scoreA}}-{{scoreB}} ({{count}}×)",
+      "boussoleEmpty": "Boussole : aucun prono pour le moment",
+      "challengeReceived": "Défié par {{from}} · {{stakes}} pts en jeu",
+      "doubleDownReceived": "Double Down de {{from}} · {{stakes}} pts en jeu",
+      "unknownPlayer": "un autre joueur"
     },
     "consume": {
       "title": "Activer « {{joker}} »",
@@ -516,6 +547,18 @@
       },
       "chatMention": {
         "title": "Mention dans le chat"
+      },
+      "challengeReceived": {
+        "title": "Tu as été challengé",
+        "body": {
+          "challenge": "Un joueur te défie ({{stakes}} pts en jeu).",
+          "doubleDown": "Un joueur te défie à quitte ou double ({{stakes}} pts en jeu).",
+          "generic": "Un joueur t'a challengé ({{stakes}} pts en jeu)."
+        }
+      },
+      "giftReceived": {
+        "title": "Tu as reçu un joker",
+        "body": "Un joueur t'a offert un joker « {{code}} »."
       }
     },
     "errors": {

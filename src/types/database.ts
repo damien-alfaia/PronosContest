@@ -604,13 +604,31 @@ export type Database = {
       }
     }
     Views: {
+      v_challenge_deltas: {
+        Row: {
+          challenge_delta: number | null
+          concours_id: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concours_participants_concours_id_fkey"
+            columns: ["concours_id"]
+            isOneToOne: false
+            referencedRelation: "concours"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_classement_concours: {
         Row: {
           avatar_url: string | null
+          challenge_delta: number | null
           concours_id: string | null
           nom: string | null
           points: number | null
           prenom: string | null
+          prono_points: number | null
           pronos_exacts: number | null
           pronos_gagnes: number | null
           pronos_joues: number | null
@@ -634,10 +652,15 @@ export type Database = {
           cote_appliquee: number | null
           is_exact: boolean | null
           is_final: boolean | null
+          joker_multiplier: number | null
+          joker_safety_net: boolean | null
           match_id: string | null
           match_status: string | null
           phase: string | null
           points_base: number | null
+          points_final: number | null
+          points_pure: number | null
+          points_raw: number | null
           user_id: string | null
         }
         Relationships: [
@@ -673,6 +696,14 @@ export type Database = {
         Returns: undefined
       }
       badge_to_joker_code: { Args: { p_badge_code: string }; Returns: string }
+      boussole_most_common_score: {
+        Args: { p_concours_id: string; p_match_id: string }
+        Returns: {
+          count: number
+          score_a: number
+          score_b: number
+        }[]
+      }
       generate_concours_code: { Args: never; Returns: string }
       is_admin: { Args: { p_user_id?: string }; Returns: boolean }
       is_concours_jokers_enabled: {
@@ -682,10 +713,37 @@ export type Database = {
       is_match_locked: { Args: { p_match_id: string }; Returns: boolean }
       is_participant: { Args: { p_concours_id: string }; Returns: boolean }
       join_concours_by_code: { Args: { p_code: string }; Returns: string }
+      joker_category: { Args: { p_code: string }; Returns: string }
       jokers_starter_codes: { Args: never; Returns: string[] }
       push_notification: {
         Args: { p_payload?: Json; p_type: string; p_user_id: string }
         Returns: undefined
+      }
+      use_joker: {
+        Args: {
+          p_payload?: Json
+          p_target_match_id?: string
+          p_target_user_id?: string
+          p_user_joker_id: string
+        }
+        Returns: {
+          acquired_at: string
+          acquired_from: string
+          concours_id: string
+          id: string
+          joker_code: string
+          used_at: string | null
+          used_on_match_id: string | null
+          used_on_target_user_id: string | null
+          used_payload: Json | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "user_jokers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {

@@ -334,3 +334,57 @@ export const compareUserJokerForInventory = (
   // acquired_at desc = le plus récent d'abord
   return b.acquired_at.localeCompare(a.acquired_at);
 };
+
+/**
+ * Compare deux user_jokers+catalog pour la section "Historique jokers"
+ * (page profil, Sprint 8.C.3) :
+ *   1) date d'activité la plus récente desc
+ *      = max(used_at, acquired_at). `used_at` est toujours >= `acquired_at`
+ *      par construction SQL (on ne peut pas utiliser avant d'avoir acquis),
+ *      donc pratiquement `used_at ?? acquired_at`.
+ *   2) tie-break par acquired_at desc.
+ *
+ * Ce tri diffère de `compareUserJokerForInventory` : sur la page profil,
+ * on veut une timeline chronologique (événements récents en haut), pas un
+ * inventaire groupé par statut.
+ */
+export const compareUserJokerByLastActivity = (
+  a: UserJokerWithCatalog,
+  b: UserJokerWithCatalog,
+): number => {
+  const aDate = a.used_at ?? a.acquired_at;
+  const bDate = b.used_at ?? b.acquired_at;
+  const activityDiff = bDate.localeCompare(aDate);
+  if (activityDiff !== 0) return activityDiff;
+  return b.acquired_at.localeCompare(a.acquired_at);
+};
+
+// ------------------------------------------------------------------
+//  BOUSSOLE (RPC boussole_most_common_score)
+// ------------------------------------------------------------------
+
+/**
+ * Résultat de la RPC `boussole_most_common_score(concours_id, match_id)`
+ * (Sprint 8.B.1) : agrégat anonymisé du score exact le plus fréquent
+ * parmi les pronos du concours sur un match donné.
+ *
+ * - `score_a` / `score_b` : le score exact majoritaire (0..99 comme les
+ *   bornes CHECK SQL de `pronos.score_a/b`).
+ * - `count` : nombre de pronos ayant ce score exact (≥ 1).
+ *
+ * `null` si aucun prono n'existe encore sur le match (tableau vide côté
+ * SQL → la RPC retourne `null`, la boussole ne révèle alors rien).
+ *
+ * ⚠️ La RPC est `SECURITY DEFINER` et ne renvoie QUE l'agrégat : elle ne
+ * permet jamais de remonter à une ligne individuelle (pas de user_id),
+ * ce qui garantit que la boussole ne contourne pas la RLS `pronos` avant
+ * kick-off.
+ */
+export const boussoleResultSchema = z
+  .object({
+    score_a: z.number().int().min(0).max(99),
+    score_b: z.number().int().min(0).max(99),
+    count: z.number().int().min(1),
+  })
+  .nullable();
+export type BoussoleResult = z.infer<typeof boussoleResultSchema>;

@@ -23,6 +23,8 @@ describe('classementRowSchema', () => {
       user_id: USER,
       rang: 1,
       points: 42,
+      prono_points: 42,
+      challenge_delta: 0,
       pronos_joues: 10,
       pronos_gagnes: 8,
       pronos_exacts: 3,
@@ -32,6 +34,8 @@ describe('classementRowSchema', () => {
     });
     expect(parsed.rang).toBe(1);
     expect(parsed.points).toBe(42);
+    expect(parsed.prono_points).toBe(42);
+    expect(parsed.challenge_delta).toBe(0);
   });
 
   it('rejette un rang < 1', () => {
@@ -40,6 +44,8 @@ describe('classementRowSchema', () => {
       user_id: USER,
       rang: 0,
       points: 0,
+      prono_points: 0,
+      challenge_delta: 0,
       pronos_joues: 0,
       pronos_gagnes: 0,
       pronos_exacts: 0,
@@ -56,6 +62,8 @@ describe('classementRowSchema', () => {
       user_id: USER,
       rang: 5,
       points: 0,
+      prono_points: 0,
+      challenge_delta: 0,
       pronos_joues: 0,
       pronos_gagnes: 0,
       pronos_exacts: 0,
@@ -66,6 +74,66 @@ describe('classementRowSchema', () => {
     expect(parsed.prenom).toBeNull();
     expect(parsed.nom).toBeNull();
     expect(parsed.avatar_url).toBeNull();
+  });
+
+  it('accepte un challenge_delta négatif', () => {
+    const parsed = classementRowSchema.parse({
+      concours_id: CONCOURS,
+      user_id: USER,
+      rang: 1,
+      points: 15,
+      prono_points: 25,
+      challenge_delta: -10,
+      pronos_joues: 5,
+      pronos_gagnes: 3,
+      pronos_exacts: 1,
+      prenom: null,
+      nom: null,
+      avatar_url: null,
+    });
+    expect(parsed.challenge_delta).toBe(-10);
+    expect(parsed.points).toBe(15);
+  });
+
+  it('accepte points négatif (delta challenge > prono_points)', () => {
+    // `prono_points ≥ 0` par définition, mais `points` peut théoriquement
+    // être < 0 si les transferts challenge dépassent les points pronos.
+    // Le schema n'applique pas de floor côté Zod pour refléter la vue SQL.
+    const parsed = classementRowSchema.parse({
+      concours_id: CONCOURS,
+      user_id: USER,
+      rang: 10,
+      points: -5,
+      prono_points: 5,
+      challenge_delta: -10,
+      pronos_joues: 2,
+      pronos_gagnes: 1,
+      pronos_exacts: 0,
+      prenom: null,
+      nom: null,
+      avatar_url: null,
+    });
+    expect(parsed.points).toBe(-5);
+  });
+
+  it('rejette un prono_points négatif', () => {
+    // `prono_points` est la somme des `points_final` ≥ 0 côté vue,
+    // donc jamais négatif. Le Zod sentinelle le garantit.
+    const result = classementRowSchema.safeParse({
+      concours_id: CONCOURS,
+      user_id: USER,
+      rang: 1,
+      points: 0,
+      prono_points: -1,
+      challenge_delta: 0,
+      pronos_joues: 0,
+      pronos_gagnes: 0,
+      pronos_exacts: 0,
+      prenom: null,
+      nom: null,
+      avatar_url: null,
+    });
+    expect(result.success).toBe(false);
   });
 });
 
@@ -89,6 +157,10 @@ describe('normalizeClassementRow', () => {
     expect(row?.pronos_joues).toBe(0);
     expect(row?.pronos_gagnes).toBe(0);
     expect(row?.pronos_exacts).toBe(0);
+    // prono_points fallback = max(0, points - challenge_delta) = 0
+    expect(row?.prono_points).toBe(0);
+    // challenge_delta fallback = 0
+    expect(row?.challenge_delta).toBe(0);
   });
 
   it('retourne null si concours_id manque', () => {
@@ -139,6 +211,89 @@ describe('normalizeClassementRow', () => {
     expect(row?.prenom).toBe('Bob');
     expect(row?.nom).toBe('Dupont');
     expect(row?.avatar_url).toBe('https://cdn/bob.png');
+  });
+
+  it('préserve prono_points et challenge_delta quand fournis par la vue', () => {
+    const row = normalizeClassementRow({
+      concours_id: CONCOURS,
+      user_id: USER,
+      rang: 1,
+      points: 47,
+      prono_points: 52,
+      challenge_delta: -5,
+      pronos_joues: 10,
+      pronos_gagnes: 7,
+      pronos_exacts: 3,
+      prenom: 'Alice',
+      nom: 'Martin',
+      avatar_url: null,
+    });
+    expect(row?.points).toBe(47);
+    expect(row?.prono_points).toBe(52);
+    expect(row?.challenge_delta).toBe(-5);
+  });
+
+  it('fallback rétrocompat : prono_points recalculé depuis points - challenge_delta', () => {
+    // Quand la vue n'a pas encore été régénérée (`supabase gen types`
+    // pas rejoué), `prono_points` et `challenge_delta` peuvent être
+    // `undefined`. Le normalizer doit reconstruire un break-down cohérent.
+    const row = normalizeClassementRow({
+      concours_id: CONCOURS,
+      user_id: USER,
+      rang: 1,
+      points: 42,
+      pronos_joues: 8,
+      pronos_gagnes: 6,
+      pronos_exacts: 2,
+      prenom: null,
+      nom: null,
+      avatar_url: null,
+    });
+    expect(row?.points).toBe(42);
+    // Pas de challenge_delta → 0
+    expect(row?.challenge_delta).toBe(0);
+    // prono_points = max(0, 42 - 0) = 42
+    expect(row?.prono_points).toBe(42);
+  });
+
+  it('fallback rétrocompat : prono_points clampé à 0 si points < 0', () => {
+    // Si la vue legacy renvoie points=-5 (delta négatif non exposé),
+    // on ne veut pas que prono_points devienne négatif en fallback.
+    const row = normalizeClassementRow({
+      concours_id: CONCOURS,
+      user_id: USER,
+      rang: 1,
+      points: -5,
+      pronos_joues: 0,
+      pronos_gagnes: 0,
+      pronos_exacts: 0,
+      prenom: null,
+      nom: null,
+      avatar_url: null,
+    });
+    expect(row?.points).toBe(-5);
+    expect(row?.challenge_delta).toBe(0);
+    // Math.max(0, -5 - 0) = 0
+    expect(row?.prono_points).toBe(0);
+  });
+
+  it('accepte prono_points + challenge_delta null explicites → fallback', () => {
+    const row = normalizeClassementRow({
+      concours_id: CONCOURS,
+      user_id: USER,
+      rang: 1,
+      points: 30,
+      prono_points: null,
+      challenge_delta: null,
+      pronos_joues: 5,
+      pronos_gagnes: 4,
+      pronos_exacts: 2,
+      prenom: null,
+      nom: null,
+      avatar_url: null,
+    });
+    expect(row?.challenge_delta).toBe(0);
+    expect(row?.prono_points).toBe(30);
   });
 });
 

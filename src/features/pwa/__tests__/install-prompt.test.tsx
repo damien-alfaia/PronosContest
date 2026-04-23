@@ -9,9 +9,8 @@ import {
   vi,
 } from 'vitest';
 
-import { i18n } from '@/i18n';
-
 import { InstallPrompt } from '@/features/pwa/install-prompt';
+import { i18n } from '@/i18n';
 
 /**
  * Forge un faux `beforeinstallprompt`. Les propriétés custom (`prompt`,
