@@ -116,6 +116,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          jokers_enabled: boolean
           nom: string
           owner_id: string
           scoring_rules: Json
@@ -128,6 +129,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          jokers_enabled?: boolean
           nom: string
           owner_id: string
           scoring_rules?: Json
@@ -140,6 +142,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          jokers_enabled?: boolean
           nom?: string
           owner_id?: string
           scoring_rules?: Json
@@ -267,6 +270,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      jokers: {
+        Row: {
+          category: string
+          code: string
+          created_at: string
+          description: Json
+          icon: string
+          libelle: Json
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string
+          description: Json
+          icon: string
+          libelle: Json
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string
+          description?: Json
+          icon?: string
+          libelle?: Json
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       matchs: {
         Row: {
@@ -505,6 +541,67 @@ export type Database = {
           },
         ]
       }
+      user_jokers: {
+        Row: {
+          acquired_at: string
+          acquired_from: string
+          concours_id: string
+          id: string
+          joker_code: string
+          used_at: string | null
+          used_on_match_id: string | null
+          used_on_target_user_id: string | null
+          used_payload: Json | null
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          acquired_from: string
+          concours_id: string
+          id?: string
+          joker_code: string
+          used_at?: string | null
+          used_on_match_id?: string | null
+          used_on_target_user_id?: string | null
+          used_payload?: Json | null
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string
+          acquired_from?: string
+          concours_id?: string
+          id?: string
+          joker_code?: string
+          used_at?: string | null
+          used_on_match_id?: string | null
+          used_on_target_user_id?: string | null
+          used_payload?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_jokers_concours_id_fkey"
+            columns: ["concours_id"]
+            isOneToOne: false
+            referencedRelation: "concours"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_jokers_joker_code_fkey"
+            columns: ["joker_code"]
+            isOneToOne: false
+            referencedRelation: "jokers"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "user_jokers_used_on_match_id_fkey"
+            columns: ["used_on_match_id"]
+            isOneToOne: false
+            referencedRelation: "matchs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       v_classement_concours: {
@@ -566,11 +663,26 @@ export type Database = {
         Args: { p_badge_code: string; p_metadata?: Json; p_user_id: string }
         Returns: undefined
       }
+      award_joker: {
+        Args: {
+          p_acquired_from: string
+          p_concours_id: string
+          p_joker_code: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      badge_to_joker_code: { Args: { p_badge_code: string }; Returns: string }
       generate_concours_code: { Args: never; Returns: string }
       is_admin: { Args: { p_user_id?: string }; Returns: boolean }
+      is_concours_jokers_enabled: {
+        Args: { p_concours_id: string }
+        Returns: boolean
+      }
       is_match_locked: { Args: { p_match_id: string }; Returns: boolean }
       is_participant: { Args: { p_concours_id: string }; Returns: boolean }
       join_concours_by_code: { Args: { p_code: string }; Returns: string }
+      jokers_starter_codes: { Args: never; Returns: string[] }
       push_notification: {
         Args: { p_payload?: Json; p_type: string; p_user_id: string }
         Returns: undefined

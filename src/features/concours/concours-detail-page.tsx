@@ -31,6 +31,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { JokersEnabledToggle } from '@/features/jokers/jokers-enabled-toggle';
+import { MyJokersSection } from '@/features/jokers/my-jokers-section';
 import { useAuth } from '@/hooks/use-auth';
 
 import {
@@ -45,7 +47,11 @@ const VISIBILITY_ICON = {
   unlisted: Eye,
 } as const;
 
-const formatDateRange = (start?: string | null, end?: string | null, locale = 'fr') => {
+const formatDateRange = (
+  start?: string | null,
+  end?: string | null,
+  locale = 'fr',
+) => {
   const fmt = (iso: string) =>
     new Date(iso).toLocaleDateString(locale === 'en' ? 'en-GB' : 'fr-FR', {
       day: 'numeric',
@@ -78,7 +84,9 @@ export const ConcoursDetailPage = () => {
   const isMember = useMemo(
     () =>
       Boolean(
-        concours && userId && concours.participants.some((p) => p.user_id === userId),
+        concours &&
+        userId &&
+        concours.participants.some((p) => p.user_id === userId),
       ),
     [concours, userId],
   );
@@ -99,6 +107,12 @@ export const ConcoursDetailPage = () => {
   );
 
   const scoring = concours.scoring_rules as Record<string, unknown>;
+
+  // Le flag `jokers_enabled` est ajouté par la migration Sprint 8.A —
+  // cast défensif tant que `supabase gen types` n'a pas été régénéré.
+  const jokersEnabled = Boolean(
+    (concours as { jokers_enabled?: boolean | null }).jokers_enabled,
+  );
 
   const onCopyCode = async () => {
     if (!concours.code_invitation) return;
@@ -140,7 +154,9 @@ export const ConcoursDetailPage = () => {
 
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">{concours.nom}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {concours.nom}
+            </h1>
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="flex items-center gap-1">
                 {VisibilityIcon ? (
@@ -154,9 +170,13 @@ export const ConcoursDetailPage = () => {
                   {t('concours.detail.ownerBadge')}
                 </Badge>
               ) : isMember ? (
-                <Badge variant="secondary">{t('concours.detail.memberBadge')}</Badge>
+                <Badge variant="secondary">
+                  {t('concours.detail.memberBadge')}
+                </Badge>
               ) : (
-                <Badge variant="muted">{t('concours.detail.visitorBadge')}</Badge>
+                <Badge variant="muted">
+                  {t('concours.detail.visitorBadge')}
+                </Badge>
               )}
             </div>
           </div>
@@ -254,7 +274,9 @@ export const ConcoursDetailPage = () => {
                 {t('concours.sections.participants')}
               </CardTitle>
               <CardDescription className="text-xs">
-                {t('concours.list.participantsCount', { count: participantCount })}
+                {t('concours.list.participantsCount', {
+                  count: participantCount,
+                })}
               </CardDescription>
             </div>
           </CardHeader>
@@ -267,13 +289,20 @@ export const ConcoursDetailPage = () => {
                 <code className="flex-1 rounded-md border border-input bg-muted px-3 py-2 font-mono text-base font-semibold tracking-widest text-primary">
                   {concours.code_invitation}
                 </code>
-                <Button type="button" variant="outline" size="sm" onClick={onCopyCode}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={onCopyCode}
+                >
                   {copied ? (
                     <Check className="mr-2 h-4 w-4" aria-hidden />
                   ) : (
                     <Copy className="mr-2 h-4 w-4" aria-hidden />
                   )}
-                  {copied ? t('concours.actions.copied') : t('concours.actions.copyCode')}
+                  {copied
+                    ? t('concours.actions.copied')
+                    : t('concours.actions.copyCode')}
                 </Button>
               </div>
             </CardContent>
@@ -292,20 +321,28 @@ export const ConcoursDetailPage = () => {
         </CardHeader>
         <CardContent>
           <dl className="grid gap-3 text-sm sm:grid-cols-2">
-            {(['exact_score', 'correct_winner', 'correct_draw', 'knockout_bonus'] as const).map(
-              (key) => {
-                const value = scoring?.[key];
-                if (typeof value !== 'number') return null;
-                return (
-                  <div key={key} className="flex items-center justify-between rounded-md border border-border bg-muted/40 px-3 py-2">
-                    <dt className="text-muted-foreground">
-                      {t(`concours.scoring.${key}`)}
-                    </dt>
-                    <dd className="font-semibold">{value}</dd>
-                  </div>
-                );
-              },
-            )}
+            {(
+              [
+                'exact_score',
+                'correct_winner',
+                'correct_draw',
+                'knockout_bonus',
+              ] as const
+            ).map((key) => {
+              const value = scoring?.[key];
+              if (typeof value !== 'number') return null;
+              return (
+                <div
+                  key={key}
+                  className="flex items-center justify-between rounded-md border border-border bg-muted/40 px-3 py-2"
+                >
+                  <dt className="text-muted-foreground">
+                    {t(`concours.scoring.${key}`)}
+                  </dt>
+                  <dd className="font-semibold">{value}</dd>
+                </div>
+              );
+            })}
           </dl>
           <p className="mt-3 text-xs text-muted-foreground">
             {scoring?.odds_multiplier_enabled
@@ -314,6 +351,21 @@ export const ConcoursDetailPage = () => {
           </p>
         </CardContent>
       </Card>
+
+      {/* Toggle owner : activer / désactiver les jokers sur ce concours. */}
+      {isOwner ? (
+        <JokersEnabledToggle concoursId={concours.id} enabled={jokersEnabled} />
+      ) : null}
+
+      {/* Section "Mes jokers" : uniquement si membre ET concours opt-in. */}
+      {isMember && jokersEnabled ? (
+        <MyJokersSection
+          userId={userId}
+          concoursId={concours.id}
+          competitionId={concours.competition_id}
+          enabled={jokersEnabled}
+        />
+      ) : null}
     </section>
   );
 };

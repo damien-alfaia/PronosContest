@@ -353,6 +353,83 @@
       "gridAriaLabel": "Badge list"
     }
   },
+  "jokers": {
+    "section": {
+      "title": "My jokers",
+      "progress": "{{owned}} / {{total}} available",
+      "loading": "Loading jokers…",
+      "loadError": "Couldn't load jokers.",
+      "empty": "No joker yet — come back once you've joined a contest or earned a related badge.",
+      "gridAriaLabel": "Joker list",
+      "acquiredOn": "Acquired on {{date}}",
+      "usedOn": "Used on {{date}}",
+      "activateAriaLabel": "Activate joker {{joker}}"
+    },
+    "acquiredFrom": {
+      "starter": "Starter",
+      "badge": "Badge",
+      "gift": "Gift"
+    },
+    "toggle": {
+      "title": "Jokers & bonuses",
+      "descriptionEnabled": "Jokers are enabled on this contest. Every participant receives a starter pack.",
+      "descriptionDisabled": "Jokers are disabled. Enable them to distribute the starter pack to every participant.",
+      "on": "Enabled",
+      "off": "Disabled",
+      "ariaLabel": "Enable or disable jokers on this contest",
+      "hint": "Only the contest owner can change this.",
+      "toast": {
+        "enabled": "Jokers enabled: the starter pack is distributed to participants.",
+        "disabled": "Jokers disabled. Already-granted slots are preserved.",
+        "error": "Couldn't update the jokers flag."
+      }
+    },
+    "consume": {
+      "title": "Activate \"{{joker}}\"",
+      "submit": "Activate joker",
+      "submitting": "Activating…",
+      "fields": {
+        "match": "Target match",
+        "matchPlaceholder": "Pick an upcoming match…",
+        "matchError": "Couldn't load matches.",
+        "matchEmpty": "No match available (locked matches are hidden).",
+        "user": "Target participant",
+        "userPlaceholder": "Pick a participant…",
+        "userError": "Couldn't load participants.",
+        "userEmpty": "No other participant in this contest.",
+        "giftedJoker": "Joker to gift",
+        "giftedJokerPlaceholder": "Pick a joker to gift…",
+        "giftedJokerError": "Couldn't load your jokers.",
+        "giftedJokerEmpty": "You don't have any other joker to gift."
+      },
+      "toast": {
+        "success": "Joker \"{{joker}}\" activated."
+      },
+      "errors": {
+        "generic": "Couldn't activate this joker.",
+        "not_authenticated": "Session expired, please sign in again.",
+        "joker_not_found": "Joker not found.",
+        "not_owner": "This joker doesn't belong to you.",
+        "already_used": "This joker has already been used.",
+        "concours_not_found": "Contest not found.",
+        "jokers_disabled": "Jokers are disabled on this contest.",
+        "target_match_required": "This joker requires a target match.",
+        "target_match_forbidden": "This joker cannot target a match.",
+        "target_user_required": "This joker requires a target participant.",
+        "target_user_forbidden": "This joker cannot target a participant.",
+        "target_user_not_in_concours": "This participant isn't in the contest.",
+        "target_match_not_found": "Target match not found.",
+        "target_match_wrong_competition": "This match doesn't belong to the contest's competition.",
+        "target_is_self": "You can't target yourself.",
+        "match_locked": "The match is locked (kick-off has passed).",
+        "category_already_used_on_match": "You've already used a joker of this category on this match.",
+        "payload_missing_gifted_code": "Pick the joker to gift.",
+        "cannot_gift_a_gift": "A gift joker can't gift another one.",
+        "gifted_joker_not_owned": "You don't own that joker to gift.",
+        "unknown_joker_code": "Unknown joker code."
+      }
+    }
+  },
   "chat": {
     "title": "Contest chat",
     "backToConcours": "Back to contest",
