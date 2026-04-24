@@ -41,6 +41,43 @@ export const signupSchema = z.object({
 });
 export type SignupInput = z.infer<typeof signupSchema>;
 
+/**
+ * Extended schema for the 3-step signup wizard (Sprint 9.B).
+ *
+ * Step 1 : email + password
+ * Step 2 : prenom + nom
+ * Step 3 : optional inviteCode
+ *
+ * `inviteCode` : trimmed, optional (empty string accepted). Validation
+ * de format léger (3..20 chars alphanum + tirets — le RPC côté back
+ * re-vérifie). Si vide, ignoré post-signup. Si non-vide, consommé par
+ * la page /app/welcome via sessionStorage.
+ */
+export const signupWizardSchema = signupSchema.extend({
+  inviteCode: z
+    .string()
+    .trim()
+    .max(20, { message: 'auth.errors.inviteCodeTooLong' })
+    .regex(/^[A-Za-z0-9-]*$/, { message: 'auth.errors.inviteCodeFormat' })
+    .optional()
+    .or(z.literal('')),
+});
+export type SignupWizardInput = z.infer<typeof signupWizardSchema>;
+
+/**
+ * Intent capturée depuis l'URL de la landing (`?intent=join|create`).
+ * Consommée par le wizard pour adapter le parcours et par `/app/welcome`
+ * pour l'aiguillage post-signup.
+ */
+export const signupIntentSchema = z.enum(['join', 'create']);
+export type SignupIntent = z.infer<typeof signupIntentSchema>;
+
+export function parseSignupIntent(raw: string | null): SignupIntent | null {
+  if (raw === null) return null;
+  const parsed = signupIntentSchema.safeParse(raw);
+  return parsed.success ? parsed.data : null;
+}
+
 // ------- Magic link -------
 export const magicLinkSchema = z.object({
   email: emailSchema,
