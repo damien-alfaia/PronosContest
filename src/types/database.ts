@@ -116,10 +116,13 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_sponsored: boolean
           jokers_enabled: boolean
           nom: string
           owner_id: string
+          paid_features: Json
           scoring_rules: Json
+          sponsor_brand: string | null
           updated_at: string
           visibility: string
         }
@@ -129,10 +132,13 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_sponsored?: boolean
           jokers_enabled?: boolean
           nom: string
           owner_id: string
+          paid_features?: Json
           scoring_rules?: Json
+          sponsor_brand?: string | null
           updated_at?: string
           visibility?: string
         }
@@ -142,10 +148,13 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_sponsored?: boolean
           jokers_enabled?: boolean
           nom?: string
           owner_id?: string
+          paid_features?: Json
           scoring_rules?: Json
+          sponsor_brand?: string | null
           updated_at?: string
           visibility?: string
         }
@@ -436,6 +445,7 @@ export type Database = {
           id: string
           locale: string
           nom: string | null
+          plan_code: string
           prenom: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string
@@ -447,6 +457,7 @@ export type Database = {
           id: string
           locale?: string
           nom?: string | null
+          plan_code?: string
           prenom?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
@@ -458,6 +469,7 @@ export type Database = {
           id?: string
           locale?: string
           nom?: string | null
+          plan_code?: string
           prenom?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
@@ -602,6 +614,45 @@ export type Database = {
           },
         ]
       }
+      user_onboarding_progress: {
+        Row: {
+          checklist_dismissed_at: string | null
+          created_at: string
+          first_classement_viewed_at: string | null
+          first_concours_joined_at: string | null
+          first_invite_sent_at: string | null
+          first_prono_saved_at: string | null
+          tour_steps_completed: Json
+          updated_at: string
+          user_id: string
+          welcomed_at: string | null
+        }
+        Insert: {
+          checklist_dismissed_at?: string | null
+          created_at?: string
+          first_classement_viewed_at?: string | null
+          first_concours_joined_at?: string | null
+          first_invite_sent_at?: string | null
+          first_prono_saved_at?: string | null
+          tour_steps_completed?: Json
+          updated_at?: string
+          user_id: string
+          welcomed_at?: string | null
+        }
+        Update: {
+          checklist_dismissed_at?: string | null
+          created_at?: string
+          first_classement_viewed_at?: string | null
+          first_concours_joined_at?: string | null
+          first_invite_sent_at?: string | null
+          first_prono_saved_at?: string | null
+          tour_steps_completed?: Json
+          updated_at?: string
+          user_id?: string
+          welcomed_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       v_challenge_deltas: {
@@ -705,6 +756,7 @@ export type Database = {
         }[]
       }
       generate_concours_code: { Args: never; Returns: string }
+      get_landing_stats: { Args: never; Returns: Json }
       is_admin: { Args: { p_user_id?: string }; Returns: boolean }
       is_concours_jokers_enabled: {
         Args: { p_concours_id: string }
