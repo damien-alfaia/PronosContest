@@ -78,6 +78,15 @@ vi.mock('@/features/classement/use-classement', () => ({
   useClassementRealtime: () => undefined,
 }));
 
+// Stub onboarding hook utilisé pour le milestone first_classement_viewed_at.
+// Pas besoin de QueryClient : on retourne un mutation-like inerte.
+vi.mock('@/features/onboarding/use-onboarding', () => ({
+  useMarkFirstClassementViewedMutation: () => ({
+    mutate: () => undefined,
+    isPending: false,
+  }),
+}));
+
 vi.mock('@/hooks/use-auth', () => ({
   useAuth: () => ({ user: { id: USER } }),
 }));
