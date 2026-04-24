@@ -33,6 +33,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { JokersEnabledToggle } from '@/features/jokers/jokers-enabled-toggle';
 import { MyJokersSection } from '@/features/jokers/my-jokers-section';
+import { ReferralBanner } from '@/features/referrals/referral-banner';
 import { useAuth } from '@/hooks/use-auth';
 
 import {
@@ -308,6 +309,16 @@ export const ConcoursDetailPage = () => {
             </CardContent>
           ) : null}
         </Card>
+
+        {/* ReferralBanner (viral loop Sprint 9.C) — tout membre peut
+            inviter, pas que l'owner, pour maximiser la viralité. */}
+        {isMember && concours.code_invitation ? (
+          <ReferralBanner
+            concoursId={concours.id}
+            concoursName={concours.nom}
+            codeInvitation={concours.code_invitation}
+          />
+        ) : null}
       </div>
 
       <Separator />
