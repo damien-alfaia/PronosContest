@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useParams } from 'react-router-dom';
 
+import { EmptyStateIllustrated } from '@/components/common/empty-state-illustrated';
 import { FullScreenSpinner } from '@/components/common/full-screen-spinner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,10 +22,7 @@ import { cn } from '@/lib/utils';
 import type { Prono, ResolvedMatchWithEquipes } from './api';
 import { isResolvedMatch } from './api';
 import { MatchCard } from './components/match-card';
-import {
-  useMatchsQuery,
-  useMyPronosInConcoursQuery,
-} from './use-pronos';
+import { useMatchsQuery, useMyPronosInConcoursQuery } from './use-pronos';
 
 /**
  * Grille de saisie des pronos pour un concours.
@@ -70,8 +68,10 @@ const indexPronosByMatch = (pronos: Prono[]): Map<string, Prono> => {
 const isMatchLocked = (isoKickOff: string, nowMs: number): boolean =>
   Date.parse(isoKickOff) <= nowMs;
 
-const hasProno = (matchId: string, pronosByMatch: Map<string, Prono>): boolean =>
-  pronosByMatch.has(matchId);
+const hasProno = (
+  matchId: string,
+  pronosByMatch: Map<string, Prono>,
+): boolean => pronosByMatch.has(matchId);
 
 /**
  * Indexe une liste de `UserJokerWithCatalog` (slots `used` ciblant un
@@ -327,13 +327,19 @@ export const PronosGridPage = () => {
                   className={cn(
                     'flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[10px] uppercase transition-colors',
                     active
-                      ? cn(color.badge, 'ring-1 ring-offset-1 ring-offset-background')
+                      ? cn(
+                          color.badge,
+                          'ring-1 ring-offset-1 ring-offset-background',
+                        )
                       : 'text-muted-foreground hover:border-primary/40',
                   )}
                   aria-pressed={active}
                 >
                   <span
-                    className={cn('inline-block h-1.5 w-1.5 rounded-full', color.dot)}
+                    className={cn(
+                      'inline-block h-1.5 w-1.5 rounded-full',
+                      color.dot,
+                    )}
                     aria-hidden
                   />
                   {g}
@@ -350,12 +356,14 @@ export const PronosGridPage = () => {
           <FullScreenSpinner />
         </div>
       ) : totalMatchs === 0 ? (
-        <EmptyState
+        <EmptyStateIllustrated
+          illustration="pronos"
           title={t('pronos.empty.title')}
           description={t('pronos.empty.description')}
         />
       ) : filteredMatchs.length === 0 ? (
-        <EmptyState
+        <EmptyStateIllustrated
+          illustration="pronos"
           title={t('pronos.emptyFiltered.title')}
           description={t('pronos.emptyFiltered.description')}
         />
@@ -398,20 +406,3 @@ export const PronosGridPage = () => {
     </div>
   );
 };
-
-// ------------------------------------------------------------------
-//  Sous-composant local : état vide
-// ------------------------------------------------------------------
-
-const EmptyState = ({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) => (
-  <div className="flex flex-col items-center gap-2 rounded-md border border-dashed p-8 text-center">
-    <p className="text-sm font-medium">{title}</p>
-    <p className="text-xs text-muted-foreground">{description}</p>
-  </div>
-);

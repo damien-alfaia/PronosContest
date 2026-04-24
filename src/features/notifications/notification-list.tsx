@@ -1,6 +1,7 @@
-import { Bell, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { EmptyStateIllustrated } from '@/components/common/empty-state-illustrated';
 import { Button } from '@/components/ui/button';
 
 import { NotificationItem } from './notification-item';
@@ -68,19 +69,14 @@ export const NotificationList = ({
 
   if (notifications.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-2 px-4 py-10 text-center">
-        <span
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-muted"
-          aria-hidden
-        >
-          <Bell className="h-5 w-5 text-muted-foreground" />
-        </span>
-        <p className="text-sm font-medium text-foreground">
-          {t('notifications.list.empty.title')}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          {t('notifications.list.empty.description')}
-        </p>
+      <div className="px-4 py-6">
+        <EmptyStateIllustrated
+          illustration="notifications"
+          size="sm"
+          title={t('notifications.list.empty.title')}
+          description={t('notifications.list.empty.description')}
+          className="border-none"
+        />
       </div>
     );
   }

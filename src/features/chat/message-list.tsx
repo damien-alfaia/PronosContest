@@ -2,6 +2,7 @@ import { ArrowUp, Loader2 } from 'lucide-react';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { EmptyStateIllustrated } from '@/components/common/empty-state-illustrated';
 import { Button } from '@/components/ui/button';
 
 import { MessageBubble } from './message-bubble';
@@ -164,11 +165,14 @@ export const MessageList = ({
 
   if (messages.length === 0) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-1 p-6 text-center">
-        <p className="text-sm font-medium">{t('chat.empty.title')}</p>
-        <p className="text-xs text-muted-foreground">
-          {t('chat.empty.description')}
-        </p>
+      <div className="flex flex-1 items-center justify-center p-6">
+        <EmptyStateIllustrated
+          illustration="chat"
+          size="sm"
+          title={t('chat.empty.title')}
+          description={t('chat.empty.description')}
+          className="border-none"
+        />
       </div>
     );
   }
@@ -221,12 +225,11 @@ export const MessageList = ({
               const sameAuthor = prev ? prev.user_id === m.user_id : false;
               // Seuil : 5 min entre deux messages pour qu'ils restent
               // groupés (sinon on ré-affiche le header).
-              const withinBurst =
-                prev
-                  ? new Date(m.created_at).getTime() -
-                      new Date(prev.created_at).getTime() <
-                    5 * 60_000
-                  : false;
+              const withinBurst = prev
+                ? new Date(m.created_at).getTime() -
+                    new Date(prev.created_at).getTime() <
+                  5 * 60_000
+                : false;
               const showHeader = !(sameAuthor && withinBurst);
               return (
                 <li key={m.id} className="list-none">

@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useParams } from 'react-router-dom';
 
+import { EmptyStateIllustrated } from '@/components/common/empty-state-illustrated';
 import { FullScreenSpinner } from '@/components/common/full-screen-spinner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -21,10 +22,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 
 import type { ClassementRow } from './schemas';
-import {
-  useClassementQuery,
-  useClassementRealtime,
-} from './use-classement';
+import { useClassementQuery, useClassementRealtime } from './use-classement';
 
 /**
  * Page Classement d'un concours.
@@ -123,7 +121,9 @@ export const ConcoursClassementPage = () => {
   const isMember = useMemo(
     () =>
       Boolean(
-        concours && userId && concours.participants.some((p) => p.user_id === userId),
+        concours &&
+        userId &&
+        concours.participants.some((p) => p.user_id === userId),
       ),
     [concours, userId],
   );
@@ -193,10 +193,7 @@ export const ConcoursClassementPage = () => {
             <span className="font-medium">{t('classement.myPosition')}</span>
             <Badge
               variant="outline"
-              className={cn(
-                'font-semibold',
-                getRankClass(myRow.rang) ?? '',
-              )}
+              className={cn('font-semibold', getRankClass(myRow.rang) ?? '')}
             >
               #{myRow.rang}
             </Badge>
@@ -233,7 +230,8 @@ export const ConcoursClassementPage = () => {
           <FullScreenSpinner />
         </div>
       ) : !hasRows ? (
-        <EmptyState
+        <EmptyStateIllustrated
+          illustration="classement"
           title={t('classement.empty.title')}
           description={t('classement.empty.description')}
         />
@@ -372,18 +370,3 @@ export const ConcoursClassementPage = () => {
 };
 
 // ------------------------------------------------------------------
-//  Sous-composant local : état vide
-// ------------------------------------------------------------------
-
-const EmptyState = ({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) => (
-  <div className="flex flex-col items-center gap-2 rounded-md border border-dashed p-8 text-center">
-    <p className="text-sm font-medium">{title}</p>
-    <p className="text-xs text-muted-foreground">{description}</p>
-  </div>
-);
