@@ -4,6 +4,120 @@
     "tagline": "Crée un concours, invite tes amis, pronostique, gagne.",
     "cta": "Commencer"
   },
+  "landing": {
+    "topbar": {
+      "login": "Se connecter",
+      "goToApp": "Mon tableau de bord",
+      "signupShort": "Créer un compte"
+    },
+    "hero": {
+      "eyebrow": "Coupe du Monde 2026 · 100 % gratuit",
+      "title": "Prédis la Coupe du Monde avec tes potes.",
+      "subtitle": "Crée un concours ou rejoins celui d'un ami. Saisis tes pronos, grimpe au classement en temps réel, gagne des badges et des jokers. Aucune pub intrusive, aucun paywall.",
+      "ctaJoin": "J'ai un code d'invitation",
+      "ctaCreate": "Créer un concours gratuit",
+      "mockupAlt": "Aperçu de l'application",
+      "mockupScoreboardTitle": "Classement",
+      "mockupScoreboardPlayer1": "Léa",
+      "mockupScoreboardPlayer2": "Tom",
+      "mockupScoreboardPlayer3": "Moi",
+      "mockupMatchLabel": "FR vs BR · groupe D"
+    },
+    "socialProof": {
+      "concoursLabel": "concours",
+      "pronosLabel": "pronostics",
+      "usersLabel": "joueurs",
+      "ariaLabel": "Statistiques publiques"
+    },
+    "howItWorks": {
+      "title": "Comment ça marche",
+      "subtitle": "Trois étapes, deux minutes, tu es dans le jeu.",
+      "steps": {
+        "join": {
+          "title": "1. Rejoins un concours",
+          "description": "Utilise un code d'invitation reçu par un ami, ou crée le tien en quelques clics."
+        },
+        "predict": {
+          "title": "2. Pronostique les matchs",
+          "description": "Score de chaque match, vainqueur aux TAB en phase finale. Auto-sauvegardé, modifiable jusqu'au coup d'envoi."
+        },
+        "rank": {
+          "title": "3. Grimpe au classement",
+          "description": "Rang mis à jour en direct dès le coup de sifflet final. Badges, jokers, chat — l'ambiance du stade à la maison."
+        }
+      }
+    },
+    "features": {
+      "title": "Tout ce dont tu as besoin, rien en trop",
+      "subtitle": "Un moteur de jeu complet, conçu pour des concours entre amis.",
+      "cards": {
+        "scoring": {
+          "title": "Scoring par cote",
+          "description": "Plus la surprise est grande, plus ton prono rapporte. 1 point bon résultat, 3 points score exact, multiplié par la cote."
+        },
+        "jokers": {
+          "title": "Jokers de jeu",
+          "description": "Doubler tes points, challenger un pote, offrir un bonus. 7 jokers tous gagnables en jouant."
+        },
+        "badges": {
+          "title": "Badges à débloquer",
+          "description": "28 badges répartis en 10 catégories. Série, score parfait, champion — chaque exploit laisse une trace."
+        },
+        "chat": {
+          "title": "Chat live",
+          "description": "Discute avec les membres de ton concours en direct. Mentions @Prénom, pagination, séparateurs par jour."
+        },
+        "realtime": {
+          "title": "Classement Realtime",
+          "description": "Ton rang se met à jour en temps réel dès que le résultat tombe. Ambiance stade, même à 3 000 km."
+        },
+        "offline": {
+          "title": "App installable",
+          "description": "PWA compatible iOS / Android. Installe-la sur ton écran d'accueil. Consultation offline de tes pronos."
+        }
+      }
+    },
+    "free": {
+      "eyebrow": "Notre promesse",
+      "title": "100 % gratuit pendant la Coupe du Monde",
+      "description": "Pas d'abonnement, pas de paywall, pas de pub intrusive. Crée autant de concours que tu veux, invite qui tu veux, joue autant que tu veux — sans carte bancaire.",
+      "cta": "Créer mon compte"
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "items": {
+        "free": {
+          "question": "C'est vraiment gratuit ?",
+          "answer": "Oui. Pendant toute la Coupe du Monde 2026, tout est gratuit : créer des concours, saisir des pronos, chat, badges, jokers. Aucun tier payant. Après la CdM, on évaluera ce qui a du sens en fonction des retours, mais les fonctions de base resteront gratuites pour les utilisateurs existants."
+        },
+        "howToCreate": {
+          "question": "Comment on crée un concours ?",
+          "answer": "Tu crées ton compte (email + mot de passe), tu choisis un nom et une compétition (CdM 2026 par défaut), tu récupères un code d'invitation à 6 caractères, tu l'envoies à tes amis. Ils saisissent le code et c'est bon — tout le monde est dans le même classement."
+        },
+        "rugby": {
+          "question": "Ça marche pour le rugby ?",
+          "answer": "Oui, foot et rugby (règles XV) sont supportés. Le moteur de scoring gère les deux. D'autres sports viendront si la demande existe."
+        },
+        "limited": {
+          "question": "C'est limité dans le temps ?",
+          "answer": "Non. Même après la Coupe du Monde, l'application reste accessible. Tu peux continuer à utiliser tes concours, consulter l'historique, débloquer des badges sur d'autres compétitions."
+        },
+        "data": {
+          "question": "Mes données sont protégées ?",
+          "answer": "Oui. Données stockées sur Supabase (hébergement européen). Tu peux exporter tes données et supprimer ton compte à tout moment depuis ton profil. Aucune donnée revendue ni croisée avec des tiers."
+        }
+      }
+    },
+    "footer": {
+      "madeWith": "Fait pour la Coupe du Monde 2026.",
+      "copyright": "© 2026 PronosticsContest. Tous droits réservés.",
+      "links": {
+        "terms": "Conditions d'utilisation",
+        "privacy": "Confidentialité",
+        "contact": "Contact"
+      }
+    }
+  },
   "theme": {
     "label": "Thème",
     "light": "Clair",

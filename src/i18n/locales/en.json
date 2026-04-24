@@ -4,6 +4,120 @@
     "tagline": "Start a contest, invite your friends, predict, win.",
     "cta": "Get started"
   },
+  "landing": {
+    "topbar": {
+      "login": "Log in",
+      "goToApp": "My dashboard",
+      "signupShort": "Sign up"
+    },
+    "hero": {
+      "eyebrow": "World Cup 2026 · 100 % free",
+      "title": "Predict the World Cup with your friends.",
+      "subtitle": "Start a contest or join a friend's. Make your predictions, climb the live leaderboard, unlock badges and jokers. No intrusive ads, no paywall.",
+      "ctaJoin": "I have an invite code",
+      "ctaCreate": "Start a free contest",
+      "mockupAlt": "App preview",
+      "mockupScoreboardTitle": "Leaderboard",
+      "mockupScoreboardPlayer1": "Léa",
+      "mockupScoreboardPlayer2": "Tom",
+      "mockupScoreboardPlayer3": "Me",
+      "mockupMatchLabel": "FR vs BR · group D"
+    },
+    "socialProof": {
+      "concoursLabel": "contests",
+      "pronosLabel": "predictions",
+      "usersLabel": "players",
+      "ariaLabel": "Public stats"
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "subtitle": "Three steps, two minutes, you're in.",
+      "steps": {
+        "join": {
+          "title": "1. Join a contest",
+          "description": "Use an invite code from a friend, or create your own in a few clicks."
+        },
+        "predict": {
+          "title": "2. Predict the matches",
+          "description": "Score for each match, penalty-shootout winner in the knockout stage. Auto-saved, editable until kick-off."
+        },
+        "rank": {
+          "title": "3. Climb the leaderboard",
+          "description": "Rank updated live as soon as the final whistle blows. Badges, jokers, chat — stadium vibes at home."
+        }
+      }
+    },
+    "features": {
+      "title": "Everything you need, nothing you don't",
+      "subtitle": "A full game engine, built for contests between friends.",
+      "cards": {
+        "scoring": {
+          "title": "Odds-weighted scoring",
+          "description": "The bigger the upset, the bigger the reward. 1 point for the right outcome, 3 for the exact score, multiplied by the odds."
+        },
+        "jokers": {
+          "title": "Game jokers",
+          "description": "Double your points, challenge a friend, gift a bonus. 7 jokers — all earned by playing, never bought."
+        },
+        "badges": {
+          "title": "Unlockable badges",
+          "description": "28 badges across 10 categories. Streak, perfect score, champion — every feat leaves a mark."
+        },
+        "chat": {
+          "title": "Live chat",
+          "description": "Chat with contest members in real time. @FirstName mentions, pagination, day separators."
+        },
+        "realtime": {
+          "title": "Realtime leaderboard",
+          "description": "Your rank updates live the moment a result lands. Stadium atmosphere, 3 000 km away."
+        },
+        "offline": {
+          "title": "Installable app",
+          "description": "PWA compatible iOS / Android. Pin it to your home screen. Offline access to your predictions."
+        }
+      }
+    },
+    "free": {
+      "eyebrow": "Our promise",
+      "title": "100 % free throughout the World Cup",
+      "description": "No subscription, no paywall, no intrusive ads. Create as many contests as you want, invite whoever you want, play as much as you want — no credit card.",
+      "cta": "Create my account"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": {
+        "free": {
+          "question": "Is it really free?",
+          "answer": "Yes. Throughout the 2026 World Cup, everything is free: creating contests, submitting predictions, chat, badges, jokers. No paid tier. After the World Cup we'll evaluate what makes sense based on feedback, but core features will remain free for existing users."
+        },
+        "howToCreate": {
+          "question": "How do I create a contest?",
+          "answer": "You create your account (email + password), pick a name and a competition (World Cup 2026 by default), get a 6-character invite code, and send it to your friends. They enter the code and you're all on the same leaderboard."
+        },
+        "rugby": {
+          "question": "Does it work for rugby?",
+          "answer": "Yes, football and rugby (XV rules) are both supported. The scoring engine handles both. More sports will follow if there's demand."
+        },
+        "limited": {
+          "question": "Is it time-limited?",
+          "answer": "No. Even after the World Cup, the app stays available. You can keep using your contests, check history, unlock badges on other competitions."
+        },
+        "data": {
+          "question": "Is my data protected?",
+          "answer": "Yes. Data is stored on Supabase (European hosting). You can export your data and delete your account anytime from your profile. No data is sold or cross-referenced with third parties."
+        }
+      }
+    },
+    "footer": {
+      "madeWith": "Built for the 2026 World Cup.",
+      "copyright": "© 2026 PronosticsContest. All rights reserved.",
+      "links": {
+        "terms": "Terms of service",
+        "privacy": "Privacy",
+        "contact": "Contact"
+      }
+    }
+  },
   "theme": {
     "label": "Theme",
     "light": "Light",
