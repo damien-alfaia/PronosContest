@@ -1,5 +1,5 @@
 import { ArrowLeft, Medal, Target, Trophy } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useParams } from 'react-router-dom';
 
@@ -18,6 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useConcoursDetailQuery } from '@/features/concours/use-concours';
+import { useMarkFirstClassementViewedMutation } from '@/features/onboarding/use-onboarding';
 import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 
@@ -117,6 +118,18 @@ export const ConcoursClassementPage = () => {
 
   const classementQuery = useClassementQuery(id);
   useClassementRealtime(id, { enabled: Boolean(id) });
+
+  // Milestone FTUE : marque first_classement_viewed_at au 1er visit.
+  // Guard par ref pour éviter StrictMode double-fire + refiring sur
+  // re-render. Idempotent côté SQL (filtre `is null`), safe même sans ref.
+  const markClassementMutation = useMarkFirstClassementViewedMutation();
+  const classementMarkedRef = useRef(false);
+  useEffect(() => {
+    if (!userId || classementMarkedRef.current) return;
+    classementMarkedRef.current = true;
+    markClassementMutation.mutate(userId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   const isMember = useMemo(
     () =>

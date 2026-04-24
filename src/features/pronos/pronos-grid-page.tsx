@@ -15,6 +15,7 @@ import {
   useIncomingChallengesInConcoursQuery,
   useUserJokersInConcoursQuery,
 } from '@/features/jokers/use-jokers';
+import { ProductTour } from '@/features/onboarding/product-tour';
 import { useAuth } from '@/hooks/use-auth';
 import { getGroupColor } from '@/lib/group-colors';
 import { cn } from '@/lib/utils';
@@ -209,6 +210,13 @@ export const PronosGridPage = () => {
 
   const grouped = useMemo(() => groupByRound(filteredMatchs), [filteredMatchs]);
 
+  // 1er match visible (tous rounds confondus), utilisé comme ancre du
+  // product tour pour le coach-mark "Entre ton pronostic".
+  const firstMatchId = useMemo(() => {
+    const entries = Array.from(grouped.values());
+    return entries[0]?.[0]?.id;
+  }, [grouped]);
+
   // ---------- Guards ----------
 
   if (!id) return <Navigate to="/app/concours" replace />;
@@ -264,7 +272,7 @@ export const PronosGridPage = () => {
             </p>
           </div>
 
-          <Button asChild variant="outline" size="sm">
+          <Button asChild variant="outline" size="sm" data-tour="pronos-classement-cta">
             <Link to={`/app/concours/${id}/classement`}>
               <Trophy className="mr-2 h-4 w-4" aria-hidden />
               {t('pronos.viewClassement')}
@@ -281,6 +289,7 @@ export const PronosGridPage = () => {
           role="tablist"
           aria-label={t('pronos.filters.statusLabel')}
           className="flex gap-1 rounded-md border p-1"
+          data-tour="pronos-filters"
         >
           {FILTER_MODES.map((mode) => (
             <button
@@ -385,24 +394,37 @@ export const PronosGridPage = () => {
                 </Badge>
               </h2>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                {matchs.map((match) => (
-                  <MatchCard
-                    key={match.id}
-                    match={match}
-                    existing={pronosByMatch.get(match.id)}
-                    concoursId={id}
-                    userId={userId}
-                    usedJokers={usedJokersByMatch.get(match.id) ?? []}
-                    incomingChallenges={
-                      incomingChallengesByMatch.get(match.id) ?? []
-                    }
-                  />
-                ))}
+                {matchs.map((match) => {
+                  const card = (
+                    <MatchCard
+                      match={match}
+                      existing={pronosByMatch.get(match.id)}
+                      concoursId={id}
+                      userId={userId}
+                      usedJokers={usedJokersByMatch.get(match.id) ?? []}
+                      incomingChallenges={
+                        incomingChallengesByMatch.get(match.id) ?? []
+                      }
+                    />
+                  );
+                  return match.id === firstMatchId ? (
+                    <div key={match.id} data-tour="pronos-first-match-card">
+                      {card}
+                    </div>
+                  ) : (
+                    <div key={match.id}>{card}</div>
+                  );
+                })}
               </div>
             </section>
           ))}
         </div>
       )}
+
+      {/* Product tour — auto-start au 1er visit, idempotent via
+          tour_steps_completed. `enabled` désactivé s'il n'y a aucun
+          match visible (éviterait de planter sur un selector absent). */}
+      <ProductTour enabled={Boolean(firstMatchId) && totalMatchs > 0} />
     </div>
   );
 };

@@ -28,6 +28,7 @@ import {
 } from '@/features/badges/use-badges';
 import { JoinByCodeDialog } from '@/features/concours/components/join-by-code-dialog';
 import { useMyConcoursQuery } from '@/features/concours/use-concours';
+import { OnboardingChecklist } from '@/features/onboarding/onboarding-checklist';
 import { useAuth } from '@/hooks/use-auth';
 
 /**
@@ -73,6 +74,8 @@ export const DashboardPage = () => {
           {t('dashboard.subtitle')}
         </p>
       </header>
+
+      <OnboardingChecklist />
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* ================================================= */}
