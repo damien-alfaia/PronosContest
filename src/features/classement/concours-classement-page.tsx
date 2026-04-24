@@ -2,6 +2,7 @@ import { ArrowLeft, Medal, Target, Trophy } from 'lucide-react';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { EmptyStateIllustrated } from '@/components/common/empty-state-illustrated';
 import { FullScreenSpinner } from '@/components/common/full-screen-spinner';
@@ -146,6 +147,89 @@ export const ConcoursClassementPage = () => {
     [classementQuery.data, userId],
   );
 
+  // ---------- Moment émotionnel (Sprint 9.C.4) ----------
+  //
+  // Auto-scroll vers la ligne de l'utilisateur + toast "N places gagnées /
+  // perdues" en comparant le rang courant au rang précédent stocké en
+  // sessionStorage. Idempotent via un useRef qui garde le dernier rang
+  // déjà traité dans cette session de navigation.
+  //
+  // Storage key : `classement:lastRank:<concoursId>:<userId>` — scopé
+  // au couple concours/user pour ne pas mélanger les deltas entre
+  // plusieurs concours.
+  const myRowRef = useRef<HTMLTableRowElement | null>(null);
+  const rankProcessedRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!id || !userId || !myRow) return;
+
+    const storageKey = `classement:lastRank:${id}:${userId}`;
+    const currentRang = myRow.rang;
+
+    // Guard : déjà traité ce rang pendant le montage courant ?
+    if (rankProcessedRef.current === currentRang) return;
+    rankProcessedRef.current = currentRang;
+
+    // Delta vs rang précédent (session-scoped — efface au reload complet
+    // du navigateur, ce qui est OK : on veut le delta "depuis la dernière
+    // visite dans cette session").
+    let previousRang: number | null = null;
+    try {
+      const raw = sessionStorage.getItem(storageKey);
+      if (raw) {
+        const parsed = Number.parseInt(raw, 10);
+        if (Number.isFinite(parsed) && parsed >= 1) previousRang = parsed;
+      }
+    } catch {
+      // sessionStorage peut throw en navigation privée extrême, silencieux.
+    }
+
+    if (previousRang !== null && previousRang !== currentRang) {
+      // Rang monte = places gagnées (delta > 0), rang descend = places
+      // perdues. On inverse le signe pour que le toast affiche +N / -N
+      // dans le sens naturel "progression".
+      const delta = previousRang - currentRang;
+      if (delta > 0) {
+        toast.success(t('classement.rankDelta.up', { count: delta }), {
+          description: t('classement.rankDelta.description', {
+            from: previousRang,
+            to: currentRang,
+          }),
+        });
+      } else if (delta < 0) {
+        toast.warning(t('classement.rankDelta.down', { count: -delta }), {
+          description: t('classement.rankDelta.description', {
+            from: previousRang,
+            to: currentRang,
+          }),
+        });
+      }
+    }
+
+    // Persiste le rang courant pour la prochaine visite.
+    try {
+      sessionStorage.setItem(storageKey, String(currentRang));
+    } catch {
+      // silencieux
+    }
+  }, [id, userId, myRow, t]);
+
+  // Auto-scroll vers la ligne de l'user au 1er rendu où elle est mountée.
+  // Délay léger pour laisser le tableau peindre avant de scroller.
+  const scrolledRef = useRef(false);
+  useEffect(() => {
+    if (!myRowRef.current || scrolledRef.current || !myRow) return;
+    scrolledRef.current = true;
+    const timer = window.setTimeout(() => {
+      myRowRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest',
+      });
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [myRow]);
+
   // ---------- Guards ----------
 
   if (!id) return <Navigate to="/app/concours" replace />;
@@ -284,6 +368,7 @@ export const ConcoursClassementPage = () => {
                 return (
                   <TableRow
                     key={row.user_id}
+                    ref={isMe ? myRowRef : undefined}
                     className={cn(isMe && 'bg-primary/5 hover:bg-primary/10')}
                     aria-label={
                       isMe ? t('classement.rowMeAriaLabel') : undefined
