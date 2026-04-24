@@ -95,11 +95,14 @@
 
     /* ---- Shadows — élévation iOS/Android ---- */
     --shadow-xs: 0 1px 2px 0 hsl(226 25% 12% / 0.04);
-    --shadow-sm: 0 1px 3px 0 hsl(226 25% 12% / 0.06),
+    --shadow-sm:
+      0 1px 3px 0 hsl(226 25% 12% / 0.06),
       0 1px 2px -1px hsl(226 25% 12% / 0.04);
-    --shadow-md: 0 4px 12px -2px hsl(226 25% 12% / 0.08),
+    --shadow-md:
+      0 4px 12px -2px hsl(226 25% 12% / 0.08),
       0 2px 4px -2px hsl(226 25% 12% / 0.04);
-    --shadow-lg: 0 12px 32px -8px hsl(226 25% 12% / 0.12),
+    --shadow-lg:
+      0 12px 32px -8px hsl(226 25% 12% / 0.12),
       0 4px 12px -4px hsl(226 25% 12% / 0.06);
     --shadow-xl: 0 24px 48px -12px hsl(226 25% 12% / 0.18);
     --shadow-primary: 0 8px 24px -8px hsl(var(--primary) / 0.45);
@@ -110,9 +113,16 @@
     --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-emphasis: cubic-bezier(0.2, 0, 0, 1); /* iOS-like */
     --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1); /* spring léger */
+    --ease-celebration: cubic-bezier(
+      0.16,
+      1,
+      0.3,
+      1
+    ); /* feel-good, apparition bumpée */
     --duration-fast: 120ms;
     --duration-base: 200ms;
     --duration-slow: 320ms;
+    --duration-celebration: 600ms;
 
     /* ---- Touch targets mobiles ---- */
     --touch-target: 44px;
@@ -165,8 +175,8 @@
 
     /* Shadows plus contrastées en dark */
     --shadow-xs: 0 1px 2px 0 hsl(0 0% 0% / 0.25);
-    --shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.35),
-      0 1px 2px -1px hsl(0 0% 0% / 0.25);
+    --shadow-sm:
+      0 1px 3px 0 hsl(0 0% 0% / 0.35), 0 1px 2px -1px hsl(0 0% 0% / 0.25);
     --shadow-md: 0 4px 12px -2px hsl(0 0% 0% / 0.45);
     --shadow-lg: 0 12px 32px -8px hsl(0 0% 0% / 0.55);
     --shadow-xl: 0 24px 48px -12px hsl(0 0% 0% / 0.65);
@@ -187,7 +197,11 @@
   body {
     @apply bg-background text-foreground;
     font-family:
-      'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      'Inter',
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      sans-serif;
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
@@ -233,8 +247,7 @@
  * ================================================================== */
 @layer components {
   .display {
-    font-family:
-      'Inter', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: clamp(2.25rem, 5vw, 3rem); /* 36 → 48px */
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -289,8 +302,7 @@
   }
 
   .code {
-    font-family:
-      'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
     font-size: 0.9em;
     background: hsl(var(--muted));
     padding: 0.1em 0.35em;
@@ -305,5 +317,74 @@
     letter-spacing: -0.03em;
     font-size: 2.25rem; /* 36px — override via classe Tailwind si besoin */
     line-height: 1;
+  }
+}
+
+/* ==================================================================
+ * Brand gradient — utilities pour le hero landing, WelcomeHero et
+ * bannières de célébration. primary (indigo) → accent (amber) :
+ * warm, lisible, cohérent avec le décor radial de <body>.
+ * ================================================================== */
+@layer utilities {
+  .bg-brand-gradient {
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--accent)) 100%
+    );
+  }
+
+  /* Version atténuée pour les arrière-plans (hero, bandeaux) :
+   * on superpose le dégradé en faible opacité sur la couleur de
+   * fond ambiante. Usage : <section className="bg-brand-gradient-soft">. */
+  .bg-brand-gradient-soft {
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.08) 0%,
+      hsl(var(--accent) / 0.08) 100%
+    );
+  }
+
+  .dark .bg-brand-gradient-soft {
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.14) 0%,
+      hsl(var(--accent) / 0.12) 100%
+    );
+  }
+}
+
+/* ==================================================================
+ * Celebrate — animation d'apparition bumpée, usage :
+ *   <div className="animate-celebrate">…</div>
+ * Utilisée pour les moments feel-good (WelcomeHero, RankDeltaToast,
+ * célébration de badge débloqué, etc.).
+ * ================================================================== */
+@layer utilities {
+  @keyframes celebrate-bump {
+    0% {
+      opacity: 0;
+      transform: scale(0.92) translateY(8px);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.02) translateY(0);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .animate-celebrate {
+    animation: celebrate-bump var(--duration-celebration)
+      var(--ease-celebration) both;
+  }
+
+  /* Respect prefers-reduced-motion (a11y) : on saute l'animation */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-celebrate {
+      animation: none;
+    }
   }
 }

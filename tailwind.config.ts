@@ -103,8 +103,8 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
-        xl: 'var(--radius-lg)', /* 16px — modales, sheets */
-        '2xl': 'var(--radius-xl)', /* 24px — bottom-sheets, tiles */
+        xl: 'var(--radius-lg)' /* 16px — modales, sheets */,
+        '2xl': 'var(--radius-xl)' /* 24px — bottom-sheets, tiles */,
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
@@ -132,11 +132,13 @@ export default {
         fast: 'var(--duration-fast)',
         base: 'var(--duration-base)',
         slow: 'var(--duration-slow)',
+        celebration: 'var(--duration-celebration)',
       },
       transitionTimingFunction: {
         standard: 'var(--ease-standard)',
         emphasis: 'var(--ease-emphasis)',
         bounce: 'var(--ease-bounce)',
+        celebration: 'var(--ease-celebration)',
       },
       height: {
         /* Hauteurs tactiles minimums (≥ 44px mobile) */
