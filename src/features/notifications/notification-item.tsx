@@ -4,6 +4,7 @@ import {
   Bell as BellIcon,
   Gift,
   type LucideIcon,
+  Share2,
   Swords,
   Trophy,
   UserPlus,
@@ -76,6 +77,13 @@ const TYPE_VISUALS: Record<NotificationType, TypeVisual> = {
     iconClassName: 'text-emerald-700 dark:text-emerald-300',
     bgClassName: 'bg-emerald-100 dark:bg-emerald-950/50',
   },
+  // Milestone referral (Sprint 9.C.5) — teinte indigo pour faire écho
+  // au brand-gradient de la ReferralBanner.
+  referral_milestone: {
+    icon: Share2,
+    iconClassName: 'text-indigo-700 dark:text-indigo-300',
+    bgClassName: 'bg-indigo-100 dark:bg-indigo-950/50',
+  },
 };
 
 // ------------------------------------------------------------------
@@ -106,6 +114,8 @@ const resolveTitle = (
       return t('notifications.types.challengeReceived.title');
     case 'gift_received':
       return t('notifications.types.giftReceived.title');
+    case 'referral_milestone':
+      return t('notifications.types.referralMilestone.title');
   }
 };
 
@@ -163,6 +173,17 @@ const resolveBody = (
       return t('notifications.types.giftReceived.body', {
         code: n.payload.gifted_joker_code,
       });
+    case 'referral_milestone':
+      // 2 libellés selon qu'un joker a été offert ou non (dépend du
+      // concours où le dernier invité a rejoint : si jokers_enabled=false,
+      // la notif reste motivante mais sans joker).
+      return n.payload.joker_granted
+        ? t('notifications.types.referralMilestone.body.withJoker', {
+            count: n.payload.count,
+          })
+        : t('notifications.types.referralMilestone.body.noJoker', {
+            count: n.payload.count,
+          });
   }
 };
 
@@ -249,6 +270,10 @@ const resolveRoute = (n: Notification): string => {
       // On envoie sur la fiche concours : c'est là que la section
       // "Mes jokers" est visible (sous le toggle owner) et que le
       // nouveau slot apparaît.
+      return `/app/concours/${n.payload.concours_id}`;
+    case 'referral_milestone':
+      // On envoie sur la fiche concours où l'invité a rejoint — c'est
+      // là que le joker offert apparaît dans la section "Mes jokers".
       return `/app/concours/${n.payload.concours_id}`;
   }
 };

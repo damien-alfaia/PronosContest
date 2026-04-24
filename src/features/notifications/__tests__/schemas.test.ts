@@ -22,7 +22,7 @@ import {
 // ------------------------------------------------------------------
 
 describe('NOTIFICATION_TYPE_VALUES', () => {
-  it('expose les 6 types supportés (Sprint 6.C + 8.C.4)', () => {
+  it('expose les 7 types supportés (Sprint 6.C + 8.C.4 + 9.C.5)', () => {
     expect(NOTIFICATION_TYPE_VALUES).toEqual([
       'match_result',
       'badge_earned',
@@ -30,6 +30,7 @@ describe('NOTIFICATION_TYPE_VALUES', () => {
       'chat_mention',
       'challenge_received',
       'gift_received',
+      'referral_milestone',
     ]);
   });
 });

@@ -447,6 +447,13 @@
     "empty": {
       "title": "Empty leaderboard",
       "description": "No participants yet. Invite players to get things started!"
+    },
+    "rankDelta": {
+      "up_one": "+{{count}} place 🚀",
+      "up_other": "+{{count}} places 🚀",
+      "down_one": "-{{count}} place 📉",
+      "down_other": "-{{count}} places 📉",
+      "description": "Rank {{from}} → {{to}}"
     }
   },
   "profile": {
@@ -673,6 +680,13 @@
       "giftReceived": {
         "title": "You received a joker",
         "body": "A player gifted you a \"{{code}}\" joker."
+      },
+      "referralMilestone": {
+        "title": "Way to go, ambassador 🎉",
+        "body": {
+          "withJoker": "{{count}} friends joined thanks to you — 1 \"double\" joker unlocked 🎁",
+          "noJoker": "{{count}} friends joined thanks to you. Thank you ❤️"
+        }
       }
     },
     "errors": {
@@ -895,6 +909,28 @@
       "drapeauUrlFormat": "Invalid flag URL.",
       "fifaIdInteger": "FIFA ID must be an integer.",
       "fifaIdRange": "FIFA ID must be greater than zero."
+    }
+  },
+  "referrals": {
+    "banner": {
+      "title": "Invite your friends",
+      "description": "Share the code or link — the more, the merrier.",
+      "codeLabel": "Invite code",
+      "shareCta": "Share the link",
+      "toast": {
+        "codeCopied": "Code copied!",
+        "linkCopied": "Link copied!",
+        "copyError": "Couldn't copy — paste it manually."
+      },
+      "share": {
+        "title": "Join my contest",
+        "text": "Come predict the 2026 World Cup in contest \"{{concours}}\" — it's free!"
+      },
+      "milestone": {
+        "progress": "{{current}} / {{total}} friends joined · {{toNext}} more for 1 joker 🎁",
+        "reached": "{{count}} friends joined — 1 joker unlocked 🎉",
+        "hint": "Every 3rd friend who joins, you unlock 1 joker."
+      }
     }
   },
   "onboarding": {

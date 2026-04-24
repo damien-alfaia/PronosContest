@@ -447,6 +447,13 @@
     "empty": {
       "title": "Classement vide",
       "description": "Aucun participant pour le moment. Invite des joueurs pour lancer la compétition !"
+    },
+    "rankDelta": {
+      "up_one": "+{{count}} place 🚀",
+      "up_other": "+{{count}} places 🚀",
+      "down_one": "-{{count}} place 📉",
+      "down_other": "-{{count}} places 📉",
+      "description": "Rang {{from}} → {{to}}"
     }
   },
   "profile": {
@@ -673,6 +680,13 @@
       "giftReceived": {
         "title": "Tu as reçu un joker",
         "body": "Un joueur t'a offert un joker « {{code}} »."
+      },
+      "referralMilestone": {
+        "title": "Bravo ambassadeur 🎉",
+        "body": {
+          "withJoker": "{{count}} potes ont rejoint grâce à toi — 1 joker « double » débloqué 🎁",
+          "noJoker": "{{count}} potes ont rejoint grâce à toi. Merci ❤️"
+        }
       }
     },
     "errors": {
@@ -895,6 +909,28 @@
       "drapeauUrlFormat": "URL de drapeau invalide.",
       "fifaIdInteger": "L'ID FIFA doit être un entier.",
       "fifaIdRange": "L'ID FIFA doit être supérieur à zéro."
+    }
+  },
+  "referrals": {
+    "banner": {
+      "title": "Invite tes potes",
+      "description": "Partage le code ou le lien — plus vous êtes, plus c'est fun.",
+      "codeLabel": "Code d'invitation",
+      "shareCta": "Partager le lien",
+      "toast": {
+        "codeCopied": "Code copié !",
+        "linkCopied": "Lien copié !",
+        "copyError": "Impossible de copier — colle à la main."
+      },
+      "share": {
+        "title": "Rejoins mon concours",
+        "text": "Viens pronostiquer la CdM 2026 dans le concours \"{{concours}}\" — c'est gratuit !"
+      },
+      "milestone": {
+        "progress": "{{current}} / {{total}} potes rejoints · plus que {{toNext}} pour 1 joker 🎁",
+        "reached": "{{count}} potes rejoints — 1 joker débloqué 🎉",
+        "hint": "À chaque 3e invité qui rejoint, tu débloques 1 joker."
+      }
     }
   },
   "onboarding": {

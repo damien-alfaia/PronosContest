@@ -40,6 +40,7 @@ export const NOTIFICATION_TYPE_VALUES = [
   'chat_mention',
   'challenge_received',
   'gift_received',
+  'referral_milestone',
 ] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPE_VALUES)[number];
 
@@ -163,6 +164,24 @@ export const giftReceivedPayloadSchema = z.object({
 });
 export type GiftReceivedPayload = z.infer<typeof giftReceivedPayloadSchema>;
 
+/**
+ * Payload `referral_milestone` — produit par le trigger
+ * `handle_referral_milestone` (Sprint 9.C.1) quand l'user a fait
+ * rejoindre son N-ième invité (N multiple de 3). `count` est le cumul
+ * total (3, 6, 9…). `joker_granted` indique si un joker `double` a bien
+ * été offert — dépend du `concours.jokers_enabled` du concours où le
+ * dernier invité a rejoint (si jokers désactivés, on laisse passer la
+ * notif motivante mais pas de joker).
+ */
+export const referralMilestonePayloadSchema = z.object({
+  count: z.number().int().positive(),
+  concours_id: z.string().uuid(),
+  joker_granted: z.boolean(),
+});
+export type ReferralMilestonePayload = z.infer<
+  typeof referralMilestonePayloadSchema
+>;
+
 // ------------------------------------------------------------------
 //  ROW (union discriminée par `type`)
 // ------------------------------------------------------------------
@@ -212,6 +231,11 @@ export const notificationSchema = z.discriminatedUnion('type', [
     type: z.literal('gift_received'),
     payload: giftReceivedPayloadSchema,
   }),
+  z.object({
+    ...notificationBaseShape,
+    type: z.literal('referral_milestone'),
+    payload: referralMilestonePayloadSchema,
+  }),
 ]);
 export type Notification = z.infer<typeof notificationSchema>;
 
@@ -224,6 +248,9 @@ export type ConcoursNewMemberNotification = Notification & {
 export type ChatMentionNotification = Notification & { type: 'chat_mention' };
 export type ChallengeReceivedNotification = Notification & {
   type: 'challenge_received';
+};
+export type ReferralMilestoneNotification = Notification & {
+  type: 'referral_milestone';
 };
 export type GiftReceivedNotification = Notification & {
   type: 'gift_received';
