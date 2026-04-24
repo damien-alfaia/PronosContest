@@ -163,8 +163,9 @@ pnpm prepare                     # Husky hooks
 - [x] **Sprint 6** — Social & gamification (badges ✅, chat ✅, notifs ✅)
 - [x] **Sprint 7** — PWA, perf, docs + (optionnel, reporté) import auto API-Football
 - [x] **Sprint 8** — Bonus/malus (jokers) — acquisition (8.A) ➜ consommation + RPC `use_joker` (8.B) ➜ affichage UX (8.C : badges MatchCard, décomposition classement, historique profil, notifications sociales)
+- [ ] **Sprint 9** — Onboarding & lancement CdM 2026 (Phase 1 : 100 % gratuit, pas de gating). Décomposé en 4 semaines : W1 landing + fondations (✅ livré) ➜ W2 FTUE (signup wizard + welcome + checklist + product tour) ➜ W3 viral loop + moment émotionnel ➜ W4 analytics + legal + launch checklist. Spec détaillée : `docs/onboarding-saas-proposal.md`.
 
-Sprint courant : **Sprint 8 — livré** (livraisons 8.A → 8.C.5). Prochaines pistes post-Sprint 8 (à prioriser) : import auto API-Football (reporté Sprint 7) + legacy skip si ré-introduction de règles v1.
+Sprint courant : **Sprint 9 — Semaine 1 livrée**. Prochaine étape : Sprint 9.B (FTUE — wizard signup + welcome + checklist + product tour). Pistes post-Sprint 9 (à prioriser post-CdM) : monétisation Phase 2 (don / pass événement / white-label / freemium — décision informée par les données), import auto API-Football (reporté Sprint 7), legacy skip si ré-introduction de règles v1.
 
 ### Sprint 1 — récap (✅)
 
@@ -314,6 +315,63 @@ Checks verts (sandbox Linux + pnpm) : `typecheck` ✅ · `test src/features/joke
   **Checks verts finaux (sandbox Linux)** : `typecheck` ✅ (0 erreur) · `lint --max-warnings 0` ✅ (0 warning, 0 erreur) · `test` ✅ **731/731** répartis en 47 fichiers (jokers 118 + notifications 116 + classement 35 + auth 34 + concours 29 + pronos 53 + chat 106 + badges 51 + admin ~130 + pwa 21 + profile/dashboard/hooks/app 154 + lib 5) · `vite build` ✅ PWA 63 entrées precache (1168 KiB) en 6,29 s.
 
   Résumé Sprint 8 livré : **6 migrations** (init_jokers, jokers_consumption, jokers_scoring_effects, notifications_jokers, + tests SQL), **7 jokers** catalogués bilingues FR/EN (double / triple / safety_net / boussole / challenge / double_down / gift), **20 codes d'erreur** RPC `use_joker` mappés 1:1 en i18n, **nouvelles colonnes** `v_classement_concours.{prono_points, challenge_delta}` + `v_pronos_points.{points_pure, joker_multiplier, joker_safety_net, points_raw, points_final}`, **2 nouveaux types** de notifications (`challenge_received`, `gift_received`), **4 surfaces UX** (MatchCard badges, ClassementPage décomposition, HistoriqueJokersSection profil, NotificationBell 2 nouveaux visuels). Le MVP jokers est complet et testable end-to-end : acquisition → consommation → effet scoring → notification sociale → affichage.
+
+### Sprint 9 — Semaine 1 — récap (✅ landing refondue + fondations onboarding)
+
+**Cadre de décision stratégique (tranché le 2026-04-24)** — Phase 1 = 100 % gratuit jusqu'à fin CdM 2026 (pas de tier, pas de Stripe, pas de feature gating). Monétisation Phase 2 à décider post-CdM sur la base des données (pistes : don volontaire / pass événement / white-label / freemium informé). Détails + alternatives étudiées : `docs/onboarding-saas-proposal.md`. Cible : amis/famille + collègues de bureau. Aha moment principal = rejoindre un concours.
+
+- **9.A.1 (Migrations SQL Sprint 9)** — 3 migrations groupées pour éviter la multi-régénération de types :
+  - `20260501120000_onboarding_progress.sql` : table `user_onboarding_progress` (PK `user_id → auth.users`, colonnes timestamp par milestone `welcomed_at / first_concours_joined_at / first_prono_saved_at / first_classement_viewed_at / first_invite_sent_at`, `tour_steps_completed jsonb` avec CHECK array, `checklist_dismissed_at` nullable). RLS self-only (SELECT/INSERT/UPDATE, pas de DELETE policy — cascade via FK). Trigger `profiles_init_onboarding_progress` AFTER INSERT sur `profiles` en SECURITY DEFINER + `ON CONFLICT DO NOTHING` → ligne créée automatiquement à chaque nouveau profil. Backfill inclus (ligne créée pour tous les profils existants). Pas de DELETE policy : le cleanup passe par ON DELETE CASCADE du FK.
+  - `20260501130000_future_proof_hooks.sql` : crochets inertes Phase 2. `profiles.plan_code text not null default 'free'` avec CHECK `in ('free','host','pro','sponsor')` + index partiel `where plan_code <> 'free'`. `concours.is_sponsored boolean` + `concours.sponsor_brand text` + `concours.paid_features jsonb default '{}'` avec CHECK `jsonb_typeof = 'object'` + index partiel sponsored. Aucune policy additionnelle, aucun helper ne les lit en Phase 1 → 100 % inerte.
+  - `20260501140000_landing_stats.sql` : function `public.get_landing_stats() returns jsonb` en `SECURITY DEFINER STABLE` qui retourne `{nb_concours, nb_pronos, nb_users}` agrégés. Permet d'exposer les counts à anon **sans casser les RLS strictes** des 3 tables sources (alternative à une vue matérialisée — migration facile plus tard sans changer l'interface PostgREST). GRANT EXECUTE TO anon, authenticated.
+
+- **9.A.2 (Tokens design étendus)** — Ajouts minimalistes à `src/styles/globals.css` et `tailwind.config.ts` (le reste du design system était déjà en place Sprint 0+) :
+  - `--ease-celebration: cubic-bezier(.16,1,.3,1)` + `--duration-celebration: 600ms` → feel-good animations (WelcomeHero, RankDeltaToast, bump de badges).
+  - Utility `.bg-brand-gradient` (linear-gradient 135° primary → accent, indigo → amber) + `.bg-brand-gradient-soft` (version 8 % opacité light / 14 % dark) dans `@layer utilities` de `globals.css`.
+  - Keyframe `celebrate-bump` + utility `.animate-celebrate` (scale 0.92→1.02→1 + translateY 8px→0 + opacity 0→1, 600ms). Respect `prefers-reduced-motion: reduce` (no animation).
+  - Tailwind config : `transitionDuration.celebration` + `transitionTimingFunction.celebration` pour usage via utilities (`duration-celebration`, `ease-celebration`).
+
+- **9.A.3 (Composant `<EmptyStateIllustrated />`)** — `src/components/common/empty-state-illustrated.tsx` : composant centralisé avec 5 illustrations SVG inline (`pronos` = clipboard avec checkmark + ballon ; `concours` = trophée avec étoile + sparkles ; `classement` = podium 3 bars avec couronne 1re place ; `notifications` = cloche + Z's + dashed circle ; `chat` = 2 bulles avec typing dots). Style outline cohérent lucide-react (stroke-width 1.5, stroke `currentColor` hérité de `text-primary`, accents via `className="text-accent"`). 3 tailles `sm` (h-20) / `md` (h-32) / `lg` (h-40). Props `illustration / title / description? / action? / size? / className?`. Accessibilité : `role="status"` + `aria-label={title}` + illustration `aria-hidden`. Tree-shakable (switch/case sur illustration, pas d'import-all).
+
+- **9.A.4 (Refactor des 6 empty states)** — Remplacement des 6 emplacements existants :
+  1. `features/pronos/pronos-grid-page.tsx` — 2 usages (total + filtré) + suppression du composant local `EmptyState` dupliqué.
+  2. `features/classement/concours-classement-page.tsx` — 1 usage + suppression du local.
+  3. `features/chat/message-list.tsx` — passage du HTML brut à `<EmptyStateIllustrated illustration="chat" size="sm" className="border-none" />` (border-none car wrapper flex-1 du chat a déjà un padding).
+  4. `features/notifications/notification-list.tsx` — idem, retrait de l'import `Bell` (unused après refactor).
+  5. `features/concours/concours-page.tsx` ligne "Mes concours" — enrichi d'un `action` slot avec 2 boutons (`joinByCode` + `create`) ouvrant la modale existante / navigant vers `/app/concours/nouveau`.
+  6. `features/concours/concours-page.tsx` ligne "Découvrir" — version simplifiée `size="sm"` sans description (le titre varie déjà selon si search est actif).
+
+  Les clés i18n sont **toutes conservées** (`pronos.empty.*`, `classement.empty.*`, `chat.empty.*`, `notifications.list.empty.*`, `concours.empty.*`) — le refactor est purement visuel, aucun changement de copy.
+
+- **9.A.5 (SocialProofStrip + API + hook)** — 3 fichiers dans `features/landing/` :
+  - `api.ts` — `getLandingStats()` appelle `supabase.rpc('get_landing_stats')`, parse via Zod (`landingStatsSchema` : `nb_concours / nb_pronos / nb_users` int non-négatifs), renvoie `LANDING_STATS_ZERO` si payload malformé/null (fallback silencieux — on ne bloque pas la landing sur une erreur analytics). Retour en camelCase (`{nbConcours, nbPronos, nbUsers}`).
+  - `use-landing-stats.ts` — hook TanStack Query `useLandingStatsQuery()` avec `staleTime: 5 min` (landing pas besoin ultra-réactif) + `retry: 1` (éviter de bombarder le backend en cas d'incident). Query key structurée `landingKeys.stats()`. Pas d'auth requise (RPC anon-accessible).
+  - `social-proof-strip.tsx` — composant `<SocialProofStrip />` qui rend 3 stats en ligne (Trophy + ClipboardCheck + Users lucide-react), chiffres formatés via `new Intl.NumberFormat(locale)` (espace insécable FR). États : loading (3 skeleton placeholders), error (rien — fallback silencieux), empty (si 0/0/0 : rien — évite "0 concours" qui casse l'effet social proof), normal. Accessibilité : `role="list"` + `aria-label` + `role="listitem"` sur chaque stat.
+
+- **9.A.6 (Refonte complète de la landing page)** — Remplacement de `features/landing/landing-page.tsx` (58 lignes → 380 lignes) par une landing marketing complète :
+  1. **Topbar sticky** : logo gradient "P" + titre + toggle lang (FR/EN) + ThemeToggle + CTA adaptatif (Sign up / Dashboard si authentifié).
+  2. **Hero** : `bg-brand-gradient-soft`, eyebrow pill "Coupe du Monde 2026 · 100 % gratuit", `.display` title ("Prédis la Coupe du Monde avec tes potes."), subtitle bénéfice < 50 mots, 2 CTAs (primary `/auth/signup?intent=join` + outline `/auth/signup?intent=create` — l'intent sera consommée par le signup wizard W2), `animate-celebrate` sur la partie gauche. À droite : `<HeroMockup />` = carte scoreboard SVG inline rotée (podium 3 joueurs "Moi" en tête, ligne match FR vs BR, badge sparkles).
+  3. **Social proof** : `<SocialProofStrip />` branché sur la vue.
+  4. **Comment ça marche** : 3 cards `<HowItWorksStep />` (Rejoindre / Pronostiquer / Grimper) avec icônes KeyRound / Target / Medal sur bg-primary/10.
+  5. **Features** : 6 cards `<FeatureCard />` (scoring par cote, jokers, badges, chat, realtime, PWA offline) icône sur bg-accent/10, hover `shadow-md`.
+  6. **Bloc "100 % gratuit"** : `bg-brand-gradient` full (indigo→amber), `.display` blanche, promesse assumée "Pas d'abonnement, pas de paywall, pas de pub intrusive", CTA `variant="secondary"` final.
+  7. **FAQ** : 5 questions (C'est gratuit / Comment créer / Rugby / Limité / Données) en accordéon natif `<details>/<summary>` (keyboard & screen reader natifs, pas de dépendance @radix-ui/react-accordion ajoutée, chevron rotate via `group-open:rotate-180`).
+  8. **Footer** : `madeWith` + copyright + nav (Terms / Privacy / Contact — placeholders de route à câbler W4).
+
+  i18n FR/EN complet : bloc `landing.*` ~60 clés (hero / topbar / socialProof / howItWorks / features / free / faq / footer).
+
+- **9.A.7 (Tests Vitest + checks verts)** — 3 nouveaux fichiers de tests :
+  - `components/common/__tests__/empty-state-illustrated.test.tsx` — 12 tests (rendu title / description optionnelle / action slot / role=status + aria-label / 5 illustrations via `it.each` / propagation className / classe d'illustration par size sm/md/lg).
+  - `features/landing/__tests__/api.test.ts` — 6 tests (mock `supabase.rpc` via factory `rpcResponse` + `rpcCalls`, appel `get_landing_stats` avec bon nom, payload normal camelCase, data null → ZERO, champ manquant → ZERO, nombre négatif rejeté par Zod → ZERO, erreur RPC propagée).
+  - `features/landing/__tests__/social-proof-strip.test.tsx` — 5 tests (`vi.hoisted()` pour mock `useLandingStatsQuery`, loading → 3 animate-pulse, error → null, empty 0/0/0 → null, normal → 3 stats + chiffres formatés + labels i18n, role=list + listitem accessibility).
+
+  **Checks verts finaux (sandbox Linux, npm binaries directement invoqués)** : `tsc --noEmit` ✅ (0 erreur) · `eslint --max-warnings 0` ✅ (0 warning, 0 erreur) · `vitest run` ✅ **754 tests passés** (731 Sprint 8 + 23 Sprint 9.A) · `vite build` ✅ en 3.59 s (58 entrées precache PWA, bundle gzip 245 KiB).
+
+  Audit a11y W1 (manuel) : landmarks HTML corrects (`<header>/<main>/<section>/<footer>/<nav>`), hiérarchie h1→h2→h3 respectée, FAQ en `<details>/<summary>` (keyboard natif), tous les interactifs avec focus ring, `role="img"` + `aria-label` sur HeroMockup, toutes les icônes SVG en `aria-hidden`, `role="status"` sur empty states, `prefers-reduced-motion` respecté sur `animate-celebrate`.
+
+> **Note supabase gen types (Sprint 9.A)** : après les 3 migrations `20260501*`, relancer `supabase gen types typescript --local > src/types/database.ts` pour typer la nouvelle RPC `get_landing_stats` et les colonnes `profiles.plan_code` / `concours.{is_sponsored, sponsor_brand, paid_features}` / table `user_onboarding_progress`. Le code est rédigé pour typecheck dès régénération (aucun cast défensif nécessaire — typecheck actuel vert via la tolérance du typing `supabase.rpc` sur fonctions inconnues). **Pour appliquer les migrations** : `supabase db reset` (dev) ou `supabase db push` (staging/prod).
+
+**Résumé W1 livré** : **3 migrations** posées (onboarding progress + crochets Phase 2 + RPC landing stats), **5 nouvelles utilities/tokens** design (gradient brand + motion celebration + keyframe + 2 classes utility), **1 composant central** `<EmptyStateIllustrated />` + 5 illustrations SVG, **6 empty states** refactorés (dédoublonnage des 2 composants locaux), **1 landing refondue** (8 sections + mockup SVG + FAQ accordéon natif), **bloc i18n** `landing.*` FR/EN complet, **23 nouveaux tests** Vitest (tous verts), **754/754 tests** totaux au vert. Crochets Phase 2 posés sans friction pour la décision post-CdM.
 
 > **Reporté Sprint 7** : import automatique des matchs via API-Football (clé `API_FOOTBALL_KEY` déjà prévue dans `.env.example`). L'Edge Function d'import, la table de mapping `fifa_match_id ↔ api_football_id`, et le polling CRON sont volontairement hors périmètre du Sprint 5 pour livrer l'espace admin manuel en priorité. Tout le scoring est déjà branché à `matchs.status / score_a / score_b / vainqueur_tab` (Sprint 4), donc l'import auto n'aura qu'à écrire sur ces colonnes — la vue `v_classement_concours` et le Realtime front suivront sans changement.
 
