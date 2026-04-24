@@ -177,28 +177,7 @@
       "submit": "Create my account",
       "alreadyAccount": "Already have an account?",
       "loginLink": "Sign in",
-      "emailSent": "A confirmation email has been sent. Check your inbox.",
-      "wizard": {
-        "stepAriaLabel": "Account creation steps",
-        "nextStep": "Next",
-        "step1": {
-          "label": "Account",
-          "subtitle": "Start with your email and password."
-        },
-        "step2": {
-          "label": "Identity",
-          "subtitle": "What's your name? (will appear on the leaderboard)"
-        },
-        "step3": {
-          "label": "Contest",
-          "subtitle": "Last step — you can join a contest right now.",
-          "inputLabel": "Invite code",
-          "placeholder": "E.g. WC-2026",
-          "hintJoin": "Paste the code your friend gave you.",
-          "hintNeutral": "A friend gave you a code? Enter it here.",
-          "hintOptional": "Optional — you can always join a contest later."
-        }
-      }
+      "emailSent": "A confirmation email has been sent. Check your inbox."
     },
     "forgot": {
       "title": "Forgot password",
@@ -243,9 +222,7 @@
       "rateLimited": "Too many attempts. Try again in a moment.",
       "network": "Can't reach the server, check your connection.",
       "unknown": "Something went wrong. Try again in a moment.",
-      "invalidOrExpiredLink": "This link is invalid or expired.",
-      "inviteCodeTooLong": "Invite code too long (20 characters max).",
-      "inviteCodeFormat": "Invalid code (letters, digits and dashes only)."
+      "invalidOrExpiredLink": "This link is invalid or expired."
     }
   },
   "dashboard": {

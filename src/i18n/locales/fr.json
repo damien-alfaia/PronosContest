@@ -177,28 +177,7 @@
       "submit": "Créer mon compte",
       "alreadyAccount": "Déjà un compte ?",
       "loginLink": "Se connecter",
-      "emailSent": "Un e-mail de confirmation t'a été envoyé. Vérifie ta boîte.",
-      "wizard": {
-        "stepAriaLabel": "Étapes de création du compte",
-        "nextStep": "Suivant",
-        "step1": {
-          "label": "Compte",
-          "subtitle": "Commence par ton e-mail et ton mot de passe."
-        },
-        "step2": {
-          "label": "Identité",
-          "subtitle": "Comment t'appelles-tu ? (ça apparaîtra dans le classement)"
-        },
-        "step3": {
-          "label": "Concours",
-          "subtitle": "Dernière étape — tu peux rejoindre un concours tout de suite.",
-          "inputLabel": "Code d'invitation",
-          "placeholder": "Ex : CDM-2026",
-          "hintJoin": "Colle ici le code reçu par ton pote.",
-          "hintNeutral": "Un pote t'a filé un code ? Mets-le ici.",
-          "hintOptional": "Optionnel — tu pourras toujours rejoindre un concours plus tard."
-        }
-      }
+      "emailSent": "Un e-mail de confirmation t'a été envoyé. Vérifie ta boîte."
     },
     "forgot": {
       "title": "Mot de passe oublié",
@@ -243,9 +222,7 @@
       "rateLimited": "Trop de tentatives. Réessaie dans un instant.",
       "network": "Connexion impossible, vérifie ta connexion internet.",
       "unknown": "Une erreur est survenue. Réessaie dans un instant.",
-      "invalidOrExpiredLink": "Ce lien est invalide ou a expiré.",
-      "inviteCodeTooLong": "Code d'invitation trop long (20 caractères max).",
-      "inviteCodeFormat": "Code invalide (lettres, chiffres et tirets uniquement)."
+      "invalidOrExpiredLink": "Ce lien est invalide ou a expiré."
     }
   },
   "dashboard": {
