@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { ArrowLeft, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+import type * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -132,7 +133,33 @@ export const SignupPage = () => {
 
   const back = () => setStep((s) => (Math.max(1, s - 1) as 1 | 2 | 3));
 
-  const onSubmit = form.handleSubmit((values) => mutation.mutate(values));
+  // Garde dure : on ne soumet jamais le form sauf si on est sur l'étape
+  // finale. Nécessaire parce qu'un Enter tapé dans un input peut lever
+  // un `submit` event malgré les boutons `type="button"` (selon les
+  // browsers + combinaison avec shadcn Slot), ou un click bubble après
+  // setStep peut re-fire sur le nouveau bouton submit rendu à la même
+  // position DOM.
+  const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (step !== 3) {
+      e.preventDefault();
+      return;
+    }
+    void form.handleSubmit((values) => mutation.mutate(values))(e);
+  };
+
+  // Sur Enter pendant step 1 ou 2, avance plutôt que de soumettre —
+  // meilleure UX + défense en profondeur contre l'implicit submission.
+  const onFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key !== 'Enter') return;
+    // Laisse Enter sur les textarea / select natifs se comporter
+    // normalement (pas de textarea ici mais par sécurité)
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'TEXTAREA') return;
+    if (step < 3) {
+      e.preventDefault();
+      void next();
+    }
+  };
 
   const err = (field: keyof SignupWizardInput) => {
     const msg = form.formState.errors[field]?.message;
@@ -158,7 +185,12 @@ export const SignupPage = () => {
       <StepIndicator current={step} total={3} labels={getStepLabels(t)} />
 
       <Form {...form}>
-        <form onSubmit={onSubmit} className="mt-6 space-y-4" noValidate>
+        <form
+          onSubmit={onFormSubmit}
+          onKeyDown={onFormKeyDown}
+          className="mt-6 space-y-4"
+          noValidate
+        >
           {step === 1 ? (
             <Step1 form={form} err={err} t={t} />
           ) : step === 2 ? (
