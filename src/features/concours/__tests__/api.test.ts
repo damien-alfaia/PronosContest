@@ -218,13 +218,26 @@ describe('joinPublicConcours', () => {
 });
 
 describe('joinConcoursByCode', () => {
-  it('appelle la RPC avec p_code', async () => {
+  it('appelle la RPC avec p_code + p_referrer_id null par défaut', async () => {
     mockResponse = { data: UUID, error: null };
     const id = await joinConcoursByCode('ABCD1234');
     expect(id).toBe(UUID);
     expect(rpcCalls).toHaveLength(1);
     expect(rpcCalls[0]?.name).toBe('join_concours_by_code');
-    expect(rpcCalls[0]?.args).toEqual({ p_code: 'ABCD1234' });
+    expect(rpcCalls[0]?.args).toEqual({
+      p_code: 'ABCD1234',
+      p_referrer_id: null,
+    });
+  });
+
+  it('passe p_referrer_id quand fourni (viral loop W3)', async () => {
+    mockResponse = { data: UUID, error: null };
+    const REF = '55555555-5555-5555-5555-555555555555';
+    await joinConcoursByCode('ABCD1234', REF);
+    expect(rpcCalls[0]?.args).toEqual({
+      p_code: 'ABCD1234',
+      p_referrer_id: REF,
+    });
   });
 
   it('remonte une erreur RPC', async () => {

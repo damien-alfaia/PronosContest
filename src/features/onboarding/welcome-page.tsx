@@ -53,6 +53,14 @@ export const WelcomePage = () => {
     const v = sessionStorage.getItem('onboarding:inviteCode');
     return v && v.trim().length > 0 ? v.trim() : null;
   }, []);
+  // Referrer UUID capturé depuis `?ref=<uuid>` sur la landing/signup
+  // (viral loop W3). Consommé une seule fois au join pour que le trigger
+  // SQL `handle_referral_milestone` crédite l'ambassadeur.
+  const storedReferrerId = useMemo<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const v = sessionStorage.getItem('onboarding:referrerId');
+    return v && v.trim().length > 0 ? v.trim() : null;
+  }, []);
 
   const progressQuery = useOnboardingProgressQuery(userId);
   const markWelcomed = useMarkWelcomedMutation();
@@ -76,15 +84,19 @@ export const WelcomePage = () => {
     if (!userId || joinTriggered.current || !storedInviteCode) return;
     joinTriggered.current = true;
 
-    joinMutation.mutate(storedInviteCode, {
+    joinMutation.mutate(
+      { code: storedInviteCode, referrerId: storedReferrerId },
+      {
       onSuccess: (concoursId) => {
         sessionStorage.removeItem('onboarding:inviteCode');
         sessionStorage.removeItem('onboarding:intent');
+        sessionStorage.removeItem('onboarding:referrerId');
         toast.success(t('concours.toast.joinSuccess'));
         navigate(`/app/concours/${concoursId}`, { replace: true });
       },
       onError: (err) => {
         sessionStorage.removeItem('onboarding:inviteCode');
+        sessionStorage.removeItem('onboarding:referrerId');
         const msg = err instanceof Error ? err.message : '';
         if (msg.includes('concours_not_found') || msg.includes('PGRST116')) {
           toast.error(t('concours.toast.joinNotFound'));

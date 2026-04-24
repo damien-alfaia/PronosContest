@@ -211,9 +211,13 @@ export const leaveConcours = async (
  *  - 'concours_not_found'
  *  - 'concours_not_joinable'
  */
-export const joinConcoursByCode = async (code: string): Promise<string> => {
+export const joinConcoursByCode = async (
+  code: string,
+  referrerId?: string | null,
+): Promise<string> => {
   const { data, error } = await supabase.rpc('join_concours_by_code', {
     p_code: code,
+    p_referrer_id: referrerId ?? null,
   });
 
   if (error) throw error;

@@ -52,15 +52,34 @@ export const SignupPage = () => {
     () => parseSignupIntent(searchParams.get('intent')),
     [searchParams],
   );
+  // Code d'invitation (viral loop W3). L'ambassadeur partage un lien
+  // `?intent=join&code=<CODE>&ref=<UUID>`. On stocke le code en session
+  // pour que /app/welcome auto-join, et le referrer pour que le
+  // trigger SQL `handle_referral_milestone` crédite l'ambassadeur.
+  const urlCode = useMemo(
+    () => searchParams.get('code')?.trim() ?? '',
+    [searchParams],
+  );
+  const urlRef = useMemo(
+    () => searchParams.get('ref')?.trim() ?? '',
+    [searchParams],
+  );
 
-  // Stocke l'intent en session pour que /app/welcome puisse s'y référer.
+  // Stocke intent + code + ref en session pour /app/welcome.
   useEffect(() => {
     if (intent) {
       sessionStorage.setItem('onboarding:intent', intent);
     } else {
       sessionStorage.removeItem('onboarding:intent');
     }
-  }, [intent]);
+    if (urlCode) {
+      sessionStorage.setItem('onboarding:inviteCode', urlCode);
+    }
+    // UUID v4 basique — si c'est du garbage on ne stocke rien.
+    if (urlRef && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(urlRef)) {
+      sessionStorage.setItem('onboarding:referrerId', urlRef);
+    }
+  }, [intent, urlCode, urlRef]);
 
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),

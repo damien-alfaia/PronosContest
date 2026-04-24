@@ -131,12 +131,29 @@ export const useJoinPublicConcoursMutation = (userId: string | undefined) => {
   });
 };
 
-/** Rejoint un concours privé/unlisted via code. Retourne l'id. */
+/**
+ * Rejoint un concours privé/unlisted via code. Retourne l'id.
+ *
+ * Supporte 2 signatures d'appel pour rester compat avec l'existant :
+ *   - `mutate(code)` (legacy — passe juste une string)
+ *   - `mutate({ code, referrerId })` (nouveau, viral loop W3)
+ *
+ * Le `referrerId` est consommé par le trigger SQL
+ * `handle_referral_milestone` qui récompense l'ambassadeur tous les
+ * 3 invités rejoignant ses concours.
+ */
+export type JoinByCodeVariables =
+  | string
+  | { code: string; referrerId?: string | null };
+
 export const useJoinByCodeMutation = (userId: string | undefined) => {
   const queryClient = useQueryClient();
 
-  return useMutation<string, Error, string>({
-    mutationFn: (code: string) => joinConcoursByCode(code),
+  return useMutation<string, Error, JoinByCodeVariables>({
+    mutationFn: (vars: JoinByCodeVariables) => {
+      if (typeof vars === 'string') return joinConcoursByCode(vars);
+      return joinConcoursByCode(vars.code, vars.referrerId);
+    },
     onSuccess: (concoursId) => {
       void queryClient.invalidateQueries({ queryKey: concoursKeys.mine(userId) });
       void queryClient.invalidateQueries({ queryKey: concoursKeys.detail(concoursId) });
