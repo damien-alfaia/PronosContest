@@ -82,10 +82,20 @@ export const router = createBrowserRouter([
     },
   },
 
-  // Pages privées (dans le shell AppLayout)
+  // Pages privées
   {
     element: <RequireAuth />,
     children: [
+      // Welcome : plein écran, HORS AppLayout (respiration post-signup)
+      {
+        path: '/app/welcome',
+        lazy: async () => {
+          const { WelcomePage } = await import(
+            '@/features/onboarding/welcome-page'
+          );
+          return { Component: WelcomePage };
+        },
+      },
       {
         element: <AppLayout />,
         children: [
