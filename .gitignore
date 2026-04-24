@@ -76,3 +76,6 @@ _tmp_*
 *.zip
 design-system/
 PronosticsContest Design System.zip
+
+# Vite — fichiers temporaires générés au boot du dev server
+vite.config.ts.timestamp-*.mjs
