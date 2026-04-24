@@ -177,7 +177,28 @@
       "submit": "Create my account",
       "alreadyAccount": "Already have an account?",
       "loginLink": "Sign in",
-      "emailSent": "A confirmation email has been sent. Check your inbox."
+      "emailSent": "A confirmation email has been sent. Check your inbox.",
+      "wizard": {
+        "stepAriaLabel": "Account creation steps",
+        "nextStep": "Next",
+        "step1": {
+          "label": "Account",
+          "subtitle": "Start with your email and password."
+        },
+        "step2": {
+          "label": "Identity",
+          "subtitle": "What's your name? (will appear on the leaderboard)"
+        },
+        "step3": {
+          "label": "Contest",
+          "subtitle": "Last step — you can join a contest right now.",
+          "inputLabel": "Invite code",
+          "placeholder": "E.g. WC-2026",
+          "hintJoin": "Paste the code your friend gave you.",
+          "hintNeutral": "A friend gave you a code? Enter it here.",
+          "hintOptional": "Optional — you can always join a contest later."
+        }
+      }
     },
     "forgot": {
       "title": "Forgot password",
@@ -222,7 +243,9 @@
       "rateLimited": "Too many attempts. Try again in a moment.",
       "network": "Can't reach the server, check your connection.",
       "unknown": "Something went wrong. Try again in a moment.",
-      "invalidOrExpiredLink": "This link is invalid or expired."
+      "invalidOrExpiredLink": "This link is invalid or expired.",
+      "inviteCodeTooLong": "Invite code too long (20 characters max).",
+      "inviteCodeFormat": "Invalid code (letters, digits and dashes only)."
     }
   },
   "dashboard": {
@@ -895,6 +918,67 @@
       "drapeauUrlFormat": "Invalid flag URL.",
       "fifaIdInteger": "FIFA ID must be an integer.",
       "fifaIdRange": "FIFA ID must be greater than zero."
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "eyebrow": "Let's go",
+      "titleNamed": "Welcome {{name}} 🎉",
+      "titleAnon": "Welcome 🎉",
+      "subtitle": "You're two clicks away from your first prediction. Where do you want to start?",
+      "joiningSubtitle": "Joining the contest…",
+      "skip": "Skip",
+      "choiceJoin": {
+        "title": "I have an invite code",
+        "description": "Join a friend's contest in seconds.",
+        "cta": "Join a contest"
+      },
+      "choiceCreate": {
+        "title": "I'll create my contest",
+        "description": "Set up your own contest and invite your friends.",
+        "cta": "Create my contest"
+      }
+    },
+    "checklist": {
+      "title": "Get started on PronosticsContest",
+      "subtitleProgress": "{{done}} / {{total}} steps done",
+      "subtitleComplete": "Nice — you've unlocked everything!",
+      "dismiss": "Hide the checklist",
+      "dismissConfirm": "Hide for good?",
+      "tasks": {
+        "join_concours": "Join your first contest",
+        "save_prono": "Submit your first prediction",
+        "view_classement": "Check the leaderboard",
+        "complete_profile": "Complete your profile",
+        "invite_friend": "Invite a friend"
+      },
+      "taskCtas": {
+        "join_concours": "Join",
+        "save_prono": "Predict",
+        "view_classement": "View",
+        "complete_profile": "Complete",
+        "invite_friend": "Invite"
+      }
+    },
+    "tour": {
+      "skipAll": "Skip tour",
+      "next": "Next",
+      "done": "Done",
+      "stepCounter": "Step {{current}} of {{total}}",
+      "steps": {
+        "pronosFirstMatchCard": {
+          "title": "Enter your prediction",
+          "description": "Fill in both scores — auto-saved. You can edit until kick-off."
+        },
+        "pronosFilters": {
+          "title": "Filter your predictions",
+          "description": "Split pending matches from locked ones."
+        },
+        "pronosClassementCta": {
+          "title": "Track your rank live",
+          "description": "As soon as the final whistle blows, your rank updates in real time."
+        }
+      }
     }
   },
   "pwa": {

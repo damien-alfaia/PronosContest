@@ -177,7 +177,28 @@
       "submit": "Créer mon compte",
       "alreadyAccount": "Déjà un compte ?",
       "loginLink": "Se connecter",
-      "emailSent": "Un e-mail de confirmation t'a été envoyé. Vérifie ta boîte."
+      "emailSent": "Un e-mail de confirmation t'a été envoyé. Vérifie ta boîte.",
+      "wizard": {
+        "stepAriaLabel": "Étapes de création du compte",
+        "nextStep": "Suivant",
+        "step1": {
+          "label": "Compte",
+          "subtitle": "Commence par ton e-mail et ton mot de passe."
+        },
+        "step2": {
+          "label": "Identité",
+          "subtitle": "Comment t'appelles-tu ? (ça apparaîtra dans le classement)"
+        },
+        "step3": {
+          "label": "Concours",
+          "subtitle": "Dernière étape — tu peux rejoindre un concours tout de suite.",
+          "inputLabel": "Code d'invitation",
+          "placeholder": "Ex : CDM-2026",
+          "hintJoin": "Colle ici le code reçu par ton pote.",
+          "hintNeutral": "Un pote t'a filé un code ? Mets-le ici.",
+          "hintOptional": "Optionnel — tu pourras toujours rejoindre un concours plus tard."
+        }
+      }
     },
     "forgot": {
       "title": "Mot de passe oublié",
@@ -222,7 +243,9 @@
       "rateLimited": "Trop de tentatives. Réessaie dans un instant.",
       "network": "Connexion impossible, vérifie ta connexion internet.",
       "unknown": "Une erreur est survenue. Réessaie dans un instant.",
-      "invalidOrExpiredLink": "Ce lien est invalide ou a expiré."
+      "invalidOrExpiredLink": "Ce lien est invalide ou a expiré.",
+      "inviteCodeTooLong": "Code d'invitation trop long (20 caractères max).",
+      "inviteCodeFormat": "Code invalide (lettres, chiffres et tirets uniquement)."
     }
   },
   "dashboard": {
@@ -895,6 +918,67 @@
       "drapeauUrlFormat": "URL de drapeau invalide.",
       "fifaIdInteger": "L'ID FIFA doit être un entier.",
       "fifaIdRange": "L'ID FIFA doit être supérieur à zéro."
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "eyebrow": "C'est parti",
+      "titleNamed": "Bienvenue {{name}} 🎉",
+      "titleAnon": "Bienvenue 🎉",
+      "subtitle": "Tu es à deux clics de ton premier pronostic. Par où veux-tu commencer ?",
+      "joiningSubtitle": "On te connecte au concours…",
+      "skip": "Passer",
+      "choiceJoin": {
+        "title": "J'ai un code d'invitation",
+        "description": "Rejoins le concours d'un pote en quelques secondes.",
+        "cta": "Rejoindre un concours"
+      },
+      "choiceCreate": {
+        "title": "Je crée mon concours",
+        "description": "Monte ton concours entre potes et invite-les.",
+        "cta": "Créer mon concours"
+      }
+    },
+    "checklist": {
+      "title": "Démarre sur PronosticsContest",
+      "subtitleProgress": "{{done}} / {{total}} étapes terminées",
+      "subtitleComplete": "Bravo, tu as tout débloqué !",
+      "dismiss": "Masquer la checklist",
+      "dismissConfirm": "Masquer pour de bon ?",
+      "tasks": {
+        "join_concours": "Rejoindre ton premier concours",
+        "save_prono": "Saisir ton premier pronostic",
+        "view_classement": "Consulter le classement",
+        "complete_profile": "Compléter ton profil",
+        "invite_friend": "Inviter un ami"
+      },
+      "taskCtas": {
+        "join_concours": "Rejoindre",
+        "save_prono": "Pronostiquer",
+        "view_classement": "Voir",
+        "complete_profile": "Compléter",
+        "invite_friend": "Inviter"
+      }
+    },
+    "tour": {
+      "skipAll": "Passer la visite",
+      "next": "Suivant",
+      "done": "Terminer",
+      "stepCounter": "Étape {{current}} sur {{total}}",
+      "steps": {
+        "pronosFirstMatchCard": {
+          "title": "Entre ton pronostic",
+          "description": "Remplis les deux scores — c'est auto-sauvegardé. Tu peux modifier jusqu'au coup d'envoi."
+        },
+        "pronosFilters": {
+          "title": "Filtre tes pronos",
+          "description": "Sépare les matchs à pronostiquer de ceux déjà verrouillés."
+        },
+        "pronosClassementCta": {
+          "title": "Suis ton classement en direct",
+          "description": "Dès le coup de sifflet final, ton rang se met à jour en temps réel."
+        }
+      }
     }
   },
   "pwa": {
